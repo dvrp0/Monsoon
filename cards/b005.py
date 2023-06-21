@@ -1,4 +1,3 @@
-import random
 from point import Point
 from structure import Structure
 from target import Target
@@ -37,6 +36,7 @@ class B005Test(CardTestCase):
         card.activate_ability()
 
         self.board.at(Point(0, 2)).deal_damage(7)
+        self.board.at(Point(0, 2)).poison()
         self.board.set(Point(0, 3), None)
         self.board.set(Point(0, 4), None)
         self.board.set(Point(1, 2), None)

@@ -65,27 +65,33 @@ class Board:
             unit.set_path()
             unit.move()
 
-    def get_targets(self, target: Target, exclude: Point=None) -> List[Point]:
+    def get_targets(self, target: Target, exclude: Point = None) -> List[Point]:
         tiles = []
 
         for y in range(5):
             for x in range(4):
-                tile = self.board[y][x]
-                is_unit = isinstance(tile, Unit)
-                is_structure = isinstance(tile, Structure)
+                entity = self.board[y][x]
+                is_unit = isinstance(entity, Unit)
+                is_structure = isinstance(entity, Structure)
 
-                if is_unit:
-                    type_matches = True if target.unit_types is None else any(type in tile.unit_types for type in target.unit_types)
-
-                if not (is_unit or is_structure):
+                if not is_unit and not is_structure:
                     continue
 
-                kind_matches = (target.kind == Target.Kind.ANY or
-                    (target.kind == Target.Kind.UNIT and is_unit and type_matches) or
-                    (target.kind == Target.Kind.STRUCTURE and is_structure))
+                if is_unit:
+                    type_matches = True if target.unit_types is None else any(type in entity.unit_types for type in target.unit_types)
+                    non_hero_matches = True if not target.non_hero else UnitType.HERO not in entity.unit_types
+                    status_matches = True if target.status_effects is None else any(status in entity.status_effects for status in target.status_effects)
+
+                strength_matches = True if target.strength_limit is None else entity.strength <= target.strength_limit
+                unit_matches = is_unit and type_matches and non_hero_matches and status_matches and strength_matches
+                structure_matches = is_structure and strength_matches
+
+                kind_matches = ((target.kind == Target.Kind.ANY and (unit_matches or structure_matches)) or # TODO:
+                    (target.kind == Target.Kind.UNIT and unit_matches) or
+                    (target.kind == Target.Kind.STRUCTURE and structure_matches))
                 side_matches = (target.side == Target.Side.ANY or
-                    (target.side == Target.Side.FRIENDLY and self.is_ally(tile)) or
-                    (target.side == Target.Side.ENEMY and not self.is_ally(tile)))
+                    (target.side == Target.Side.FRIENDLY and self.is_ally(entity)) or
+                    (target.side == Target.Side.ENEMY and not self.is_ally(entity)))
 
                 if kind_matches and side_matches:
                     tiles.append(Point(x, y))
@@ -95,7 +101,7 @@ class Board:
 
         return tiles
 
-    def get_front_tiles(self, position: Point, target: Target=None) -> List[Point]:
+    def get_front_tiles(self, position: Point, target: Target = None) -> List[Point]:
         tiles = [Point(position.x, i) for i in range(position.y - 1, -1, -1)]
 
         if target is not None:
@@ -104,7 +110,7 @@ class Board:
 
         return tiles
 
-    def get_behind_tiles(self, position: Point, target: Target=None) -> List[Point]:
+    def get_behind_tiles(self, position: Point, target: Target = None) -> List[Point]:
         tiles = [Point(position.x, i) for i in range(position.y + 1, 5)]
 
         if target is not None:
@@ -113,7 +119,7 @@ class Board:
 
         return tiles
 
-    def get_side_tiles(self, position: Point, target: Target=None) -> List[Point]:
+    def get_side_tiles(self, position: Point, target: Target = None) -> List[Point]:
         tiles = [
             Point(position.x - 1, position.y),
             Point(position.x + 1, position.y)
@@ -123,9 +129,9 @@ class Board:
             targets = self.get_targets(target)
             tiles = [tile for tile in tiles if tile in targets]
 
-        return [tile for tile in tiles if tile.x >= 0 and tile.x <= 3 and tile.y >= 0 and tile.y <= 4]
+        return [tile for tile in tiles if tile.is_valid]
 
-    def get_bordering_tiles(self, position: Point, target: Target=None) -> List[Point]:
+    def get_bordering_tiles(self, position: Point, target: Target = None) -> List[Point]:
         tiles = [
             Point(position.x - 1, position.y),
             Point(position.x + 1, position.y),
@@ -137,9 +143,9 @@ class Board:
             targets = self.get_targets(target)
             tiles = [tile for tile in tiles if tile in targets]
 
-        return [tile for tile in tiles if tile.x >= 0 and tile.x <= 3 and tile.y >= 0 and tile.y <= 4]
+        return [tile for tile in tiles if tile.is_valid]
 
-    def get_surrounding_tiles(self, position: Point, target: Target=None) -> List[Point]:
+    def get_surrounding_tiles(self, position: Point, target: Target = None) -> List[Point]:
         tiles = [
             Point(position.x - 1, position.y),
             Point(position.x - 1, position.y - 1),
@@ -155,7 +161,7 @@ class Board:
             targets = self.get_targets(target)
             tiles = [tile for tile in tiles if tile in targets]
 
-        return [tile for tile in tiles if tile.x >= 0 and tile.x <= 3 and tile.y >= 0 and tile.y <= 4]
+        return [tile for tile in tiles if tile.is_valid]
 
     def spawn_token_unit(self, player: "Player", position: Point, strength: int, types: List[UnitType] = None):
         types = types or [random.choice(list(UnitType))]

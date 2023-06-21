@@ -8,3 +8,7 @@ class Point():
 
     def __repr__(self):
         return f"({self.x}, {self.y})"
+
+    @property
+    def is_valid(self):
+        return self.x >= 0 and self.x <= 3 and self.y >= 0 and self.y <= 4

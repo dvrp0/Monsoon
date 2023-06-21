@@ -1,17 +1,12 @@
 import random
 from card import Card
 from enums import UnitType, TriggerType, StatusEffect
-from typing import TYPE_CHECKING, List
+from typing import List
 from point import Point
-from copy import deepcopy
-
-if TYPE_CHECKING:
-    from player import Player
 
 class Unit(Card):
-    def __init__(self, unit_types: List[UnitType], cost: int, strength: int, movement: int, trigger: TriggerType=None, fixedly_forward=False):
+    def __init__(self, unit_types: List[UnitType], cost: int, strength: int, movement: int, trigger: TriggerType = None, fixedly_forward=False):
         super().__init__()
-        self.player: Player = None
         self.unit_types = unit_types
         self.cost = cost
         self.strength = strength
@@ -22,7 +17,7 @@ class Unit(Card):
         self.position: Point = None
 
     def __eq__(self, other):
-        return self.card_id == other.card_id and self.player == other.player
+        return self.card_id == other.card_id and self.player == other.player and self.position == other.position
 
     def __repr__(self):
         strength = f"♥{self.strength}{' ' if self.strength < 10 else ''}"
@@ -54,14 +49,9 @@ class Unit(Card):
     def is_disabled(self):
         return StatusEffect.DISABLED in self.status_effects
 
-    def copy(self):
-        copied = deepcopy(self)
-        copied.player = self.player # 그냥 deepcopy()만 하면 player가 새로운 객체가 되어서 난리가 남
-
-        return copied
-
     def play(self, position: Point):
         self.position = position
+        self.player.board.set(self.position, self)
         self.set_path(True)
 
         if self.trigger == TriggerType.ON_PLAY:
@@ -76,6 +66,7 @@ class Unit(Card):
 
         for _ in range(self.movement if on_play else 1):
             destination = Point(position.x, position.y - 1)
+            up = self.player.board.at(destination)
 
             if StatusEffect.CONFUSED in status_effects_cached:
                 if position.x == 0:
@@ -87,21 +78,23 @@ class Unit(Card):
 
                 destination = Point(position.x + random.choice(choices), position.y)
                 status_effects_cached.remove(StatusEffect.CONFUSED)
-            elif on_play and not self.fixedly_forward:
+            elif on_play and not self.fixedly_forward and destination.y > -1 and (up is None or up.player == self.player):
+                # 상대 기지 앞이 아닌 위치에서 앞에 아무것도 없거나 앞이 아군으로 막혀 있다면 옆을 살펴보기
                 left_position = Point(position.x - 1, position.y)
                 left = self.player.board.at(left_position) if position.x > 0 else None
                 right_position = Point(position.x + 1, position.y)
                 right = self.player.board.at(right_position) if position.x < 3 else None
 
+                # inward -> outward
                 if position.x <= 1:
-                    if right is not None and right.player != self.player:
+                    if right is not None and right.player != self.player and right_position not in destinations:
                         destination = right_position
-                    elif left is not None and left.player != self.player:
+                    elif left is not None and left.player != self.player and left_position not in destinations:
                         destination = left_position
                 elif position.x >= 2:
-                    if left is not None and left.player != self.player:
+                    if left is not None and left.player != self.player and left_position not in destinations:
                         destination = left_position
-                    elif right is not None and right.player != self.player:
+                    elif right is not None and right.player != self.player and right_position not in destinations:
                         destination = right_position
 
             destinations.append(destination)
@@ -129,12 +122,17 @@ class Unit(Card):
 
         for destination in self.path:
             if destination.y < 0: # 적 기지로
+                if self.trigger == TriggerType.BEFORE_ATTACKING and not self.is_disabled:
+                    self.activate_ability(destination)
+
                 self.player.opponent.deal_damage(self.strength)
                 self.destroy()
 
                 return
 
             target = self.player.board.at(destination)
+            is_attacked = False
+
             if target is not None and (self.is_confused or target.player != self.player):
                 if self.trigger == TriggerType.BEFORE_ATTACKING and not self.is_disabled:
                     self.activate_ability(destination)
@@ -145,10 +143,15 @@ class Unit(Card):
                     target.deal_damage(self.strength) # defender triggers first
                     self.deal_damage(target_strength_cached)
 
+                    is_attacked = True
+
             if self.player.board.at(destination) is None and self.strength > 0:
                 self.player.board.set(self.position, None)
                 self.position = destination
                 self.player.board.set(destination, self)
+
+            if is_attacked and self.trigger == TriggerType.AFTER_ATTACKING and not self.is_disabled:
+                self.activate_ability()
 
             if self.is_confused:
                 self.deconfuse()
@@ -163,6 +166,7 @@ class Unit(Card):
 
     def destroy(self):
         self.player.board.set(self.position, None)
+        self.path = []
 
         if self.trigger == TriggerType.ON_DEATH:
             self.activate_ability()

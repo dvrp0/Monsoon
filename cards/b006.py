@@ -9,7 +9,8 @@ class B006(Structure): # Temple of Life
         super().__init__(3, 6)
 
     def activate_ability(self, position: Point | None = None):
-        targets = self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY))
+        targets = [target for target in self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY))
+                   if not self.player.board.at(target).is_vitalized]
         random.shuffle(targets)
 
         for target in targets[:3]:

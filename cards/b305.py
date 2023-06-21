@@ -16,11 +16,11 @@ class B305(Structure): # Temple of Space
             targets.remove(self.position)
 
         for target in targets:
-            if self.player.board.at(target) == self:
+            if self.player.board.at(target).card_id == self.card_id:
                 for tile in self.player.board.get_surrounding_tiles(target, Target(Target.Kind.UNIT, Target.Side.ANY)):
                     to = Point(tile.x - target.x  + self.position.x, tile.y - target.y + self.position.y)
 
-                    if to.x >= 0 and to.x <= 3 and to.y >= 0 and to.y <= 4:
+                    if to.is_valid:
                         self.player.board.at(tile).teleport(to)
 
                 self.player.board.at(target).destroy()

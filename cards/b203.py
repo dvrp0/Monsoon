@@ -1,4 +1,3 @@
-import random
 from point import Point
 from structure import Structure
 from target import Target

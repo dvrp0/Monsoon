@@ -20,9 +20,18 @@ class UE04Test(CardTestCase):
         self.board.spawn_token_unit(self.remote, Point(2, 0), 7)
         self.board.spawn_token_unit(self.remote, Point(3, 0), 12)
         self.board.spawn_token_unit(self.remote, Point(0, 1), 7)
-
+        self.board.spawn_token_unit(self.remote, Point(0, 3), 1)
         card = UE04()
         card.player = self.local
-        card.activate_ability()
+        card.play(Point(0, 4))
 
-        self.assertEqual(card.strength, 18)
+        self.assertEqual(card.strength, 17)
+
+        self.board.clear()
+        self.board.spawn_token_unit(self.remote, Point(0, 0), 3)
+        self.board.spawn_token_unit(self.remote, Point(0, 3), 3)
+        card = UE04()
+        card.player = self.local
+        card.play(Point(0, 4))
+
+        self.assertEqual(card.strength, 3)

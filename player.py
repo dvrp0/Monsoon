@@ -14,15 +14,13 @@ class Player:
         self.order = order
         self.mana = 3 if order == PlayerOrder.FIRST else 4
         self.strength = 20
-        self.front_line = 0
+        self.front_line = 4
 
         self.deck = deck
         random.shuffle(self.deck)
 
         for i, card in enumerate(self.deck):
-            if isinstance(card, Unit) or isinstance(card, Structure):
-                card.player = self
-
+            card.player = self
             card.weight = 1 if i == 0 else self.deck[i - 1].weight * 1.6 + 100
 
         self.hand: List[Card] = []

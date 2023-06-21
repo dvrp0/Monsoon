@@ -1,23 +1,18 @@
 from card import Card
 from enums import TriggerType
-from typing import TYPE_CHECKING, List
+from typing import List
 from point import Point
-from copy import deepcopy
-
-if TYPE_CHECKING:
-    from player import Player
 
 class Structure(Card):
     def __init__(self, cost: int, strength: int, triggers: List[TriggerType]=[TriggerType.TURN_START]):
         super().__init__()
-        self.player: Player = None
         self.cost = cost
         self.strength = strength
         self.triggers = triggers
         self.position: Point = None
 
     def __eq__(self, other):
-        return self.card_id == other.card_id and self.player == other.player
+        return self.card_id == other.card_id and self.player == other.player and self.position == other.position
 
     def __repr__(self):
         strength = f"♥{self.strength}{' ' if self.strength < 10 else ''}"
@@ -35,12 +30,6 @@ class Structure(Card):
     @property
     def is_on_play(self):
         return TriggerType.ON_PLAY in self.triggers
-
-    def copy(self):
-        copied = deepcopy(self)
-        copied.player = self.player # 그냥 deepcopy()만 하면 player가 새로운 객체가 되어서 난리가 남
-
-        return copied
 
     def play(self, position: Point):
         self.position = position

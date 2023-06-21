@@ -7,7 +7,7 @@ class U061(Unit): # Sparkly Kitties
     def __init__(self):
         super().__init__([UnitType.FELINE], 2, 6, 0, TriggerType.ON_PLAY)
 
-    def activate_ability(self, position: Point | None=None):
+    def activate_ability(self, position: Point | None = None):
         self.confuse()
         self.gain_speed(2)
 

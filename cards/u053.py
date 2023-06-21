@@ -1,4 +1,3 @@
-import random
 from enums import UnitType, TriggerType
 from unit import Unit
 from point import Point
