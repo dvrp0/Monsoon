@@ -10,7 +10,7 @@ class U216(Unit): # Reckless Rushers
     def activate_ability(self, position: Point | None = None):
         self.player.deal_damage(1)
 
-class U206Test(CardTestCase):
+class U216Test(CardTestCase):
     def test_ability(self):
         card = U216()
         card.player = self.local

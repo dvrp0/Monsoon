@@ -133,6 +133,9 @@ class Unit(Card):
             target = self.player.board.at(destination)
             is_attacked = False
 
+            if target is not None and target.player == self.player and destination.y < self.position.y:
+                return
+
             if target is not None and (self.is_confused or target.player != self.player):
                 if self.trigger == TriggerType.BEFORE_ATTACKING and not self.is_disabled:
                     self.activate_ability(destination)
@@ -144,17 +147,22 @@ class Unit(Card):
                     self.deal_damage(target_strength_cached)
 
                     is_attacked = True
+            # elif target is not None and target.player == self.player:
+            #     return
 
             if self.player.board.at(destination) is None and self.strength > 0:
                 self.player.board.set(self.position, None)
                 self.position = destination
                 self.player.board.set(destination, self)
 
-            if is_attacked and self.trigger == TriggerType.AFTER_ATTACKING and not self.is_disabled:
-                self.activate_ability()
+                if destination.y > 0 and self.player.front_line > destination.y:
+                    self.player.front_line = destination.y
 
-            if self.is_confused:
-                self.deconfuse()
+                if is_attacked and self.trigger == TriggerType.AFTER_ATTACKING and not self.is_disabled:
+                    self.activate_ability()
+
+                if self.is_confused:
+                    self.deconfuse()
 
     def deal_damage(self, amount: int):
         self.strength -= amount

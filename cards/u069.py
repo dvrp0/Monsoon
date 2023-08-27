@@ -17,7 +17,7 @@ class U069Test(CardTestCase):
 
         card = U069()
         card.player = self.local
-        card.play(Point(0, 3))
+        card.play(Point(1, 3))
 
         self.assertEqual(self.remote.strength, 14)
 

@@ -9,5 +9,5 @@ class Spell(Card):
         self.targetable: Target = targetable
 
     def play(self, position: Point | None = None):
-        if position is None or position in self.player.board.get_targets(self.targetable):
+        if position is None or (self.targetable is not None and position in self.player.board.get_targets(self.targetable)):
             self.activate_ability(position)
