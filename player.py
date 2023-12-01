@@ -12,9 +12,10 @@ class Player:
     def __init__(self, deck: List[Card], order: PlayerOrder):
         self.board: Board = None
         self.order = order
-        self.mana = 3 if order == PlayerOrder.FIRST else 4
+        self.max_mana = 3 if order == PlayerOrder.FIRST else 4
+        self.current_mana = self.max_mana
         self.strength = 20
-        self.front_line = 4
+        self.front_line = 4 if order == PlayerOrder.FIRST else 0
 
         self.deck = deck
         random.shuffle(self.deck)
