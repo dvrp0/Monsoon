@@ -22,9 +22,10 @@ class Board:
         rows = []
 
         for y in range(5):
-            rows.append("  ".join(str(self.board[y][x]) if self.board[y][x] is not None else f"({x}, {y}) {'-' * 17}" for x in range(4)))
+            row = "  ".join(str(self.board[y][x]) if self.board[y][x] is not None else f"({x}, {y}) {'-' * 17}" for x in range(4))
+            rows.append(f"{'▶' if self.local.front_line == y else ' '} {row} {'◁' if self.remote.front_line == y else ' '}")
 
-        return "\n".join([f"{' ' * 46} {self.remote.order}: {self.remote.strength}"] + rows + [f"{' ' * 46} {self.local.order}: {self.local.strength}"])
+        return "\n".join([f"{' ' * 50} {self.remote.order}: {self.remote.strength}"] + rows + [f"{' ' * 50} {self.local.order}: {self.local.strength}"])
 
     def at(self, position: Point):
         return self.board[position.y][position.x]
@@ -45,11 +46,30 @@ class Board:
             if structure.is_at_turn_end:
                 structure.activate_ability(structure.position)
 
+        for y in range(5):
+            if any(self.board[y][x] is not None and self.board[y][x].player == self.local for x in range(4)):
+                self.local.front_line = max(1, y) # farthest front line is 1
+                break
+
+            self.local.front_line = 4
+
+        for y in range(4, -1, -1):
+            if any(self.board[y][x] is not None and self.board[y][x].player == self.remote for x in range(4)):
+                self.remote.front_line = min(3, y) # farthest front line is 3
+                break
+
+            self.remote.front_line = 0
+
+        self.local.max_mana += 1
+        self.local.current_mana = self.local.max_mana
+        self.remote.current_mana = self.remote.max_mana
+
         temp = self.local
         self.local = self.remote
         self.remote = temp
-        print(id(self.local))
-        print(id(self.remote))
+
+        self.local.front_line = 4 - self.local.front_line
+        self.remote.front_line = 4 - self.remote.front_line
 
         self.board = [row[::-1] for row in self.board[::-1]]
         for y in range(5):
@@ -86,7 +106,7 @@ class Board:
                 unit_matches = is_unit and type_matches and non_hero_matches and status_matches and strength_matches
                 structure_matches = is_structure and strength_matches
 
-                kind_matches = ((target.kind == Target.Kind.ANY and (unit_matches or structure_matches)) or # TODO:
+                kind_matches = ((target.kind == Target.Kind.ANY and (unit_matches or structure_matches)) or
                     (target.kind == Target.Kind.UNIT and unit_matches) or
                     (target.kind == Target.Kind.STRUCTURE and structure_matches))
                 side_matches = (target.side == Target.Side.ANY or
