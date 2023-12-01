@@ -7,7 +7,7 @@ from test import CardTestCase
 
 class U320(Unit): # Original Blueprints
     def __init__(self):
-        super().__init__([UnitType.CONSUTRUCT, UnitType.ANCIENT], 4, 6, 1, TriggerType.BEFORE_MOVING)
+        super().__init__([UnitType.CONSUTRUCT, UnitType.ANCIENT], 4, 7, 1, TriggerType.BEFORE_MOVING)
 
     def activate_ability(self, position: Point | None = None):
         targets = self.player.board.get_surrounding_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.FRIENDLY))

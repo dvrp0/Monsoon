@@ -9,9 +9,9 @@ class U053(Unit): # Wild Saberpaws
         super().__init__([UnitType.FELINE], 2, 5, 0, TriggerType.ON_PLAY)
 
     def activate_ability(self, position: Point | None = None):
-        if len(self.player.board.get_surrounding_tiles(self.position, Target(Target.Kind.ANY, Target.Side.ENEMY))) == 0:
+        if len(self.player.board.get_surrounding_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ANY))) == 0:
             self.gain_speed(2)
-        elif len(self.player.board.get_bordering_tiles(self.position, Target(Target.Kind.ANY, Target.Side.ENEMY))) == 0:
+        elif len(self.player.board.get_bordering_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ANY))) == 0:
             self.gain_speed(1)
 
 class U053Test(CardTestCase):
@@ -37,3 +37,11 @@ class U053Test(CardTestCase):
         card.play(Point(0, 4))
 
         self.assertEqual(card.position, Point(0, 4))
+
+        self.board.clear()
+        self.board.spawn_token_structure(self.remote, Point(1, 3), 1)
+        card = U053()
+        card.player = self.local
+        card.play(Point(1, 2))
+
+        self.assertEqual(card.position, Point(1, 0))

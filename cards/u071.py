@@ -10,7 +10,7 @@ class U071(Unit): # Angelic Tikas
         super().__init__([UnitType.FELINE, UnitType.ANCIENT], 3, 6, 1, TriggerType.BEFORE_MOVING)
 
     def activate_ability(self, position: Point | None = None):
-        targets = self.player.board.get_surrounding_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ENEMY))
+        targets = self.player.board.get_bordering_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ENEMY))
         not_confused = [tile for tile in targets if not self.player.board.at(tile).is_confused]
 
         if len(not_confused) > 0:

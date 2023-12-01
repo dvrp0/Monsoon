@@ -1,6 +1,6 @@
 import uuid
 from enums import PlayerOrder, UnitType
-from unittest import TestCase
+from unittest import TestCase, SkipTest
 from player import Player
 from board import Board
 from cards import *
@@ -25,5 +25,6 @@ class CardTestCase(TestCase):
         self.remote = Player(remote_deck, PlayerOrder.SECOND)
         self.board = Board(self.local, self.remote)
 
+    @SkipTest
     def test_ability(self):
         pass

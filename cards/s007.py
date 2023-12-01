@@ -9,7 +9,7 @@ class S007(Spell): # Potion of Growth
 
     def activate_ability(self, position: Point | None = None):
         target = self.player.board.at(position)
-        target.heal(6)
+        target.heal(7)
         target.vitalize()
 
 class S007Test(CardTestCase):
@@ -19,7 +19,7 @@ class S007Test(CardTestCase):
         card.player = self.local
         card.play(Point(0, 4))
 
-        self.assertEqual(self.board.at(Point(0, 4)).strength, 13)
+        self.assertEqual(self.board.at(Point(0, 4)).strength, 14)
 
         self.board.clear()
         self.board.spawn_token_unit(self.remote, Point(0, 4), 7)

@@ -126,7 +126,9 @@ class Unit(Card):
                     self.activate_ability(destination)
 
                 self.player.opponent.deal_damage(self.strength)
-                self.destroy()
+
+                if self.player.opponent.strength > 0:
+                    self.destroy()
 
                 return
 

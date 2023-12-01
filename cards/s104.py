@@ -11,7 +11,7 @@ class S104(Spell): # Icicle Burst
         target = self.player.board.at(position)
 
         if target.is_frozen:
-            target.deal_damage(18)
+            target.deal_damage(12)
         else:
             target.freeze()
 

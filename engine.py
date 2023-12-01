@@ -76,21 +76,42 @@ class State:
                     mask[x + y * 4] = True
 
 local = Player([B304(), UA07(), U007(), U061(), U053(), U106(), U302(), U305(), U306(), U320(), UD31(), UE04()], PlayerOrder.FIRST)
-remote = Player([B304(), UA07(), U007(), U061(), U053(), U106(), U302(), U305(), U306(), U320(), UD31(), UE04()], PlayerOrder.SECOND)
+remote = Player([S012(), UA07(), U007(), U211(), U061(), U206(), U053(), U001(), U216(), S013(), U071(), UA04()], PlayerOrder.SECOND)
 board = Board(local, remote)
 
 with open("cards.json", "r", encoding="utf-8") as f:
     cards = json.load(f)
 
 while True:
-    print(board)
-    print(f"Current player: {board.local.order}")
-    print(f"Hand:")
-    for card in board.local.hand:
-        for entry in cards:
-            if entry["id"] == card.card_id:
-                print(f"{entry['name']} {card.card_id} {card.strength} {card.movement if isinstance(card, Unit) else ''}")
+    while True:
+        print(board)
+        print(f"Current player: {board.local.order}")
+        print(f"Max mana: {board.local.max_mana}, Current mana: {board.local.current_mana}")
+        print(f"Hand:")
+        for i, card in enumerate(board.local.hand):
+            for entry in cards:
+                if entry["id"] == card.card_id:
+                    print(f"{i}: {entry['name']} {card.card_id} {card.strength if isinstance(card, Unit) or isinstance(card, Structure) else ''} "
+                        f"{card.movement if isinstance(card, Unit) else ''}")
 
-    inputs = [int(x) for x in input("> ").split()]
-    board.local.play(inputs[0], Point(inputs[1], inputs[2]))
+        action = input("> ")
+
+        if action == "end":
+            print("Turn ended")
+            break
+        elif action.startswith("replace"):
+            target = int(action.split()[1])
+            board.local.cycle(board.local.hand[target])
+            print(f"Replaced card {target}")
+        else:
+            inputs = [int(x) for x in action.split()]
+
+            if board.local.hand[inputs[0]].cost > board.local.current_mana:
+                print("Not enough mana")
+            elif not isinstance(board.local.hand[inputs[0]], Spell) and inputs[2] < board.local.front_line:
+                print("Can only place behind front line")
+            else:
+                board.local.current_mana -= board.local.hand[inputs[0]].cost
+                board.local.play(inputs[0], Point(inputs[1], inputs[2]) if len(inputs) > 1 else None)
+
     board.to_next_turn()
