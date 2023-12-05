@@ -1,5 +1,6 @@
 import random
-from enums import UnitType, TriggerType
+from enums import UnitType
+from card import Card
 from unit import Unit
 from structure import Structure
 from target import Target
@@ -11,9 +12,10 @@ if TYPE_CHECKING:
 
 class Board:
     def __init__(self, local: "Player", remote: "Player"):
-        self.board = [[None for _ in range(4)] for _ in range(5)]
+        self.board: List[List[Unit | Structure | None]] = [[None for _ in range(4)] for _ in range(5)]
         self.local = local
         self.remote = remote
+        self.history: List[Card] = []
 
         self.local.board = self
         self.remote.board = self
@@ -25,7 +27,11 @@ class Board:
             row = "  ".join(str(self.board[y][x]) if self.board[y][x] is not None else f"({x}, {y}) {'-' * 17}" for x in range(4))
             rows.append(f"{'▶' if self.local.front_line == y else ' '} {row} {'◁' if self.remote.front_line == y else ' '}")
 
-        return "\n".join([f"{' ' * 50} {self.remote.order}: {self.remote.strength}"] + rows + [f"{' ' * 50} {self.local.order}: {self.local.strength}"])
+        remote = [f"{' ' * 50} {self.remote.order}: {self.remote.strength}"]
+        local = [f"{' ' * 50} {self.local.order}: {self.local.strength}"]
+        history = [", ".join(f"[{'local' if card.player == self.local else 'remote'}: {card.card_id}]" for card in self.history[:5])]
+
+        return "\n".join(remote + rows + local + history)
 
     def at(self, position: Point):
         return self.board[position.y][position.x]
@@ -70,6 +76,8 @@ class Board:
 
         self.local.front_line = 4 - self.local.front_line
         self.remote.front_line = 4 - self.remote.front_line
+
+        self.local.replacable = True
 
         self.board = [row[::-1] for row in self.board[::-1]]
         for y in range(5):
@@ -190,11 +198,18 @@ class Board:
         token.player = player
         token.position = position
 
+        types_id = "".join([str(type.value) for type in types])
+        token.card_id = f"f{types_id.zfill(3)}"
+
         self.set(position, token)
 
     def spawn_token_structure(self, player: "Player", position: Point, strength: int):
         token = Structure(0, strength)
         token.player = player
         token.position = position
+        token.card_id = "b001"
 
         self.set(position, token)
+
+    def add_to_history(self, card: Card):
+        self.history.append(card)
