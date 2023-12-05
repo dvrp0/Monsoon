@@ -28,7 +28,9 @@ class B305(Structure): # Temple of Space
 
                 return
 
-        self.player.deck.pop()
+        if not self.is_single_use:
+            self.player.deck.pop()
+
         self.cost = 2
         self.weight = 1
         self.player.hand.append(self)

@@ -43,10 +43,9 @@ class UA20Test(CardTestCase):
         self.assertTrue(self.local.deck[-1].is_single_use)
         self.assertTrue(self.local.deck[-1].card_id in ["b005", "b006", "b203", "b305"])
 
-        card_id = self.local.deck[-1].card_id
         self.local.hand.append(self.local.deck[-1])
         self.local.deck.pop()
         self.local.discard(self.local.hand[3])
         self.local.play(3, Point(0, 4))
 
-        self.assertEqual(len(self.local.deck), 8 if card_id == "b305" else 9)
+        self.assertEqual(len(self.local.deck), 9)
