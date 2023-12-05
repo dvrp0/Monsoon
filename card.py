@@ -14,6 +14,24 @@ class Card(ABC):
         self.weight = 0
         self.is_single_use = False
 
+    def __int__(self):
+        if self.card_id[:2] == "cs":
+            kind = "3"
+        else:
+            match self.card_id[0]:
+                case "b":
+                    kind = "0"
+                case "s":
+                    kind = "1"
+                case "u":
+                    kind = "2"
+                case "t":
+                    kind = "3"
+                case "f":
+                    kind = "4"
+
+        return int(f"{kind}{self.card_id[1:]}", 16)
+
     @abstractmethod
     def play(self, position: Point | None = None):
         pass
