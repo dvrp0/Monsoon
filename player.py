@@ -1,7 +1,6 @@
 import random
 from card import Card
-from copy import deepcopy
-from enums import PlayerOrder
+from enums import PlayerOrder, Faction
 from unit import Unit
 from structure import Structure
 from point import Point
@@ -9,13 +8,15 @@ from board import Board
 from typing import List
 
 class Player:
-    def __init__(self, deck: List[Card], order: PlayerOrder):
+    def __init__(self, faction: Faction, deck: List[Card], order: PlayerOrder):
         self.board: Board = None
+        self.faction = faction
         self.order = order
         self.max_mana = 3 if order == PlayerOrder.FIRST else 4
         self.current_mana = self.max_mana
         self.strength = 20
         self.front_line = 4 if order == PlayerOrder.FIRST else 0
+        self.replacable = True
 
         self.deck = deck
         random.shuffle(self.deck)
@@ -59,6 +60,7 @@ class Player:
 
     def play(self, index: int, position: Point | None):
         target = self.hand[index]
+        self.board.add_to_history(target)
         self.discard(target)
 
         if isinstance(target, Unit) or isinstance(target, Structure):

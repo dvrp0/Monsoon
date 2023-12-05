@@ -18,7 +18,7 @@ class Action:
 class State:
     def __init__(self, seed=None):
         self.turn = 1
-        self.players = (Player([], PlayerOrder.FIRST), Player([], PlayerOrder.SECOND))
+        self.players = (Player(Faction.WINTER, [], PlayerOrder.FIRST), Player(Faction.WINTER, [], PlayerOrder.SECOND))
         self.current_player = self.players[0]
         self.board = [[None for _ in range(4)] for _ in range(5)]
         self.__available_actions = None
@@ -75,8 +75,8 @@ class State:
                 if self.board[y][x] is not None:
                     mask[x + y * 4] = True
 
-local = Player([B304(), UA07(), U007(), U061(), U053(), U106(), U302(), U305(), U306(), U320(), UD31(), UE04()], PlayerOrder.FIRST)
-remote = Player([S012(), UA07(), U007(), U211(), U061(), U206(), U053(), U001(), U216(), S013(), U071(), UA04()], PlayerOrder.SECOND)
+local = Player(Faction.IRONCLAD, [B304(), UA07(), U007(), U061(), U053(), U106(), U302(), U305(), U306(), U320(), UD31(), UE04()], PlayerOrder.FIRST)
+remote = Player(Faction.SHADOWFEN, [S012(), UA07(), U007(), U211(), U061(), U206(), U053(), U001(), U216(), S013(), U071(), UA04()], PlayerOrder.SECOND)
 board = Board(local, remote)
 
 with open("cards.json", "r", encoding="utf-8") as f:
