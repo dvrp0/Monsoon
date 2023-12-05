@@ -10,21 +10,21 @@ class PlayerOrder(IntEnum):
 '''
 All possible actions:
 
-0: Place unit or structure card at index 0 of hand at (0, 0)
-1: Place unit or structure card at index 0 of hand at (0, 1)
-2: Place unit or structure card at index 0 of hand at (0, 2)
-3: Place unit or structure card at index 0 of hand at (0, 3)
-4: Place unit or structure card at index 0 of hand at (1, 0)
+0: Place unit or structure card at index 0 of hand at (0, 4)
+1: Place unit or structure card at index 0 of hand at (1, 4)
+2: Place unit or structure card at index 0 of hand at (2, 4)
+3: Place unit or structure card at index 0 of hand at (3, 4)
+4: Place unit or structure card at index 0 of hand at (0, 3)
 ...
-15: Place unit or structure card at index 0 of hand at (3, 3)
+15: Place unit or structure card at index 0 of hand at (3, 1)
 ...
-63: Place unit or structure card at index 3 of hand at (3, 3)
+63: Place unit or structure card at index 3 of hand at (3, 1)
 64: Use spell card at index 0 of hand with no target
-65: Use spell card at index 0 of hand at (0, 0)
+65: Use spell card at index 0 of hand at (0, 4)
 ...
-84: Use spell card at index 0 of hand at (4, 3)
+84: Use spell card at index 0 of hand at (3, 0)
 ...
-147: Use spell card at index 3 of hand at (4, 3)
+147: Use spell card at index 3 of hand at (3, 0)
 148: Replace card at index 0 of hand
 149: Replace card at index 1 of hand
 150: Replace card at index 2 of hand
@@ -40,6 +40,12 @@ class ActionType(IntEnum):
     REPLACE = 2
     TO_LEFTMOST = 3
     PASS = 4
+
+class Faction(IntEnum):
+    WINTER = 0
+    SWARM = 1
+    IRONCLAD = 2
+    SHADOWFEN = 3
 
 class UnitType(IntEnum):
     CONSUTRUCT = 0
@@ -74,3 +80,18 @@ class StatusEffect(IntEnum):
     CONFUSED = 2
     DISABLED = 3
     VITALIZED = 4
+
+# Complete list of actions:
+# index = 0
+# for card in range(4):
+#     for y in range(4, 0, -1):
+#         for x in range(4):
+#             print(f"{index}: Play unit or structure at index {card} of hand at ({x}, {y})")
+#             index += 1
+# for card in range(4):
+#     print(f"{index}: Play spell card at index {card} of hand with no target")
+#     index += 1
+#     for y in range(4, -1, -1):
+#         for x in range(4):
+#             print(f"{index}: Play spell card at index {card} of hand at ({x}, {y})")
+#             index += 1
