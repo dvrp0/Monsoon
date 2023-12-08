@@ -41,10 +41,10 @@ class State:
                         if self.board[y][x] is None:
                             place.append(Action(ActionType.PLACE, card, Point(x, y)))
             elif isinstance(card, Spell):
-                if card.targetable is None:
+                if card.required_targets is None:
                     use.append(Action(ActionType.USE, card))
                 else:
-                    use += [Action(ActionType.Use, card, point) for point in self.get_targetable_tiles(card.targetable)]
+                    use += [Action(ActionType.Use, card, point) for point in self.get_targetable_tiles(card.required_targets)]
 
         self.__available_actions = place + use + replace + to_leftmost + [Action(ActionType.PASS)]
 

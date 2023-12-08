@@ -7,13 +7,13 @@ from test import CardTestCase
 
 class S013(Spell): # Hunter's Vengeance
     def __init__(self):
-        super().__init__(3, Target(Target.Kind.UNIT, Target.Side.ANY))
+        super().__init__(3)
 
     def activate_ability(self, position: Point | None = None):
         targets = []
 
         for unit_type in list(UnitType):
-            units = [unit for unit in self.player.board.get_targets(Target(self.targetable.kind, self.targetable.side, [unit_type]))
+            units = [unit for unit in self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.ANY, [unit_type]))
                      if unit not in targets]
 
             if len(units) > 0:
@@ -43,3 +43,13 @@ class S013Test(CardTestCase):
         self.assertEqual(self.board.at(Point(1, 3)), None)
         self.assertEqual(self.board.at(Point(2, 3)), None)
         self.assertEqual(self.board.at(Point(3, 3)), None)
+
+        self.board.clear()
+        self.board.spawn_token_unit(self.local, Point(0, 2), 6, [UnitType.ANCIENT])
+        self.board.spawn_token_unit(self.remote, Point(3, 2), 6, [UnitType.ELDER])
+        card.play()
+
+        self.assertEqual(self.board.at(Point(0, 2)), None)
+        self.assertEqual(self.board.at(Point(3, 2)), None)
+        self.assertEqual(self.local.front_line, 2)
+        self.assertEqual(self.remote.front_line, 0)
