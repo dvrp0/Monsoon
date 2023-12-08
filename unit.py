@@ -181,6 +181,8 @@ class Unit(Card):
         if self.trigger == TriggerType.ON_DEATH:
             self.activate_ability()
 
+        self.player.board.calculate_front_line(self.player.board.remote)
+
     def heal(self, amount: int):
         self.strength += amount
 

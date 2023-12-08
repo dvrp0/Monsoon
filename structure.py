@@ -46,6 +46,7 @@ class Structure(Card):
 
     def destroy(self):
         self.player.board.set(self.position, None)
+        self.player.board.calculate_front_line(self.player.board.remote)
 
     def heal(self, amount: int):
         self.strength += amount

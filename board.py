@@ -44,6 +44,24 @@ class Board:
 
     def clear(self):
         self.board = [[None for _ in range(4)] for _ in range(5)]
+        self.local.front_line = 4
+        self.remote.front_line = 0
+
+    def calculate_front_line(self, player: "Player"):
+        if player == self.local:
+            for y in range(5):
+                if any(self.board[y][x] is not None and self.board[y][x].player == player for x in range(4)):
+                    self.local.front_line = max(1, y) # farthest front line is 1
+                    break
+
+                self.local.front_line = 4
+        elif player == self.remote:
+            for y in range(4, -1, -1):
+                if any(self.board[y][x] is not None and self.board[y][x].player == player for x in range(4)):
+                    self.remote.front_line = min(3, y) # farthest front line is 3
+                    break
+
+                self.remote.front_line = 0
 
     def to_next_turn(self):
         self.local.fill_hand()
@@ -52,19 +70,8 @@ class Board:
             if structure.is_at_turn_end:
                 structure.activate_ability(structure.position)
 
-        for y in range(5):
-            if any(self.board[y][x] is not None and self.board[y][x].player == self.local for x in range(4)):
-                self.local.front_line = max(1, y) # farthest front line is 1
-                break
-
-            self.local.front_line = 4
-
-        for y in range(4, -1, -1):
-            if any(self.board[y][x] is not None and self.board[y][x].player == self.remote for x in range(4)):
-                self.remote.front_line = min(3, y) # farthest front line is 3
-                break
-
-            self.remote.front_line = 0
+        self.calculate_front_line(self.local)
+        self.calculate_front_line(self.remote)
 
         self.local.max_mana += 1
         self.local.current_mana = self.local.max_mana
@@ -118,8 +125,8 @@ class Board:
                     (target.kind == Target.Kind.UNIT and unit_matches) or
                     (target.kind == Target.Kind.STRUCTURE and structure_matches))
                 side_matches = (target.side == Target.Side.ANY or
-                    (target.side == Target.Side.FRIENDLY and self.is_ally(entity)) or
-                    (target.side == Target.Side.ENEMY and not self.is_ally(entity)))
+                    (target.side == Target.Side.FRIENDLY and entity.player == self.local) or
+                    (target.side == Target.Side.ENEMY and entity.player == self.remote))
 
                 if kind_matches and side_matches:
                     tiles.append(Point(x, y))
@@ -202,6 +209,7 @@ class Board:
         token.card_id = f"f{types_id.zfill(3)}"
 
         self.set(position, token)
+        self.calculate_front_line(player)
 
     def spawn_token_structure(self, player: "Player", position: Point, strength: int):
         token = Structure(0, strength)
@@ -210,6 +218,7 @@ class Board:
         token.card_id = "b001"
 
         self.set(position, token)
+        self.calculate_front_line(player)
 
     def add_to_history(self, card: Card):
         self.history.append(card)
