@@ -8,7 +8,7 @@ class B203(Structure): # Temple of Focus
         super().__init__(3, 7)
 
     def activate_ability(self, position: Point | None = None):
-        for tile in self.player.board.get_front_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.FRIENDLY)):
+        for tile in self.player.board.get_front_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.FRIENDLY), self.player):
             target = self.player.board.at(tile)
 
             if target.is_confused:

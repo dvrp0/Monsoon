@@ -22,6 +22,7 @@ class U211Test(CardTestCase):
 
         self.assertEqual(self.board.at(Point(0, 3)).strength, 3)
         self.assertEqual(self.board.at(Point(0, 3)).unit_types, [UnitType.SATYR])
+        self.assertEqual(self.local.front_line, 3)
 
         self.board.clear()
         self.board.spawn_token_unit(self.remote, Point(0, 3), 6)

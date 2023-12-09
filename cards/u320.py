@@ -10,7 +10,7 @@ class U320(Unit): # Original Blueprints
         super().__init__([UnitType.CONSUTRUCT, UnitType.ANCIENT], 4, 7, 1, TriggerType.BEFORE_MOVING)
 
     def activate_ability(self, position: Point | None = None):
-        targets = self.player.board.get_surrounding_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.FRIENDLY))
+        targets = self.player.board.get_surrounding_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.FRIENDLY), self.player)
 
         if len(targets) > 0:
             self.player.board.at(random.choice(targets)).heal(4)

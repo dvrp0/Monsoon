@@ -2,8 +2,10 @@ import random
 from enums import UnitType, TriggerType
 from point import Point
 from unit import Unit
+from structure import Structure
 from target import Target
 from test import CardTestCase
+from typing import List
 from cards.b005 import B005
 from cards.b006 import B006
 from cards.b203 import B203
@@ -12,10 +14,10 @@ from cards.b305 import B305
 class UA20(Unit): # Guardi the Lightbringer
     def __init__(self):
         super().__init__([UnitType.KNIGHT, UnitType.ANCIENT, UnitType.HERO], 4, 8, 1, TriggerType.BEFORE_MOVING)
-        self.candidates = [B005(), B006(), B203(), B305()]
+        self.candidates: List[Structure] = [B005(), B006(), B203(), B305()]
 
     def activate_ability(self, position: Point | None = None):
-        if len(self.player.board.get_front_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ENEMY))) == 0:
+        if len(self.player.board.get_front_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ENEMY), self.player)) == 0:
             card = random.choice(self.candidates).copy()
             card.player = self.player
             card.weight = 1

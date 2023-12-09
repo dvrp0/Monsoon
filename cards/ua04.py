@@ -10,6 +10,7 @@ class UA04(Unit): # Gray the Balancer
         super().__init__([UnitType.ANCIENT, UnitType.HERO], 4, 8, 1, TriggerType.BEFORE_MOVING)
 
     def activate_ability(self, position: Point | None = None):
+        # no need to set perspective as the result will be the same
         local_units = [self.player.board.at(tile) for tile in self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY))]
         remote_units = [self.player.board.at(tile) for tile in self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.ENEMY))]
         targets = []

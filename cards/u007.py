@@ -10,7 +10,7 @@ class U007(Unit): # Green Prototypes
         super().__init__([UnitType.CONSUTRUCT], 1, 5, 1, TriggerType.ON_DEATH)
 
     def activate_ability(self, position: Point | None = None):
-        targets = self.player.board.get_surrounding_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ENEMY))
+        targets = self.player.board.get_surrounding_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ENEMY), self.player)
 
         if len(targets) > 0:
             target = self.player.board.at(random.choice(targets))
@@ -20,6 +20,9 @@ class U007(Unit): # Green Prototypes
 class U007Test(CardTestCase):
     def test_ability(self):
         self.board.spawn_token_unit(self.remote, Point(0, 3), 6)
+        self.board.spawn_token_unit(self.remote, Point(0, 2), 5)
+        self.board.spawn_token_unit(self.remote, Point(1, 2), 5)
+        self.board.spawn_token_unit(self.local, Point(1, 3), 5)
 
         card = U007()
         card.player = self.local
@@ -27,3 +30,6 @@ class U007Test(CardTestCase):
 
         self.assertEqual(self.board.at(Point(0, 3)).strength, 6)
         self.assertTrue(self.board.at(Point(0, 3)).is_vitalized)
+        self.assertEqual(self.board.at(Point(0, 2)).strength, 5)
+        self.assertEqual(self.board.at(Point(1, 2)).strength, 5)
+        self.assertEqual(self.board.at(Point(1, 3)).strength, 5)

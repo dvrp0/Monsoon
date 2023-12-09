@@ -13,7 +13,7 @@ class UD31(Unit): # Greengale Surpents
         if not position.is_valid or not isinstance(self.player.board.at(position), Unit): # 기지 또는 건물이라면 발동 안 함
             return
 
-        targets = self.player.board.get_surrounding_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.FRIENDLY, [UnitType.DRAGON]))
+        targets = self.player.board.get_surrounding_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.FRIENDLY, [UnitType.DRAGON]), self.player)
 
         if len(targets) > 0:
             self.player.board.at(random.choice(targets)).heal(3)
