@@ -142,15 +142,15 @@ class Trainer:
 
         device = next(self.model.parameters()).device
         if self.config.PER:
-            weight_batch = torch.tensor(weight_batch.copy()).float().to(device)
+            weight_batch = torch.tensor(weight_batch.copy(), device=device).float()
         observation_batch = (
-            torch.tensor(numpy.array(observation_batch)).float().to(device)
+            torch.tensor(numpy.array(observation_batch), device=device).float()
         )
-        action_batch = torch.tensor(action_batch).long().to(device).unsqueeze(-1)
-        target_value = torch.tensor(target_value).float().to(device)
-        target_reward = torch.tensor(target_reward).float().to(device)
-        target_policy = torch.tensor(target_policy).float().to(device)
-        gradient_scale_batch = torch.tensor(gradient_scale_batch).float().to(device)
+        action_batch = torch.tensor(action_batch, device=device).long().unsqueeze(-1)
+        target_value = torch.tensor(target_value, device=device).float()
+        target_reward = torch.tensor(target_reward, device=device).float()
+        target_policy = torch.tensor(target_policy, device=device).float()
+        gradient_scale_batch = torch.tensor(gradient_scale_batch, device=device).float()
         # observation_batch: batch, channels, height, width
         # action_batch: batch, num_unroll_steps+1, 1 (unsqueeze)
         # target_value: batch, num_unroll_steps+1

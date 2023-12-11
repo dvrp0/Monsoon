@@ -354,9 +354,8 @@ class Reanalyse:
                 )
 
                 observations = (
-                    torch.tensor(observations)
+                    torch.tensor(observations, device=next(self.model.parameters()).device)
                     .float()
-                    .to(next(self.model.parameters()).device)
                 )
                 values = models.support_to_scalar(
                     self.model.initial_inference(observations)[0],

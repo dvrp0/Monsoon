@@ -6,6 +6,7 @@ import ray
 import torch
 
 import models
+import random
 
 
 @ray.remote
@@ -21,6 +22,7 @@ class SelfPlay:
         # Fix random generator seed
         numpy.random.seed(seed)
         torch.manual_seed(seed)
+        random.seed(seed)
 
         # Initialize the network
         self.model = models.MuZeroNetwork(self.config)
@@ -233,7 +235,7 @@ class SelfPlay:
         if temperature == 0:
             action = actions[numpy.argmax(visit_counts)]
         elif temperature == float("inf"):
-            action = numpy.random.choice(actions)
+            action = select_random(actions)
         else:
             # See paper appendix Data Generation
             visit_count_distribution = visit_counts ** (1 / temperature)
@@ -244,6 +246,13 @@ class SelfPlay:
 
         return action
 
+def select_random(list_):
+    """ 
+    Random selection of an element from a list.
+    Faster than numpy.random.choice
+    
+    """
+    return list_[math.floor(len(list_) * random.random())] 
 
 # Game independent
 class MCTS:
@@ -256,6 +265,7 @@ class MCTS:
 
     def __init__(self, config):
         self.config = config
+        self.K = - math.log(config.pb_c_base) + config.pb_c_init  # Constant for faster calculation of the UCB
 
     def run(
         self,
@@ -278,10 +288,10 @@ class MCTS:
         else:
             root = Node(0)
             observation = (
-                torch.tensor(observation)
+                torch.tensor(observation, device="cuda")
                 .float()
                 .unsqueeze(0)
-                .to(next(model.parameters()).device)
+                # .to(next(model.parameters()).device)
             )
             (
                 root_predicted_value,
@@ -338,7 +348,8 @@ class MCTS:
             parent = search_path[-2]
             value, reward, policy_logits, hidden_state = model.recurrent_inference(
                 parent.hidden_state,
-                torch.tensor([[action]]).to(parent.hidden_state.device),
+                torch.tensor([[action]], device="cuda")
+                # torch.tensor([[action]]).to(parent.hidden_state.device),
             )
             value = models.support_to_scalar(value, self.config.support_size).item()
             reward = models.support_to_scalar(reward, self.config.support_size).item()
@@ -364,15 +375,14 @@ class MCTS:
         """
         Select the child with the highest UCB score.
         """
-        max_ucb = max(
-            self.ucb_score(node, child, min_max_stats)
-            for action, child in node.children.items()
-        )
+        actions_ucb_scores = {action: self.ucb_score(node, child, min_max_stats) for action, child in node.children.items()}
+        max_ucb_score = max(actions_ucb_scores.values())
+
         action = numpy.random.choice(
             [
                 action
-                for action, child in node.children.items()
-                if self.ucb_score(node, child, min_max_stats) == max_ucb
+                for action, score in actions_ucb_scores.items()
+                if score == max_ucb_score
             ]
         )
         return action, node.children[action]
@@ -382,10 +392,8 @@ class MCTS:
         The score for a node is based on its value, plus an exploration bonus based on the prior.
         """
         pb_c = (
-            math.log(
-                (parent.visit_count + self.config.pb_c_base + 1) / self.config.pb_c_base
-            )
-            + self.config.pb_c_init
+            math.log1p(parent.visit_count + self.config.pb_c_base)
+            + self.K
         )
         pb_c *= math.sqrt(parent.visit_count) / (child.visit_count + 1)
 
@@ -469,11 +477,10 @@ class Node:
         At the start of each search, we add dirichlet noise to the prior of the root to
         encourage the search to explore new actions.
         """
-        actions = list(self.children.keys())
-        noise = numpy.random.dirichlet([dirichlet_alpha] * len(actions))
+        noise = numpy.random.dirichlet([dirichlet_alpha] * len(self.children))
         frac = exploration_fraction
-        for a, n in zip(actions, noise):
-            self.children[a].prior = self.children[a].prior * (1 - frac) + n * frac
+        for child, n in zip(self.children.values(), noise):
+            child.prior = child.prior * (1 - frac) + n * frac
 
 
 class GameHistory:
