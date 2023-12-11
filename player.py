@@ -17,6 +17,7 @@ class Player:
         self.strength = 20
         self.front_line = 4 if order == PlayerOrder.FIRST else 0
         self.replacable = True
+        self.leftmost_movable = True
 
         self.deck = deck
         random.shuffle(self.deck)

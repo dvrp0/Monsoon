@@ -70,7 +70,7 @@ class MuZeroConfig:
         ### Training
         self.results_path = pathlib.Path(__file__).resolve().parents[1] / "results" / pathlib.Path(__file__).stem / datetime.datetime.now().strftime("%Y-%m-%d--%H-%M-%S")  # Path to store the model weights and TensorBoard logs
         self.save_model = True  # Save the checkpoint in results_path as model.checkpoint
-        self.training_steps = 1000  # Total number of training steps (ie weights update according to a batch)
+        self.training_steps = 100000  # Total number of training steps (ie weights update according to a batch)
         self.batch_size = 256  # Number of parts of games to train on at each training step
         self.checkpoint_interval = 10  # Number of training steps before using the model for self-playing
         self.value_loss_weight = 0.25  # Scale the value loss to avoid overfitting of the value function, paper recommends 0.25 (See paper appendix Reanalyze)
@@ -351,6 +351,7 @@ class Stormbound:
         elif action < 155: # To leftmost
             card_index = action - 151
             self.board.local.hand[card_index], self.board.local.hand[0] = self.board.local.hand[0], self.board.local.hand[card_index]
+            self.board.local.leftmost_movable = False
         elif action == 155: # Pass
             self.player *= -1
             observation = self.get_observation()
@@ -487,7 +488,7 @@ class Stormbound:
 
         place, use = [], []
         replace = [Action(ActionType.REPLACE, card) for card in range(hand_length)] if self.board.local.replacable else []
-        to_leftmost = [Action(ActionType.TO_LEFTMOST, card) for card in range(1, hand_length)]
+        to_leftmost = [Action(ActionType.TO_LEFTMOST, card) for card in range(1, hand_length)] if self.board.local.leftmost_movable else []
 
         for card in range(hand_length):
             instance = self.board.local.hand[card]
@@ -506,9 +507,9 @@ class Stormbound:
                 else:
                     use += [Action(ActionType.USE, card, point) for point in self.board.get_targets(instance.required_targets)]
 
-        actions: List[Action] = place + use + replace + to_leftmost + [Action(ActionType.PASS)]
+        actions: List[Action] = place + use + replace + to_leftmost
 
-        return sorted([action.to_int() for action in actions])
+        return sorted([action.to_int() for action in actions]) if len(actions) > 0 else [155]
 
     def have_winner(self):
         return self.board.local.strength < 0 or self.board.remote.strength < 0

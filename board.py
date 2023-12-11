@@ -29,7 +29,7 @@ class Board:
 
         remote = [f"{' ' * 50} {self.remote.order}: {self.remote.strength}"]
         local = [f"{' ' * 50} {self.local.order}: {self.local.strength}"]
-        history = [", ".join(f"[{'local' if card.player == self.local else 'remote'}: {card.card_id}]" for card in self.history[:5])]
+        history = [", ".join(f"[{'local' if card.player == self.local else 'remote'}: {card.card_id}]" for card in self.history[-4:])]
 
         return "\n".join(remote + rows + local + history)
 
@@ -85,6 +85,7 @@ class Board:
         self.remote.front_line = 4 - self.remote.front_line
 
         self.local.replacable = True
+        self.local.leftmost_movable = True
 
         self.board = [row[::-1] for row in self.board[::-1]]
         for y in range(5):
