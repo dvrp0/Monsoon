@@ -8,6 +8,7 @@ from spell import Spell
 from player import Player
 from board import Board
 from cards import *
+from target import Target
 from typing import Callable, List
 
 class MuZeroConfig:
@@ -26,7 +27,7 @@ class MuZeroConfig:
 
         # Evaluate
         self.muzero_player = 0  # Turn Muzero begins to play (0: MuZero plays first, 1: MuZero plays second)
-        self.opponent = "random"  # Hard coded agent that MuZero faces to assess his progress in multiplayer games. It doesn't influence training. None, "random" or "expert" if implemented in the Game class
+        self.opponent = "expert"  # Hard coded agent that MuZero faces to assess his progress in multiplayer games. It doesn't influence training. None, "random" or "expert" if implemented in the Game class
 
         ### Self-Play
         self.num_workers = 4  # Number of simultaneous threads/workers self-playing to feed the replay buffer
@@ -221,15 +222,15 @@ class Game(AbstractGame):
 
         return action_representation.to_int()
 
-    # def expert_agent(self):
-    #     """
-    #     Hard coded agent that MuZero faces to assess his progress in multiplayer games.
-    #     It doesn't influence training
+    def expert_agent(self):
+        """
+        Hard coded agent that MuZero faces to assess his progress in multiplayer games.
+        It doesn't influence training
 
-    #     Returns:
-    #         Action as an integer to take in the current game state
-    #     """
-    #     return self.env.expert_action()
+        Returns:
+            Action as an integer to take in the current game state
+        """
+        return self.env.expert_action()
 
     def action_to_string(self, action_number):
         """
@@ -488,7 +489,8 @@ class Stormbound:
 
         place, use = [], []
         replace = [Action(ActionType.REPLACE, card) for card in range(hand_length)] if self.board.local.replacable else []
-        to_leftmost = [Action(ActionType.TO_LEFTMOST, card) for card in range(1, hand_length)] if self.board.local.leftmost_movable else []
+        # to_leftmost = [Action(ActionType.TO_LEFTMOST, card) for card in range(1, hand_length)] if self.board.local.leftmost_movable else []
+        to_leftmost = []
 
         for card in range(hand_length):
             instance = self.board.local.hand[card]
@@ -513,6 +515,82 @@ class Stormbound:
 
     def have_winner(self):
         return self.board.local.strength < 0 or self.board.remote.strength < 0
+
+    def expert_action(self):
+        '''
+        1. 교체가 legal actions에 있다면 다음을 먼저 고려
+        1-1. 손에서 가장 비싼 카드의 마나가 현재 마나보다 비싸다면 교체
+        1-2. 손의 모든 카드의 마나가 현재 마나보다 적지만 사용할 수 없는 카드들이 있다면(배치 불가, 대상 없음 등등) 해당 카드 중 무작위로 교체
+        2. 마나가 부족해질 때까지 카드 사용
+        2-1. 손에서 가장 저렴한 카드부터 사용
+        2-2. 만약 현재 마나와 일치하는 카드들이 있다면 그 중 무작위로 사용
+        2-3. 카드를 사용하는 위치는 [전선의 맨 앞 행 중 무작위 타일, 무작위 적 유닛 또는 건물의 앞/왼쪽/오른쪽 타일 중 무작위] 중 무작위
+        2-4. 사용하려는 카드가 유닛이고 적 유닛이 내 기지와 인접해 있다면 다음 기준에 따라 사용
+        2-4-1. 만약 해당 유닛의 양 옆이 비어 있다면 둘 중 무작위 타일에 사용
+        2-4-2. 양 옆이 막혀 있다면 원래대로 전선 뒤 무작위 타일에 사용
+        3. 턴 종료
+        '''
+
+        actions = self.legal_actions()
+
+        if any(x >= 148 and x <= 151 for x in actions):
+            costs = [x.cost for x in self.board.local.hand]
+            max_cost = max(costs)
+
+            if max_cost > self.board.local.current_mana:
+                index = np.random.choice([i for i, x in enumerate(costs) if x == max_cost])
+
+                return Action(ActionType.REPLACE, index).to_int()
+
+        playable: List[int] = []
+
+        for i in range(4):
+            if any((x >= 16 * i and x <= 16 * i + 15) or (x >= 21 * i + 64 and x <= 21 * i + 84) for x in actions):
+                playable.append(i)
+
+        if len(playable) > 0:
+            costs = [self.board.local.hand[x].cost for x in playable]
+
+            if any(x == self.board.local.current_mana for x in costs):
+                index = playable[np.random.choice([i for i, x in enumerate(costs) if x == self.board.local.current_mana])]
+            else:
+                min_cost = min(costs)
+                index = playable[np.random.choice([i for i, x in enumerate(costs) if x == min_cost])]
+
+            target = self.board.local.hand[index]
+            base_bordering_enemies = [x for x in self.board.get_targets(Target(Target.Kind.UNIT, Target.Side.ENEMY)) if x.y == 4]
+
+            if isinstance(target, Spell):
+                position = None if target.required_targets is None else np.random.choice(self.board.get_targets(target.required_targets))
+
+                return Action(ActionType.USE, index, position).to_int()
+            elif isinstance(target, Unit) and len(base_bordering_enemies) > 0:
+                candidates = []
+
+                for enemy in base_bordering_enemies:
+                    if enemy.x > 0 and self.board.at(Point(enemy.x - 1, enemy.y)) is None:
+                        candidates.append(Point(enemy.x - 1, enemy.y))
+                    elif enemy.x < 3 and self.board.at(Point(enemy.x + 1, enemy.y)) is None:
+                        candidates.append(Point(enemy.x + 1, enemy.y))
+
+                if len(candidates) > 0:
+                    return Action(ActionType.PLACE, index, np.random.choice(candidates)).to_int()
+            else:
+                candidates = [Point(x, self.board.local.front_line) for x in range(4) if self.board.at(Point(x, self.board.local.front_line)) is None]
+                enemies = self.board.get_targets(Target(Target.Kind.UNIT, Target.Side.ENEMY))
+
+                for enemy in enemies:
+                    if enemy.x > 0 and enemy.y >= self.board.local.front_line and self.board.at(Point(enemy.x - 1, enemy.y)) is None:
+                        candidates.append(Point(enemy.x - 1, enemy.y))
+                    elif enemy.x < 3 and enemy.y >= self.board.local.front_line and self.board.at(Point(enemy.x + 1, enemy.y)) is None:
+                        candidates.append(Point(enemy.x + 1, enemy.y))
+                    elif enemy.y < 4 and enemy.y + 1 >= self.board.local.front_line and self.board.at(Point(enemy.x, enemy.y + 1)) is None:
+                        candidates.append(Point(enemy.x, enemy.y + 1))
+
+                if len(candidates) > 0:
+                    return Action(ActionType.PLACE, index, np.random.choice(candidates)).to_int()
+
+        return Action(ActionType.PASS).to_int()
 
     def render(self):
         print(self.board)
