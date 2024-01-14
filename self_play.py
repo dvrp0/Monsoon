@@ -288,7 +288,7 @@ class MCTS:
         else:
             root = Node(0)
             observation = (
-                torch.tensor(observation, device="cuda")
+                torch.tensor(observation, device=next(model.parameters()).device)
                 .float()
                 .unsqueeze(0)
                 # .to(next(model.parameters()).device)
@@ -348,7 +348,7 @@ class MCTS:
             parent = search_path[-2]
             value, reward, policy_logits, hidden_state = model.recurrent_inference(
                 parent.hidden_state,
-                torch.tensor([[action]], device="cuda")
+                torch.tensor([[action]], device=parent.hidden_state.device)
                 # torch.tensor([[action]]).to(parent.hidden_state.device),
             )
             value = models.support_to_scalar(value, self.config.support_size).item()
