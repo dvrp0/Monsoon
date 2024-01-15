@@ -1,4 +1,4 @@
-import random
+import numpy as np
 from card import Card
 from enums import PlayerOrder, Faction
 from unit import Unit
@@ -8,7 +8,7 @@ from board import Board
 from typing import List
 
 class Player:
-    def __init__(self, faction: Faction, deck: List[Card], order: PlayerOrder):
+    def __init__(self, faction: Faction, deck: List[Card], order: PlayerOrder, random: np.random.RandomState):
         self.board: Board = None
         self.faction = faction
         self.order = order
@@ -18,9 +18,10 @@ class Player:
         self.front_line = 4 if order == PlayerOrder.FIRST else 0
         self.replacable = True
         self.leftmost_movable = True
+        self.random = random
 
         self.deck = deck
-        random.shuffle(self.deck)
+        self.random.shuffle(self.deck)
 
         for i, card in enumerate(self.deck):
             card.player = self
@@ -40,7 +41,8 @@ class Player:
 
     def draw(self, amount=1):
         for _ in range(amount):
-            choice = random.choices(self.deck, weights=[card.weight for card in self.deck])[0]
+            weight_sum = sum([card.weight for card in self.deck])
+            choice = self.random.choice(self.deck, size=1, p=[card.weight / weight_sum for card in self.deck])[0]
             choice.weight = 1
             self.hand.append(choice)
             self.deck.remove(choice)

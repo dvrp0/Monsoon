@@ -1,4 +1,3 @@
-import random
 from point import Point
 from spell import Spell
 from target import Target
@@ -10,7 +9,7 @@ class S003(Spell): # Bladestorm
 
     def activate_ability(self, position: Point | None = None):
         for tile in self.player.board.get_targets(Target(Target.Kind.ANY, Target.Side.ENEMY)):
-            self.player.board.at(tile).deal_damage(random.randint(4, 5))
+            self.player.board.at(tile).deal_damage(self.player.random.randint(4, 5))
 
 class S003Test(CardTestCase):
     def test_ability(self):

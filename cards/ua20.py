@@ -1,4 +1,3 @@
-import random
 from enums import UnitType, TriggerType
 from point import Point
 from unit import Unit
@@ -18,7 +17,7 @@ class UA20(Unit): # Guardi the Lightbringer
 
     def activate_ability(self, position: Point | None = None):
         if len(self.player.board.get_front_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ENEMY), self.player)) == 0:
-            card = random.choice(self.candidates).copy()
+            card = self.player.random.choice(self.candidates).copy()
             card.player = self.player
             card.weight = 1
             card.is_single_use = True

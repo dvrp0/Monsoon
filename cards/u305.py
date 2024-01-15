@@ -1,4 +1,3 @@
-import random
 from enums import UnitType, TriggerType
 from point import Point
 from unit import Unit
@@ -13,7 +12,7 @@ class U305(Unit): # Linked Golems
         targets = self.player.board.get_bordering_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.FRIENDLY, [UnitType.CONSUTRUCT]))
 
         if len(targets) > 0:
-            self.player.board.at(random.choice(targets)).heal(4)
+            self.player.board.at(self.player.random.choice(targets)).heal(4)
             self.heal(4)
 
 class U305Test(CardTestCase):

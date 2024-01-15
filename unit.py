@@ -1,4 +1,3 @@
-import random
 from card import Card
 from enums import UnitType, TriggerType, StatusEffect
 from typing import List
@@ -76,7 +75,7 @@ class Unit(Card):
                 else:
                     choices = [-1, 1]
 
-                destination = Point(position.x + random.choice(choices), position.y)
+                destination = Point(position.x + int(self.player.random.choice(choices)), position.y)
                 status_effects_cached.remove(StatusEffect.CONFUSED)
             elif on_play and not self.fixedly_forward and destination.y > -1 and (up is None or up.player == self.player):
                 # 상대 기지 앞이 아닌 위치에서 앞에 아무것도 없거나 앞이 아군으로 막혀 있다면 옆을 살펴보기

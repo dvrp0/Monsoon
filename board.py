@@ -1,4 +1,4 @@
-import random
+import numpy as np
 from enums import UnitType
 from card import Card
 from unit import Unit
@@ -11,11 +11,12 @@ if TYPE_CHECKING:
     from player import Player
 
 class Board:
-    def __init__(self, local: "Player", remote: "Player"):
+    def __init__(self, local: "Player", remote: "Player", random: np.random.RandomState):
         self.board: List[List[Unit | Structure | None]] = [[None for _ in range(4)] for _ in range(5)]
         self.local = local
         self.remote = remote
         self.history: List[Card] = []
+        self.random = random
 
         self.local.board = self
         self.remote.board = self
@@ -212,7 +213,7 @@ class Board:
         return [tile for tile in tiles if tile.is_valid]
 
     def spawn_token_unit(self, player: "Player", position: Point, strength: int, types: List[UnitType] = None):
-        types = types or [random.choice(list(UnitType))]
+        types = types or [UnitType(self.random.choice(list(UnitType)))]
 
         token = Unit(types, 0, strength, 1)
         token.player = player

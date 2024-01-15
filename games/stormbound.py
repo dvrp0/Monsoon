@@ -17,7 +17,7 @@ class MuZeroConfig:
         # More information is available here: https://github.com/werner-duvaud/muzero-general/wiki/Hyperparameter-Optimization
 
         self.seed = 0  # Seed for numpy, torch and the game
-        self.max_num_gpus = None  # Fix the maximum number of GPUs to use. It's usually faster to use a single GPU (set it to 1) if it has enough memory. None will use every GPUs available
+        self.max_num_gpus = 1 # Fix the maximum number of GPUs to use. It's usually faster to use a single GPU (set it to 1) if it has enough memory. None will use every GPUs available
 
         ### Game
         self.observation_shape = (35, 5, 4)  # Dimensions of the game observation, must be 3D (channel, height, width). For a 1D array, please reshape it to (1, 1, length of array)
@@ -30,15 +30,15 @@ class MuZeroConfig:
         self.opponent = "expert"  # Hard coded agent that MuZero faces to assess his progress in multiplayer games. It doesn't influence training. None, "random" or "expert" if implemented in the Game class
 
         ### Self-Play
-        self.num_workers = 4  # Number of simultaneous threads/workers self-playing to feed the replay buffer
-        self.selfplay_on_gpu = True
+        self.num_workers = 2  # Number of simultaneous threads/workers self-playing to feed the replay buffer
+        self.selfplay_on_gpu = False
         self.max_moves = 200  # Maximum number of moves if game is not finished before
-        self.num_simulations = 50  # Number of future moves self-simulated
+        self.num_simulations = 100  # Number of future moves self-simulated
         self.discount = 1  # Chronological discount of the reward
-        self.temperature_threshold = None  # Number of moves before dropping the temperature given by visit_softmax_temperature_fn to 0 (ie selecting the best action). If None, visit_softmax_temperature_fn is used every time
+        self.temperature_threshold = 10  # Number of moves before dropping the temperature given by visit_softmax_temperature_fn to 0 (ie selecting the best action). If None, visit_softmax_temperature_fn is used every time
 
         # Root prior exploration noise
-        self.root_dirichlet_alpha = 0.2
+        self.root_dirichlet_alpha = 0.5
         self.root_exploration_fraction = 0.25
 
         # UCB formula
@@ -51,14 +51,14 @@ class MuZeroConfig:
         
         # Residual Network
         self.downsample = False  # Downsample observations before representation network, False / "CNN" (lighter) / "resnet" (See paper appendix Network Architecture)
-        self.blocks = 3  # Number of blocks in the ResNet
-        self.channels = 64  # Number of channels in the ResNet
+        self.blocks = 6  # Number of blocks in the ResNet
+        self.channels = 128  # Number of channels in the ResNet
         self.reduced_channels_reward = 8  # Number of channels in reward head
         self.reduced_channels_value = 8  # Number of channels in value head
         self.reduced_channels_policy = 8  # Number of channels in policy head
-        self.resnet_fc_reward_layers = [16]  # Define the hidden layers in the reward head of the dynamic network
-        self.resnet_fc_value_layers = [16]  # Define the hidden layers in the value head of the prediction network
-        self.resnet_fc_policy_layers = [16]  # Define the hidden layers in the policy head of the prediction network
+        self.resnet_fc_reward_layers = [64]  # Define the hidden layers in the reward head of the dynamic network
+        self.resnet_fc_value_layers = [64]  # Define the hidden layers in the value head of the prediction network
+        self.resnet_fc_policy_layers = [64]  # Define the hidden layers in the policy head of the prediction network
 
         # Fully Connected Network
         self.encoding_size = 32
@@ -72,8 +72,8 @@ class MuZeroConfig:
         self.results_path = pathlib.Path(__file__).resolve().parents[1] / "results" / pathlib.Path(__file__).stem / datetime.datetime.now().strftime("%Y-%m-%d--%H-%M-%S")  # Path to store the model weights and TensorBoard logs
         self.save_model = True  # Save the checkpoint in results_path as model.checkpoint
         self.training_steps = 100000  # Total number of training steps (ie weights update according to a batch)
-        self.batch_size = 256  # Number of parts of games to train on at each training step
-        self.checkpoint_interval = 10  # Number of training steps before using the model for self-playing
+        self.batch_size = 512  # Number of parts of games to train on at each training step
+        self.checkpoint_interval = 100  # Number of training steps before using the model for self-playing
         self.value_loss_weight = 0.25  # Scale the value loss to avoid overfitting of the value function, paper recommends 0.25 (See paper appendix Reanalyze)
         self.train_on_gpu = True  # Train on GPU if available
 
@@ -82,12 +82,12 @@ class MuZeroConfig:
         self.momentum = 0.9  # Used only if optimizer is SGD
 
         # Exponential learning rate schedule
-        self.lr_init = 0.005  # Initial learning rate
+        self.lr_init = 0.003  # Initial learning rate
         self.lr_decay_rate = 1  # Set it to 1 to use a constant learning rate
         self.lr_decay_steps = 10000
 
         ### Replay Buffer
-        self.replay_buffer_size = 10000  # Number of self-play games to keep in the replay buffer
+        self.replay_buffer_size = 100000  # Number of self-play games to keep in the replay buffer
         self.num_unroll_steps = 5  # Number of game moves to keep for every batch element
         self.td_steps = 200  # Number of steps in the future to take into account for calculating the target value
         self.PER = True  # Prioritized Replay (See paper appendix Training), select in priority the elements in the replay buffer which are unexpected for the network
@@ -119,7 +119,7 @@ class Game(AbstractGame):
     """
 
     def __init__(self, seed=None):
-        self.env = Stormbound()
+        self.env = Stormbound(seed)
 
     def step(self, action):
         """
@@ -285,10 +285,11 @@ class Action:
         return result
 
 class Stormbound:
-    def __init__(self):
-        local = Player(Faction.IRONCLAD, [B304(), UA07(), U007(), U061(), U053(), U106(), U302(), U305(), U306(), U320(), UD31(), UE04()], PlayerOrder.FIRST)
-        remote = Player(Faction.SWARM, [S012(), UA07(), U007(), U211(), U061(), U206(), U053(), U001(), U216(), S013(), U071(), UA04()], PlayerOrder.SECOND)
-        self.board = Board(local, remote)
+    def __init__(self, seed):
+        self.random = np.random.RandomState(seed)
+        local = Player(Faction.IRONCLAD, [B304(), UA07(), U007(), U061(), U053(), U106(), U302(), U305(), U306(), U320(), UD31(), UE04()], PlayerOrder.FIRST, self.random)
+        remote = Player(Faction.SWARM, [S012(), UA07(), U007(), U211(), U061(), U206(), U053(), U001(), U216(), S013(), U071(), UA04()], PlayerOrder.SECOND, self.random)
+        self.board = Board(local, remote, self.random)
         self.player = 1
 
         with open("actions.txt", "r") as f:
@@ -301,9 +302,9 @@ class Stormbound:
         return 0 if self.player == 1 else 1
 
     def reset(self):
-        local = Player(Faction.IRONCLAD, [B304(), UA07(), U007(), U061(), U053(), U106(), U302(), U305(), U306(), U320(), UD31(), UE04()], PlayerOrder.FIRST)
-        remote = Player(Faction.SWARM, [S012(), UA07(), U007(), U211(), U061(), U206(), U053(), U001(), U216(), S013(), U071(), UA04()], PlayerOrder.SECOND)
-        self.board = Board(local, remote)
+        local = Player(Faction.IRONCLAD, [B304(), UA07(), U007(), U061(), U053(), U106(), U302(), U305(), U306(), U320(), UD31(), UE04()], PlayerOrder.FIRST, self.random)
+        remote = Player(Faction.SWARM, [S012(), UA07(), U007(), U211(), U061(), U206(), U053(), U001(), U216(), S013(), U071(), UA04()], PlayerOrder.SECOND, self.random)
+        self.board = Board(local, remote, self.random)
         self.player = 1
 
         return self.get_observation()
@@ -438,9 +439,9 @@ class Stormbound:
         remote_base = [[self.board.remote.strength] * 4] * 5
         remote_faction = [[self.board.remote.faction.value] * 4] * 5
 
-        current_player = [[self.player] * 4] * 5
+        current_player = [[self.player * 99999] * 4] * 5
         history = [[-1] * 4 if not card else [
-            -1 if card.player.order.value else 1,
+            -99999 if card.player.order.value else 99999,
             int(card),
             -1,
             -1
@@ -510,8 +511,11 @@ class Stormbound:
                     use += [Action(ActionType.USE, card, point) for point in self.board.get_targets(instance.required_targets)]
 
         actions: List[Action] = place + use + replace + to_leftmost
+        if len(actions) == len(replace):
+            actions.append(Action(ActionType.PASS))
 
-        return sorted([action.to_int() for action in actions]) if len(actions) > 0 else [155]
+        return sorted([action.to_int() for action in actions])
+        # return sorted([action.to_int() for action in actions]) if len(actions) > 0 else [155]
 
     def have_winner(self):
         return self.board.local.strength < 0 or self.board.remote.strength < 0
@@ -538,7 +542,7 @@ class Stormbound:
             max_cost = max(costs)
 
             if max_cost > self.board.local.current_mana:
-                index = np.random.choice([i for i, x in enumerate(costs) if x == max_cost])
+                index = self.random.choice([i for i, x in enumerate(costs) if x == max_cost])
 
                 return Action(ActionType.REPLACE, index).to_int()
 
@@ -552,16 +556,16 @@ class Stormbound:
             costs = [self.board.local.hand[x].cost for x in playable]
 
             if any(x == self.board.local.current_mana for x in costs):
-                index = playable[np.random.choice([i for i, x in enumerate(costs) if x == self.board.local.current_mana])]
+                index = playable[self.random.choice([i for i, x in enumerate(costs) if x == self.board.local.current_mana])]
             else:
                 min_cost = min(costs)
-                index = playable[np.random.choice([i for i, x in enumerate(costs) if x == min_cost])]
+                index = playable[self.random.choice([i for i, x in enumerate(costs) if x == min_cost])]
 
             target = self.board.local.hand[index]
             base_bordering_enemies = [x for x in self.board.get_targets(Target(Target.Kind.UNIT, Target.Side.ENEMY)) if x.y == 4]
 
             if isinstance(target, Spell):
-                position = None if target.required_targets is None else np.random.choice(self.board.get_targets(target.required_targets))
+                position = None if target.required_targets is None else self.random.choice(self.board.get_targets(target.required_targets))
 
                 return Action(ActionType.USE, index, position).to_int()
             elif isinstance(target, Unit) and len(base_bordering_enemies) > 0:
@@ -574,7 +578,7 @@ class Stormbound:
                         candidates.append(Point(enemy.x + 1, enemy.y))
 
                 if len(candidates) > 0:
-                    return Action(ActionType.PLACE, index, np.random.choice(candidates)).to_int()
+                    return Action(ActionType.PLACE, index, self.random.choice(candidates)).to_int()
             else:
                 candidates = [Point(x, self.board.local.front_line) for x in range(4) if self.board.at(Point(x, self.board.local.front_line)) is None]
                 enemies = self.board.get_targets(Target(Target.Kind.UNIT, Target.Side.ENEMY))
@@ -588,7 +592,7 @@ class Stormbound:
                         candidates.append(Point(enemy.x, enemy.y + 1))
 
                 if len(candidates) > 0:
-                    return Action(ActionType.PLACE, index, np.random.choice(candidates)).to_int()
+                    return Action(ActionType.PLACE, index, self.random.choice(candidates)).to_int()
 
         return Action(ActionType.PASS).to_int()
 

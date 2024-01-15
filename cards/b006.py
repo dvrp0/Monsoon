@@ -1,4 +1,3 @@
-import random
 from point import Point
 from structure import Structure
 from target import Target
@@ -11,7 +10,7 @@ class B006(Structure): # Temple of Life
     def activate_ability(self, position: Point | None = None):
         targets = [target for target in self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY))
                    if not self.player.board.at(target).is_vitalized]
-        random.shuffle(targets)
+        self.player.random.shuffle(targets)
 
         for target in targets[:3]:
             self.player.board.at(target).vitalize()
@@ -28,7 +27,7 @@ class B006(Structure): # Temple of Life
 
         copy = self.copy()
         copy.strength = 1
-        copy.play(random.choice(tiles))
+        copy.play(self.player.random.choice(tiles))
 
 class B006Test(CardTestCase):
     def test_ability(self):

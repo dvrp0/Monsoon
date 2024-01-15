@@ -1,4 +1,3 @@
-import random
 from enums import UnitType
 from point import Point
 from spell import Spell
@@ -17,7 +16,7 @@ class S013(Spell): # Hunter's Vengeance
                      if unit not in targets]
 
             if len(units) > 0:
-                targets.append(random.choice(units))
+                targets.append(self.player.random.choice(units))
 
         for target in targets:
             self.player.board.at(target).deal_damage(6)

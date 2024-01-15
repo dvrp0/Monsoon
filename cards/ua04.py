@@ -1,4 +1,3 @@
-import random
 from enums import UnitType, TriggerType
 from point import Point
 from unit import Unit
@@ -23,7 +22,7 @@ class UA04(Unit): # Gray the Balancer
             targets = [target for target in remote_units if target.strength == strength]
 
         if len(targets) > 0:
-            random.choice(targets).destroy()
+            self.player.random.choice(targets).destroy()
 
 class UA04Test(CardTestCase):
     def test_ability(self):

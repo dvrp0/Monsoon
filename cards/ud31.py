@@ -1,4 +1,3 @@
-import random
 from enums import UnitType, TriggerType
 from point import Point
 from unit import Unit
@@ -16,7 +15,7 @@ class UD31(Unit): # Greengale Surpents
         targets = self.player.board.get_surrounding_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.FRIENDLY, [UnitType.DRAGON]), self.player)
 
         if len(targets) > 0:
-            self.player.board.at(random.choice(targets)).heal(3)
+            self.player.board.at(self.player.random.choice(targets)).heal(3)
 
         self.heal(3)
 

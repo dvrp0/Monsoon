@@ -1,4 +1,3 @@
-import random
 from unit import Unit
 from enums import UnitType, TriggerType
 from point import Point
@@ -14,7 +13,7 @@ class U061(Unit): # Sparkly Kitties
 
         units = self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY), self.position)
         if len(units) > 0:
-            self.player.board.at(random.choice(units)).confuse()
+            self.player.board.at(self.player.random.choice(units)).confuse()
 
         self.gain_speed(2)
 

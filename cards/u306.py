@@ -1,4 +1,3 @@
-import random
 from enums import UnitType, TriggerType
 from point import Point
 from unit import Unit
@@ -13,7 +12,7 @@ class U306(Unit): # Destuctobots
         targets = self.player.board.get_targets(Target(Target.Kind.ANY, Target.Side.FRIENDLY), self.position)
 
         if len(targets) > 0:
-            self.player.board.at(random.choice(targets)).deal_damage(1)
+            self.player.board.at(self.player.random.choice(targets)).deal_damage(1)
 
 class U306Test(CardTestCase):
     def test_ability(self):

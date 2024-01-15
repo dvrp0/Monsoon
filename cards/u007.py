@@ -1,4 +1,3 @@
-import random
 from enums import UnitType, TriggerType
 from unit import Unit
 from point import Point
@@ -13,7 +12,7 @@ class U007(Unit): # Green Prototypes
         targets = self.player.board.get_surrounding_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ENEMY), self.player)
 
         if len(targets) > 0:
-            target = self.player.board.at(random.choice(targets))
+            target = self.player.board.at(self.player.random.choice(targets))
             target.heal(5)
             target.vitalize()
 

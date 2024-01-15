@@ -1,4 +1,3 @@
-import random
 from enums import UnitType, TriggerType
 from point import Point
 from unit import Unit
@@ -14,7 +13,7 @@ class U071(Unit): # Angelic Tikas
         not_confused = [tile for tile in targets if not self.player.board.at(tile).is_confused]
 
         if len(not_confused) > 0:
-            self.player.board.at(random.choice(not_confused)).confuse()
+            self.player.board.at(self.player.random.choice(not_confused)).confuse()
             front = self.player.board.get_front_tiles(self.position)
 
             if len(front) > 0 and self.player.board.at(front[0]) is None:

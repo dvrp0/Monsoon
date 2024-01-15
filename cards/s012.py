@@ -1,4 +1,3 @@
-import random
 from enums import UnitType
 from point import Point
 from spell import Spell
@@ -18,7 +17,7 @@ class S012(Spell): # Summon Militia
                     tiles.append(Point(x, y))
 
         if len(tiles) > 0:
-            self.player.board.spawn_token_unit(self.player, random.choice(tiles), 5, [UnitType.KNIGHT])
+            self.player.board.spawn_token_unit(self.player, self.player.random.choice(tiles), 5, [UnitType.KNIGHT])
 
 class S012Test(CardTestCase):
     def test_ability(self):
