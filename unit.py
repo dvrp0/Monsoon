@@ -156,8 +156,8 @@ class Unit(Card):
                 self.position = destination
                 self.player.board.set(destination, self)
 
-                if destination.y > 0 and self.player.front_line > destination.y:
-                    self.player.front_line = destination.y
+                if self.player.front_line > destination.y:
+                    self.player.front_line = max(1, destination.y)
 
                 if is_attacked and self.trigger == TriggerType.AFTER_ATTACKING and not self.is_disabled:
                     self.activate_ability()
@@ -256,8 +256,14 @@ class Unit(Card):
             self.position = point
             self.player.board.set(point, self)
 
+        if self.player.front_line > self.position.y:
+            self.player.front_line = max(1, self.position.y)
+
     def teleport(self, destination: Point):
         if self.player.board.at(destination) is None:
             self.player.board.set(self.position, None)
             self.position = destination
             self.player.board.set(destination, self)
+
+            if self.player.front_line > destination.y:
+                self.player.front_line = max(1, destination.y)
