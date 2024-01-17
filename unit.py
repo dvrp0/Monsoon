@@ -144,12 +144,18 @@ class Unit(Card):
                 target = self.player.board.at(destination) # target may have changed
                 if target is not None:
                     target_strength_cached = target.strength
-                    target.deal_damage(self.strength) # defender triggers first
-                    self.deal_damage(target_strength_cached)
+                    target_on_death_pending = isinstance(target, Unit) and target.trigger == TriggerType.ON_DEATH and not target.is_disabled
+                    local_on_death_pending = self.trigger == TriggerType.ON_DEATH and not self.is_disabled
+
+                    target.deal_damage(self.strength, target_on_death_pending)
+                    self.deal_damage(target_strength_cached, local_on_death_pending)
+
+                    if target_on_death_pending:
+                        target.destroy() # defender triggers first
+                    if local_on_death_pending:
+                        self.destroy()
 
                     is_attacked = True
-            # elif target is not None and target.player == self.player:
-            #     return
 
             if self.player.board.at(destination) is None and self.strength > 0:
                 self.player.board.set(self.position, None)
@@ -165,10 +171,10 @@ class Unit(Card):
                 if self.is_confused:
                     self.deconfuse()
 
-    def deal_damage(self, amount: int):
+    def deal_damage(self, amount: int, pending_destroy=False):
         self.strength -= amount
 
-        if self.strength <= 0:
+        if not pending_destroy and self.strength <= 0:
             self.destroy()
         elif self.trigger == TriggerType.AFTER_SURVIVING:
             self.activate_ability()

@@ -38,10 +38,10 @@ class Structure(Card):
         if self.is_on_play:
             self.activate_ability()
 
-    def deal_damage(self, amount: int):
+    def deal_damage(self, amount: int, pending_destroy=False):
         self.strength -= amount
 
-        if self.strength <= 0:
+        if not pending_destroy and self.strength <= 0:
             self.destroy()
 
     def destroy(self):

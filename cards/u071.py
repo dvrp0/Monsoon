@@ -60,7 +60,6 @@ class U071Test(CardTestCase):
         card = U071()
         card.player = self.local
         card.play(Point(1, 2))
-        print(self.board)
 
         self.assertEqual(self.board.at(Point(1, 0)).card_id, "u071")
         self.assertEqual(self.local.front_line, 1)

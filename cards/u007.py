@@ -32,3 +32,18 @@ class U007Test(CardTestCase):
         self.assertEqual(self.board.at(Point(0, 2)).strength, 5)
         self.assertEqual(self.board.at(Point(1, 2)).strength, 5)
         self.assertEqual(self.board.at(Point(1, 3)).strength, 5)
+
+        self.board.clear()
+        self.board.spawn_token_unit(self.local, Point(1, 2), 1)
+        self.board.spawn_token_unit(self.remote, Point(0, 2), 1)
+
+        card = U007()
+        card.player = self.local
+        card.play(Point(2, 3))
+
+        card_remote = U007()
+        card_remote.player = self.remote
+        card_remote.play(Point(3, 2))
+
+        self.assertEqual(self.board.at(Point(2, 2)), None)
+        self.assertEqual(self.board.at(Point(3, 2)), None)

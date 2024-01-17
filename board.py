@@ -113,11 +113,12 @@ class Board:
         for y in range(5):
             for x in range(4):
                 entity = self.board[y][x]
+
+                if entity is None or entity.strength <= 0:
+                    continue
+
                 is_unit = isinstance(entity, Unit)
                 is_structure = isinstance(entity, Structure)
-
-                if not is_unit and not is_structure:
-                    continue
 
                 if is_unit:
                     type_matches = True if target.unit_types is None else any(type in entity.unit_types for type in target.unit_types)
