@@ -31,14 +31,14 @@ class MuZeroConfig:
 
         ### Self-Play
         self.num_workers = 2  # Number of simultaneous threads/workers self-playing to feed the replay buffer
-        self.selfplay_on_gpu = False
+        self.selfplay_on_gpu = True
         self.max_moves = 200  # Maximum number of moves if game is not finished before
         self.num_simulations = 100  # Number of future moves self-simulated
-        self.discount = 1  # Chronological discount of the reward
+        self.discount = 0.95  # Chronological discount of the reward
         self.temperature_threshold = 10  # Number of moves before dropping the temperature given by visit_softmax_temperature_fn to 0 (ie selecting the best action). If None, visit_softmax_temperature_fn is used every time
 
         # Root prior exploration noise
-        self.root_dirichlet_alpha = 0.5
+        self.root_dirichlet_alpha = 0.25
         self.root_exploration_fraction = 0.25
 
         # UCB formula
@@ -87,7 +87,7 @@ class MuZeroConfig:
         self.lr_decay_steps = 10000
 
         ### Replay Buffer
-        self.replay_buffer_size = 100000  # Number of self-play games to keep in the replay buffer
+        self.replay_buffer_size = 1000000000  # Number of self-play games to keep in the replay buffer
         self.num_unroll_steps = 5  # Number of game moves to keep for every batch element
         self.td_steps = 200  # Number of steps in the future to take into account for calculating the target value
         self.PER = True  # Prioritized Replay (See paper appendix Training), select in priority the elements in the replay buffer which are unexpected for the network
@@ -111,7 +111,12 @@ class MuZeroConfig:
         Returns:
             Positive float.
         """
-        return 1
+        if trained_steps < 500e3:
+            return 1.0
+        elif trained_steps < 750e3:
+            return 0.5
+        else:
+            return 0.25
 
 class Game(AbstractGame):
     """
@@ -310,7 +315,8 @@ class Stormbound:
         return self.get_observation()
 
     def step(self, action: int):
-        observation = None
+        local_strength = self.board.local.strength
+        remote_strength = self.board.remote.strength
 
         if action < 64: # Place
             card_index = action // 16
@@ -354,15 +360,18 @@ class Stormbound:
             card_index = action - 151
             self.board.local.hand[card_index], self.board.local.hand[0] = self.board.local.hand[0], self.board.local.hand[card_index]
             self.board.local.leftmost_movable = False
-        elif action == 155: # Pass
-            self.player *= -1
-            observation = self.get_observation()
-            self.board.to_next_turn()
 
         done = self.have_winner() or len(self.legal_actions()) == 0
-        reward = 1 if self.have_winner() else 0
+        if self.have_winner():
+            reward = 100 if self.board.remote.strength <= 0 else -100
+        else:
+            reward = (remote_strength - self.board.remote.strength) - (local_strength - self.board.local.strength)
 
-        return observation if observation is not None else self.get_observation(), reward, done
+        if action == 155: # Pass
+            self.player *= -1
+            self.board.to_next_turn()
+
+        return self.get_observation(), reward, done
 
     '''
     Observation shape: (35, 5, 4)
@@ -392,6 +401,9 @@ class Stormbound:
     def get_observation(self):
         def foreach(operation: Callable[[Unit | Structure | None], Unit | Structure | None]):
             return [[operation(tile) for tile in row] for row in self.board.board]
+
+        if self.player == -1:
+            self.board.flip() # flip the board to make canonical form, which is the first player's perspective
 
         local_unit_ids = foreach(lambda tile: int(tile) if isinstance(tile, Unit) and tile.player == self.board.local else -1)
         local_unit_strengths = foreach(lambda tile: tile.strength if isinstance(tile, Unit) and tile.player == self.board.local else -1)
@@ -446,6 +458,9 @@ class Stormbound:
             -1,
             -1
         ] for card in ([None] * 4 + self.board.history)[-4:]] + [[32769] * 4]
+
+        if self.player == -1:
+            self.board.flip()
 
         return np.array([
             local_unit_ids,

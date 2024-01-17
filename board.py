@@ -64,6 +64,20 @@ class Board:
 
                 self.remote.front_line = 0
 
+    def flip(self):
+        temp = self.local
+        self.local = self.remote
+        self.remote = temp
+
+        self.local.front_line = 4 - self.local.front_line
+        self.remote.front_line = 4 - self.remote.front_line
+
+        self.board = [row[::-1] for row in self.board[::-1]]
+        for y in range(5):
+            for x in range(4):
+                if self.board[y][x] is not None:
+                    self.board[y][x].position = Point(x, y)
+
     def to_next_turn(self):
         self.local.fill_hand()
 
@@ -78,21 +92,10 @@ class Board:
         self.local.current_mana = self.local.max_mana
         self.remote.current_mana = self.remote.max_mana
 
-        temp = self.local
-        self.local = self.remote
-        self.remote = temp
-
-        self.local.front_line = 4 - self.local.front_line
-        self.remote.front_line = 4 - self.remote.front_line
+        self.flip()
 
         self.local.replacable = True
         self.local.leftmost_movable = True
-
-        self.board = [row[::-1] for row in self.board[::-1]]
-        for y in range(5):
-            for x in range(4):
-                if self.board[y][x] is not None:
-                    self.board[y][x].position = Point(x, y)
 
         for structure in [self.at(tile) for tile in self.get_targets(Target(Target.Kind.STRUCTURE, Target.Side.FRIENDLY))]:
             if structure.is_at_turn_start:
