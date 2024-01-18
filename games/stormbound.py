@@ -32,7 +32,7 @@ class MuZeroConfig:
         ### Self-Play
         self.num_workers = 2  # Number of simultaneous threads/workers self-playing to feed the replay buffer
         self.selfplay_on_gpu = True
-        self.max_moves = 200  # Maximum number of moves if game is not finished before
+        self.max_moves = 400  # Maximum number of moves if game is not finished before
         self.num_simulations = 100  # Number of future moves self-simulated
         self.discount = 0.95  # Chronological discount of the reward
         self.temperature_threshold = 10  # Number of moves before dropping the temperature given by visit_softmax_temperature_fn to 0 (ie selecting the best action). If None, visit_softmax_temperature_fn is used every time
@@ -71,8 +71,8 @@ class MuZeroConfig:
         ### Training
         self.results_path = pathlib.Path(__file__).resolve().parents[1] / "results" / pathlib.Path(__file__).stem / datetime.datetime.now().strftime("%Y-%m-%d--%H-%M-%S")  # Path to store the model weights and TensorBoard logs
         self.save_model = True  # Save the checkpoint in results_path as model.checkpoint
-        self.training_steps = 100000  # Total number of training steps (ie weights update according to a batch)
-        self.batch_size = 512  # Number of parts of games to train on at each training step
+        self.training_steps = 1000000  # Total number of training steps (ie weights update according to a batch)
+        self.batch_size = 64  # Number of parts of games to train on at each training step
         self.checkpoint_interval = 100  # Number of training steps before using the model for self-playing
         self.value_loss_weight = 0.25  # Scale the value loss to avoid overfitting of the value function, paper recommends 0.25 (See paper appendix Reanalyze)
         self.train_on_gpu = True  # Train on GPU if available
@@ -362,10 +362,7 @@ class Stormbound:
             self.board.local.leftmost_movable = False
 
         done = self.have_winner() or len(self.legal_actions()) == 0
-        if self.have_winner():
-            reward = 100 if self.board.remote.strength <= 0 else -100
-        else:
-            reward = (remote_strength - self.board.remote.strength) - (local_strength - self.board.local.strength)
+        reward = 1 if self.board.remote.strength <= 0 else 0
 
         if action == 155: # Pass
             self.player *= -1
