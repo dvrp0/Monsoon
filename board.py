@@ -124,9 +124,10 @@ class Board:
                     type_matches = True if target.unit_types is None else any(type in entity.unit_types for type in target.unit_types)
                     non_hero_matches = True if not target.non_hero else UnitType.HERO not in entity.unit_types
                     status_matches = True if target.status_effects is None else any(status in entity.status_effects for status in target.status_effects)
+                    exclude_status_matches = True if target.exclude_status_effects is None else not any(status in entity.status_effects for status in target.exclude_status_effects)
 
                 strength_matches = True if target.strength_limit is None else entity.strength <= target.strength_limit
-                unit_matches = is_unit and type_matches and non_hero_matches and status_matches and strength_matches
+                unit_matches = is_unit and type_matches and non_hero_matches and status_matches and exclude_status_matches and strength_matches
                 structure_matches = is_structure and strength_matches
 
                 kind_matches = ((target.kind == Target.Kind.ANY and (unit_matches or structure_matches)) or
