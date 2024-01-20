@@ -40,6 +40,9 @@ class Board:
     def set(self, position: Point, entity: Unit | Structure | None):
         self.board[position.y][position.x] = entity
 
+        if entity is not None:
+            entity.position = position
+
     def is_ally(self, entity: Unit | Structure):
         return entity.player == self.local
 
