@@ -105,8 +105,8 @@ class Board:
                 structure.activate_ability(structure.position)
 
         for unit in [self.at(tile) for tile in self.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY))]:
-            unit.set_path()
-            unit.move()
+            unit.set_path(True)
+            unit.move(True)
 
     def get_targets(self, target: Target, exclude: Point = None, perspective: "Player | None" = None) -> List[Point]:
         if perspective is None:

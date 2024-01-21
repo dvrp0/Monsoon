@@ -51,19 +51,19 @@ class Unit(Card):
     def play(self, position: Point):
         self.position = position
         self.player.board.set(self.position, self)
-        self.set_path(True)
+        self.set_path()
 
         if self.trigger == TriggerType.ON_PLAY:
             self.activate_ability()
 
-        self.move(True)
+        self.move()
 
-    def set_path(self, on_play=False):
+    def set_path(self, is_turn_start=False):
         destinations: List[Point] = []
         position = self.position
         status_effects_cached = list(self.status_effects)
 
-        for _ in range(self.movement if on_play else 1):
+        for _ in range(1 if is_turn_start else self.movement):
             destination = Point(position.x, position.y - 1)
             up = self.player.board.at(destination)
 
@@ -77,7 +77,7 @@ class Unit(Card):
 
                 destination = Point(position.x + int(self.player.random.choice(choices)), position.y)
                 status_effects_cached.remove(StatusEffect.CONFUSED)
-            elif on_play and not self.fixedly_forward and destination.y > -1 and (up is None or up.player == self.player):
+            elif not is_turn_start and not self.fixedly_forward and destination.y > -1 and (up is None or up.player == self.player):
                 # 상대 기지 앞이 아닌 위치에서 앞에 아무것도 없거나 앞이 아군으로 막혀 있다면 옆을 살펴보기
                 left_position = Point(position.x - 1, position.y)
                 left = self.player.board.at(left_position) if position.x > 0 else None
@@ -101,8 +101,8 @@ class Unit(Card):
 
         self.path = destinations
 
-    def move(self, on_play=False):
-        if not on_play:
+    def move(self, is_turn_start=False):
+        if is_turn_start:
             if self.is_poisened:
                 self.deal_damage(1)
             elif self.is_vitalized:
@@ -229,15 +229,15 @@ class Unit(Card):
 
     def gain_speed(self, amount: int):
         self.movement += amount
-        self.set_path(True) # gaining speed is only possible on play
+        self.set_path() # gaining speed is only possible on play
         self.movement -= amount
 
     def command(self):
         fixedly_forward_cache = self.fixedly_forward
         self.fixedly_forward = True
 
-        self.set_path(True)
-        self.move(True)
+        self.set_path()
+        self.move()
 
         self.fixedly_forward = fixedly_forward_cache
 
