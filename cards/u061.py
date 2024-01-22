@@ -33,3 +33,13 @@ class U061Test(CardTestCase):
 
         self.assertEqual(card.position, Point(1, 4))
         self.assertTrue(self.board.at(Point(1, 3)).is_confused)
+
+        self.board.clear()
+        self.board.spawn_token_structure(self.remote, Point(1, 4), 1)
+        self.board.spawn_token_unit(self.remote, Point(2, 4), 1)
+        card = U061()
+        card.player = self.local
+        card.play(Point(0, 4))
+
+        self.assertEqual(card.position, Point(2, 4))
+        self.assertEqual(card.strength, 4)
