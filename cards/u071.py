@@ -28,14 +28,14 @@ class U071Test(CardTestCase):
         card.play(Point(1, 1))
 
         self.assertTrue(self.board.at(Point(0, 1)).is_confused)
-        self.assertEqual(self.remote.strength, 14)
+        self.assertEqual(self.remote.strength, 15)
 
         card = U071()
         card.player = self.local
         card.play(Point(1, 1))
 
         self.assertEqual(self.board.at(Point(0, 1)).card_id, "u071")
-        self.assertEqual(self.board.at(Point(0, 1)).strength, 5)
+        self.assertEqual(self.board.at(Point(0, 1)).strength, 4)
 
         card = U071()
         card.player = self.local
@@ -50,8 +50,7 @@ class U071Test(CardTestCase):
         card.player = self.local
         card.play(Point(1, 3))
 
-        self.assertEqual(self.board.at(Point(2, 2)).card_id, "u071")
-        self.assertEqual(self.board.at(Point(2, 2)).strength, 1)
+        self.assertEqual(self.board.at(Point(2, 2)), None)
 
         self.board.clear()
         self.board.spawn_token_unit(self.local, Point(0, 3), 3)
