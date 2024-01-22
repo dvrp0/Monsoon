@@ -12,7 +12,7 @@ class Structure(Card):
         self.position: Point = None
 
     def __eq__(self, other):
-        return self.card_id == other.card_id and self.player == other.player and self.position == other.position
+        return isinstance(other, Structure) and self.card_id == other.card_id and self.player == other.player and self.position == other.position
 
     def __repr__(self):
         strength = f"♥{self.strength}{' ' if self.strength < 10 else ''}"
