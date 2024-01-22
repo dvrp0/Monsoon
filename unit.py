@@ -150,9 +150,9 @@ class Unit(Card):
                     target.deal_damage(self.strength, target_on_death_pending)
                     self.deal_damage(target_strength_cached, local_on_death_pending)
 
-                    if target_on_death_pending:
+                    if target.strength <= 0 and target_on_death_pending:
                         target.destroy() # defender triggers first
-                    if local_on_death_pending:
+                    if self.strength <= 0 and local_on_death_pending:
                         self.destroy()
 
                     is_attacked = True
