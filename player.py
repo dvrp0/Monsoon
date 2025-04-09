@@ -1,11 +1,12 @@
 import numpy as np
 from card import Card
-from enums import PlayerOrder, Faction
+from enums import Faction, PlayerOrder
 from unit import Unit
 from structure import Structure
 from point import Point
 from board import Board
 from typing import List
+from colorama import Back, Fore, Style
 
 class Player:
     def __init__(self, faction: Faction, deck: List[Card], order: PlayerOrder, random: np.random.RandomState):
@@ -81,3 +82,46 @@ class Player:
 
     def heal(self, amount: int):
         self.strength += amount
+
+    def print_hand(self):
+        lines = [[] for _ in self.hand]
+
+        for i, card in enumerate(self.hand):
+            match card.faction:
+                case Faction.NEUTRAL:
+                    back = Back.WHITE
+                    fore = Fore.BLACK
+                case Faction.WINTER:
+                    back = Back.BLUE
+                    fore = Fore.WHITE
+                case Faction.SWARM:
+                    back = Back.YELLOW
+                    fore = Fore.BLACK
+                case Faction.IRONCLAD:
+                    back = Back.RED
+                    fore = Fore.WHITE
+                case Faction.SHADOWFEN:
+                    back = Back.GREEN
+                    fore = Fore.BLACK
+
+            if isinstance(card, Structure) or isinstance(card, Unit):
+                strength = f"{Back.LIGHTRED_EX}{Fore.BLACK} {card.strength} {back}"
+            else:
+                strength = '   '
+
+            if isinstance(card, Unit):
+                movement = f"{Back.LIGHTGREEN_EX}{Fore.BLACK} {card.movement} {back}"
+            else:
+                movement = '   '
+
+            lines[i].append(f"{back}{fore} {Back.CYAN}{Fore.BLACK} ♦{card.cost} {back} {Style.RESET_ALL}")
+            lines[i].append(f"{back}{fore}      {Style.RESET_ALL}")
+            lines[i].append(f"{back}{fore} {card.card_id} {Style.RESET_ALL}")
+            lines[i].append(f"{back}{fore}      {Style.RESET_ALL}")
+            lines[i].append(f"{back}{fore}{strength}{movement}{Style.RESET_ALL}")
+
+        for i in range(len(lines[i])):
+            for line in lines:
+                print(f"{line[i]}  ", end="")
+
+            print()
