@@ -1,3 +1,4 @@
+from enums import Faction
 from point import Point
 from spell import Spell
 from target import Target
@@ -5,7 +6,7 @@ from test import CardTestCase
 
 class S003(Spell): # Bladestorm
     def __init__(self):
-        super().__init__(5)
+        super().__init__(Faction.NEUTRAL, 5)
 
     def activate_ability(self, position: Point | None = None):
         for tile in self.player.board.get_targets(Target(Target.Kind.ANY, Target.Side.ENEMY)):

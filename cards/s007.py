@@ -1,3 +1,4 @@
+from enums import Faction
 from point import Point
 from spell import Spell
 from target import Target
@@ -5,7 +6,7 @@ from test import CardTestCase
 
 class S007(Spell): # Potion of Growth
     def __init__(self):
-        super().__init__(3, Target(Target.Kind.UNIT, Target.Side.FRIENDLY))
+        super().__init__(Faction.NEUTRAL, 3, Target(Target.Kind.UNIT, Target.Side.FRIENDLY))
 
     def activate_ability(self, position: Point | None = None):
         target = self.player.board.at(position)

@@ -1,4 +1,4 @@
-from enums import StatusEffect, TriggerType, UnitType
+from enums import Faction, StatusEffect, TriggerType, UnitType
 from point import Point
 from unit import Unit
 from target import Target
@@ -6,7 +6,7 @@ from test import CardTestCase
 
 class U055(Unit): # Sweetcap Kittens
     def __init__(self):
-        super().__init__([UnitType.FELINE], 2, 5, 0, TriggerType.ON_PLAY)
+        super().__init__(Faction.NEUTRAL, [UnitType.FELINE], 2, 5, 0, TriggerType.ON_PLAY)
 
     def activate_ability(self, position: Point | None = None):
         targets = self.player.board.get_front_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ENEMY, exclude_status_effects=[StatusEffect.CONFUSED]))

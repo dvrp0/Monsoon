@@ -1,4 +1,4 @@
-from enums import UnitType, TriggerType
+from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
 from target import Target
@@ -6,7 +6,7 @@ from test import CardTestCase
 
 class U051(Unit): # Razor-sharp Lynxes
     def __init__(self):
-        super().__init__([UnitType.FELINE], 4, 6, 1, TriggerType.ON_PLAY)
+        super().__init__(Faction.NEUTRAL, [UnitType.FELINE], 4, 6, 1, TriggerType.ON_PLAY)
 
     def activate_ability(self, position: Point | None = None):
         if len(self.player.board.get_bordering_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ANY))) == 0:

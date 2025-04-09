@@ -1,3 +1,4 @@
+from enums import Faction
 from point import Point
 from structure import Structure
 from target import Target
@@ -5,7 +6,7 @@ from test import CardTestCase
 
 class B006(Structure): # Temple of Life
     def __init__(self):
-        super().__init__(3, 6)
+        super().__init__(Faction.WINTER, 3, 6)
 
     def activate_ability(self, position: Point | None = None):
         targets = [target for target in self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY))

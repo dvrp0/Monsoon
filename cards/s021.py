@@ -1,4 +1,4 @@
-from enums import StatusEffect, UnitType
+from enums import Faction, StatusEffect, UnitType
 from point import Point
 from spell import Spell
 from target import Target
@@ -6,7 +6,7 @@ from test import CardTestCase
 
 class S201(Spell): # Catnip's Charm
     def __init__(self):
-        super().__init__(2, Target(Target.Kind.UNIT, Target.Side.ANY, exclude_status_effects=[StatusEffect.CONFUSED]))
+        super().__init__(Faction.NEUTRAL, 2, Target(Target.Kind.UNIT, Target.Side.ANY, exclude_status_effects=[StatusEffect.CONFUSED]))
 
     def activate_ability(self, position: Point | None = None):
         self.player.board.at(position).confuse()

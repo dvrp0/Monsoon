@@ -1,4 +1,4 @@
-from enums import UnitType, TriggerType
+from enums import Faction, UnitType, TriggerType
 from point import Point
 from unit import Unit
 from target import Target
@@ -6,7 +6,7 @@ from test import CardTestCase
 
 class U050(Unit): # Twilight Prowlers
     def __init__(self):
-        super().__init__([UnitType.FELINE], 6, 15, 0, TriggerType.ON_PLAY)
+        super().__init__(Faction.NEUTRAL, [UnitType.FELINE], 6, 15, 0, TriggerType.ON_PLAY)
 
     def activate_ability(self, position: Point | None = None):
         if self.position.y == 4:

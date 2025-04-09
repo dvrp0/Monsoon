@@ -1,4 +1,4 @@
-from enums import UnitType, TriggerType
+from enums import Faction, UnitType, TriggerType
 from point import Point
 from unit import Unit
 from target import Target
@@ -6,7 +6,7 @@ from test import CardTestCase
 
 class UE04(Unit): # Greenwood Ancients
     def __init__(self):
-        super().__init__([UnitType.ELDER], 4, 6, 1, TriggerType.AFTER_SURVIVING)
+        super().__init__(Faction.NEUTRAL, [UnitType.ELDER], 4, 6, 1, TriggerType.AFTER_SURVIVING)
 
     def activate_ability(self, position: Point | None = None):
         targets = self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.ENEMY), perspective=self.player)

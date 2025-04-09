@@ -1,11 +1,11 @@
-from enums import UnitType, TriggerType
+from enums import Faction, UnitType, TriggerType
 from point import Point
 from unit import Unit
 from test import CardTestCase
 
 class U302(Unit): # Windmakers
     def __init__(self):
-        super().__init__([UnitType.RODENT], 4, 2, 2, TriggerType.BEFORE_ATTACKING)
+        super().__init__(Faction.IRONCLAD, [UnitType.RODENT], 4, 2, 2, TriggerType.BEFORE_ATTACKING)
 
     def activate_ability(self, position: Point | None = None):
         if not position.is_valid or not isinstance(self.player.board.at(position), Unit): # 기지 또는 건물이라면 발동 안 함

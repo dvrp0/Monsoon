@@ -1,4 +1,4 @@
-from enums import UnitType, TriggerType
+from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
 from target import Target
@@ -6,7 +6,7 @@ from test import CardTestCase
 
 class U211(Unit): # Doppelbocks
     def __init__(self):
-        super().__init__([UnitType.SATYR], 2, 3, 0, TriggerType.ON_PLAY)
+        super().__init__(Faction.SWARM, [UnitType.SATYR], 2, 3, 0, TriggerType.ON_PLAY)
 
     def activate_ability(self, position: Point | None = None):
         tiles = self.player.board.get_front_tiles(self.position)

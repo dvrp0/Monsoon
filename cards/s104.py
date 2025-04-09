@@ -1,3 +1,4 @@
+from enums import Faction
 from point import Point
 from spell import Spell
 from target import Target
@@ -5,7 +6,7 @@ from test import CardTestCase
 
 class S104(Spell): # Icicle Burst
     def __init__(self):
-        super().__init__(1, Target(Target.Kind.UNIT, Target.Side.ENEMY))
+        super().__init__(Faction.WINTER, 1, Target(Target.Kind.UNIT, Target.Side.ENEMY))
 
     def activate_ability(self, position: Point | None = None):
         target = self.player.board.at(position)

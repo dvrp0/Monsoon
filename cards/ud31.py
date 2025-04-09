@@ -1,4 +1,4 @@
-from enums import UnitType, TriggerType
+from enums import Faction, UnitType, TriggerType
 from point import Point
 from unit import Unit
 from target import Target
@@ -6,7 +6,7 @@ from test import CardTestCase
 
 class UD31(Unit): # Greengale Surpents
     def __init__(self):
-        super().__init__([UnitType.DRAGON], 3, 3, 2, TriggerType.BEFORE_ATTACKING)
+        super().__init__(Faction.IRONCLAD, [UnitType.DRAGON], 3, 3, 2, TriggerType.BEFORE_ATTACKING)
 
     def activate_ability(self, position: Point | None = None):
         if not position.is_valid or not isinstance(self.player.board.at(position), Unit): # 기지 또는 건물이라면 발동 안 함

@@ -1,11 +1,13 @@
 from card import Card
-from enums import UnitType, TriggerType, StatusEffect
+from enums import Faction, UnitType, TriggerType, StatusEffect
 from typing import List
 from point import Point
+from colorama import Back, Style
 
 class Unit(Card):
-    def __init__(self, unit_types: List[UnitType], cost: int, strength: int, movement: int, trigger: TriggerType = None, fixedly_forward=False):
+    def __init__(self, faction: Faction, unit_types: List[UnitType], cost: int, strength: int, movement: int, trigger: TriggerType = None, fixedly_forward=False):
         super().__init__()
+        self.faction = faction
         self.unit_types = unit_types
         self.cost = cost
         self.strength = strength
@@ -19,14 +21,15 @@ class Unit(Card):
         return isinstance(other, Unit) and self.card_id == other.card_id and self.player == other.player and self.position == other.position
 
     def __repr__(self):
-        strength = f"♥{self.strength}{' ' if self.strength < 10 else ''}"
-        is_frozen = 'F' if self.is_frozen else ' '
-        is_poisoned = 'P' if self.is_poisened else ' '
-        is_vitalized = 'V' if self.is_vitalized else ' '
-        is_confused = 'C' if self.is_confused else ' '
-        is_disabled = 'D' if self.is_disabled else ' '
+        color = Back.BLUE if self.player == self.player.board.local else Back.RED
+        strength = f"♥{min(99, self.strength)}{' ' if self.strength < 10 else ''}"
+        is_frozen = f"{Back.LIGHTBLUE_EX} {color}" if self.is_frozen else ' '
+        is_poisoned = f"{Back.GREEN} {color}" if self.is_poisened else ' '
+        is_vitalized = f"{Back.LIGHTGREEN_EX} {color}" if self.is_vitalized else ' '
+        is_confused = f"{Back.YELLOW} {color}" if self.is_confused else ' '
+        is_disabled = f"{Back.MAGENTA} {color}" if self.is_disabled else ' '
 
-        return f"{self.position} {self.player.order}: {self.card_id} {strength} {is_frozen}{is_poisoned}{is_vitalized}{is_confused}{is_disabled}"
+        return f"{self.position} {color}{self.card_id} {strength} {is_frozen}{is_poisoned}{is_vitalized}{is_confused}{is_disabled}{Style.RESET_ALL}"
 
     @property
     def is_frozen(self):
@@ -222,10 +225,12 @@ class Unit(Card):
         self.status_effects.remove(StatusEffect.CONFUSED)
 
     def disable(self):
-        self.status_effects.append(StatusEffect.DISABLED)
+        if type(self).activate_ability != Card.activate_ability:
+            self.status_effects.append(StatusEffect.DISABLED)
 
     def enable(self):
-        self.status_effects.remove(StatusEffect.DISABLED)
+        if self.is_disabled:
+            self.status_effects.remove(StatusEffect.DISABLED)
 
     def gain_speed(self, amount: int):
         self.movement += amount

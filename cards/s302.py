@@ -1,3 +1,4 @@
+from enums import Faction
 from point import Point
 from spell import Spell
 from target import Target
@@ -5,7 +6,7 @@ from test import CardTestCase
 
 class S302(Spell): # Needle Blast
     def __init__(self):
-        super().__init__(6)
+        super().__init__(Faction.NEUTRAL, 6)
 
     def activate_ability(self, position: Point | None = None):
         targets = self.player.board.get_targets(Target(Target.Kind.ANY, Target.Side.ENEMY)) + [Point(-1, -1)] # indicating enemy base

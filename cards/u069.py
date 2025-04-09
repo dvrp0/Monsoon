@@ -1,11 +1,11 @@
-from enums import UnitType
+from enums import Faction, UnitType
 from point import Point
 from unit import Unit
 from test import CardTestCase
 
 class U069(Unit): # Ultrasonics
     def __init__(self):
-        super().__init__([UnitType.UNDEAD], 5, 6, 4)
+        super().__init__(Faction.NEUTRAL, [UnitType.UNDEAD], 5, 6, 4)
 
 class U069Test(CardTestCase):
     def test_ability(self):

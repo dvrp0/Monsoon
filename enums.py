@@ -42,10 +42,11 @@ class ActionType(IntEnum):
     PASS = 4
 
 class Faction(IntEnum):
-    WINTER = 0
-    SWARM = 1
-    IRONCLAD = 2
-    SHADOWFEN = 3
+    NEUTRAL = 0
+    WINTER = 1
+    SWARM = 2
+    IRONCLAD = 3
+    SHADOWFEN = 4
 
 class UnitType(IntEnum):
     CONSUTRUCT = 0

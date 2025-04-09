@@ -1,3 +1,4 @@
+from enums import Faction
 from point import Point
 from structure import Structure
 from target import Target
@@ -5,7 +6,7 @@ from test import CardTestCase
 
 class B203(Structure): # Temple of Focus
     def __init__(self):
-        super().__init__(3, 7)
+        super().__init__(Faction.SWARM, 3, 7)
 
     def activate_ability(self, position: Point | None = None):
         for tile in self.player.board.get_front_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.FRIENDLY), self.player):

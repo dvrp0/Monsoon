@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from copy import deepcopy
+from enums import Faction
 from typing import TYPE_CHECKING
 from point import Point
 
@@ -10,6 +11,7 @@ class Card(ABC):
     def __init__(self):
         self.card_id = self.__class__.__name__.lower()[:4]
         self.player: Player = None
+        self.faction: Faction = Faction.NEUTRAL
         self.cost = 0
         self.weight = 0
         self.is_single_use = False

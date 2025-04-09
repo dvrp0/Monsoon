@@ -1,4 +1,4 @@
-from enums import UnitType, TriggerType
+from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
 from target import Target
@@ -6,7 +6,7 @@ from test import CardTestCase
 
 class U007(Unit): # Green Prototypes
     def __init__(self):
-        super().__init__([UnitType.CONSUTRUCT], 1, 5, 1, TriggerType.ON_DEATH)
+        super().__init__(Faction.NEUTRAL, [UnitType.CONSUTRUCT], 1, 5, 1, TriggerType.ON_DEATH)
 
     def activate_ability(self, position: Point | None = None):
         targets = self.player.board.get_surrounding_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ENEMY), self.player)

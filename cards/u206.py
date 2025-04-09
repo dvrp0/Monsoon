@@ -1,11 +1,11 @@
-from enums import UnitType, TriggerType
+from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
 from test import CardTestCase
 
 class U206(Unit): # Restless Goats
     def __init__(self):
-        super().__init__([UnitType.SATYR], 2, 5, 2, TriggerType.ON_DEATH)
+        super().__init__(Faction.SWARM, [UnitType.SATYR], 2, 5, 2, TriggerType.ON_DEATH)
 
     def activate_ability(self, position: Point | None = None):
         self.player.deal_damage(2)

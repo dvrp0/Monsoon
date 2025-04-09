@@ -1,10 +1,11 @@
+from enums import Faction
 from point import Point
 from structure import Structure
 from test import CardTestCase
 
 class B001(Structure): # Fort of Ebonrock
     def __init__(self):
-        super().__init__(3, 9)
+        super().__init__(Faction.NEUTRAL, 3, 9)
 
 class B001Test(CardTestCase):
     def test_ability(self):

@@ -1,4 +1,4 @@
-from enums import UnitType, TriggerType
+from enums import Faction, UnitType, TriggerType
 from point import Point
 from unit import Unit
 from target import Target
@@ -6,7 +6,7 @@ from test import CardTestCase
 
 class U305(Unit): # Linked Golems
     def __init__(self):
-        super().__init__([UnitType.CONSUTRUCT], 3, 3, 1, TriggerType.ON_PLAY)
+        super().__init__(Faction.IRONCLAD, [UnitType.CONSUTRUCT], 3, 3, 1, TriggerType.ON_PLAY)
 
     def activate_ability(self, position: Point | None = None):
         targets = self.player.board.get_bordering_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.FRIENDLY, [UnitType.CONSUTRUCT]))

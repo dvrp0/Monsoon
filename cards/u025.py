@@ -1,11 +1,11 @@
-from enums import UnitType
+from enums import Faction, UnitType
 from point import Point
 from unit import Unit
 from test import CardTestCase
 
 class U025(Unit): # Lawless Herd
     def __init__(self):
-        super().__init__([UnitType.SATYR], 2, 6, 0)
+        super().__init__(Faction.NEUTRAL, [UnitType.SATYR], 2, 6, 0)
 
 class U025Test(CardTestCase):
     def test_ability(self):

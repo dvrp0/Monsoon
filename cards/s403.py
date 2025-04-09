@@ -1,4 +1,4 @@
-from enums import StatusEffect
+from enums import Faction, StatusEffect
 from point import Point
 from spell import Spell
 from target import Target
@@ -6,7 +6,7 @@ from test import CardTestCase
 
 class S403(Spell): # Soap Cleanse
     def __init__(self):
-        super().__init__(1)
+        super().__init__(Faction.SHADOWFEN, 1)
 
     def activate_ability(self, position: Point | None = None):
         targets = self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY, status_effects=[StatusEffect.POISONED]))

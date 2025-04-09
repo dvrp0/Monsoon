@@ -1,4 +1,4 @@
-from enums import UnitType, TriggerType
+from enums import Faction, UnitType, TriggerType
 from point import Point
 from spell import Spell
 from unit import Unit
@@ -9,7 +9,7 @@ from .s007 import S007
 
 class U017(Unit): # Archdruid Earyn
     def __init__(self):
-        super().__init__([UnitType.HERO], 7, 12, 0, TriggerType.ON_PLAY)
+        super().__init__(Faction.NEUTRAL, [UnitType.HERO], 7, 12, 0, TriggerType.ON_PLAY)
 
     def activate_ability(self, position: Point | None = None):
         cards = [card for card in self.player.hand if isinstance(card, Spell) and card.cost <= self.cost]

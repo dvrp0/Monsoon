@@ -1,4 +1,4 @@
-from enums import UnitType
+from enums import Faction, UnitType
 from point import Point
 from spell import Spell
 from target import Target
@@ -6,7 +6,7 @@ from test import CardTestCase
 
 class S013(Spell): # Hunter's Vengeance
     def __init__(self):
-        super().__init__(3)
+        super().__init__(Faction.NEUTRAL, 3)
 
     def activate_ability(self, position: Point | None = None):
         targets = []

@@ -1,4 +1,4 @@
-from enums import UnitType, TriggerType
+from enums import Faction, UnitType, TriggerType
 from point import Point
 from unit import Unit
 from target import Target
@@ -6,7 +6,7 @@ from test import CardTestCase
 
 class UA04(Unit): # Gray the Balancer
     def __init__(self):
-        super().__init__([UnitType.ANCIENT, UnitType.HERO], 4, 8, 1, TriggerType.BEFORE_MOVING)
+        super().__init__(Faction.NEUTRAL, [UnitType.ANCIENT, UnitType.HERO], 4, 8, 1, TriggerType.BEFORE_MOVING)
 
     def activate_ability(self, position: Point | None = None):
         # no need to set perspective as the result will be the same

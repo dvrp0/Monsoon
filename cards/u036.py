@@ -1,11 +1,11 @@
-from enums import TriggerType, UnitType
+from enums import Faction, TriggerType, UnitType
 from point import Point
 from unit import Unit
 from test import CardTestCase
 
 class U036(Unit): # Northsea Dog
     def __init__(self):
-        super().__init__([UnitType.PIRATE], 2, 1, 0, TriggerType.ON_PLAY)
+        super().__init__(Faction.NEUTRAL, [UnitType.PIRATE], 2, 1, 0, TriggerType.ON_PLAY)
 
     def activate_ability(self, position: Point | None = None):
         if len(self.player.hand) == 0:

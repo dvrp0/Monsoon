@@ -1,4 +1,4 @@
-from enums import UnitType, TriggerType
+from enums import Faction, UnitType, TriggerType
 from point import Point
 from unit import Unit
 from structure import Structure
@@ -12,7 +12,7 @@ from cards.b305 import B305
 
 class UA20(Unit): # Guardi the Lightbringer
     def __init__(self):
-        super().__init__([UnitType.KNIGHT, UnitType.ANCIENT, UnitType.HERO], 4, 8, 1, TriggerType.BEFORE_MOVING)
+        super().__init__(Faction.NEUTRAL, [UnitType.KNIGHT, UnitType.ANCIENT, UnitType.HERO], 4, 8, 1, TriggerType.BEFORE_MOVING)
         self.candidates: List[Structure] = [B005(), B006(), B203(), B305()]
 
     def activate_ability(self, position: Point | None = None):

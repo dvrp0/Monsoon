@@ -1,4 +1,4 @@
-from enums import UnitType, TriggerType
+from enums import Faction, UnitType, TriggerType
 from point import Point
 from unit import Unit
 from target import Target
@@ -6,7 +6,7 @@ from test import CardTestCase
 
 class U106(Unit): # Hearthguards
     def __init__(self):
-        super().__init__([UnitType.VIKING], 6, 7, 2, TriggerType.ON_PLAY)
+        super().__init__(Faction.NEUTRAL, [UnitType.VIKING], 6, 7, 2, TriggerType.ON_PLAY)
 
     def activate_ability(self, position: Point | None = None):
         if len(self.player.board.get_bordering_tiles(self.position, Target(Target.Kind.STRUCTURE, Target.Side.FRIENDLY))) > 0 or self.position.y == 4:

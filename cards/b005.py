@@ -1,3 +1,4 @@
+from enums import Faction
 from point import Point
 from structure import Structure
 from target import Target
@@ -5,7 +6,7 @@ from test import CardTestCase
 
 class B005(Structure): # Temple of Time
     def __init__(self):
-        super().__init__(3, 7)
+        super().__init__(Faction.SHADOWFEN, 3, 7)
         self.remembered = []
 
     def activate_ability(self, position: Point | None = None):

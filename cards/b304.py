@@ -1,10 +1,11 @@
+from enums import Faction
 from point import Point
 from structure import Structure
 from test import CardTestCase
 
 class B304(Structure): # Unstable Build
     def __init__(self):
-        super().__init__(2, 9)
+        super().__init__(Faction.IRONCLAD, 2, 9)
 
     def activate_ability(self, position: Point | None = None):
         self.deal_damage(3)

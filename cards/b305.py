@@ -1,4 +1,4 @@
-from enums import TriggerType
+from enums import Faction, TriggerType
 from point import Point
 from structure import Structure
 from target import Target
@@ -6,7 +6,7 @@ from test import CardTestCase
 
 class B305(Structure): # Temple of Space
     def __init__(self):
-        super().__init__(3, 8, [TriggerType.ON_PLAY])
+        super().__init__(Faction.IRONCLAD, 3, 8, [TriggerType.ON_PLAY])
         self.original_cost = self.cost
 
     def activate_ability(self, position: Point | None = None):

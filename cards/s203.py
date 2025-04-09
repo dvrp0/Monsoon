@@ -1,3 +1,4 @@
+from enums import Faction
 from point import Point
 from spell import Spell
 from target import Target
@@ -6,7 +7,7 @@ from typing import List
 
 class S203(Spell): # Dark Harvest
     def __init__(self):
-        super().__init__(5)
+        super().__init__(Faction.SWARM, 5)
 
     def activate_ability(self, position: Point | None = None):
         tiles: List[Point] = []

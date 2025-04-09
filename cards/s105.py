@@ -1,3 +1,4 @@
+from enums import Faction
 from point import Point
 from spell import Spell
 from target import Target
@@ -5,7 +6,7 @@ from test import CardTestCase
 
 class S105(Spell): # Blessed with Brawn
     def __init__(self):
-        super().__init__(5, Target(Target.Kind.ANY, Target.Side.FRIENDLY, strength_limit=8))
+        super().__init__(Faction.WINTER, 5, Target(Target.Kind.ANY, Target.Side.FRIENDLY, strength_limit=8))
 
     def activate_ability(self, position: Point | None = None):
         self.player.board.at(position).heal(15)

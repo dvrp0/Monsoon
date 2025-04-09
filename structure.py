@@ -1,11 +1,13 @@
 from card import Card
-from enums import TriggerType
+from enums import Faction, TriggerType
 from typing import List
 from point import Point
+from colorama import Back, Style
 
 class Structure(Card):
-    def __init__(self, cost: int, strength: int, triggers: List[TriggerType]=[TriggerType.TURN_START]):
+    def __init__(self, faction: Faction, cost: int, strength: int, triggers: List[TriggerType]=[TriggerType.TURN_START]):
         super().__init__()
+        self.faction = faction
         self.cost = cost
         self.strength = strength
         self.triggers = triggers
@@ -15,9 +17,10 @@ class Structure(Card):
         return isinstance(other, Structure) and self.card_id == other.card_id and self.player == other.player and self.position == other.position
 
     def __repr__(self):
+        color = Back.BLUE if self.player == self.player.board.local else Back.RED
         strength = f"♥{self.strength}{' ' if self.strength < 10 else ''}"
 
-        return f"{self.position} {self.player.order}: {self.card_id} {strength}      "
+        return f"{self.position} {color}{self.card_id} {strength}      {Style.RESET_ALL}"
     
     @property
     def is_at_turn_start(self):

@@ -1,5 +1,5 @@
 import numpy as np
-from enums import UnitType
+from enums import Faction, UnitType
 from card import Card
 from unit import Unit
 from structure import Structure
@@ -25,7 +25,7 @@ class Board:
         rows = []
 
         for y in range(5):
-            row = "  ".join(str(self.board[y][x]) if self.board[y][x] is not None else f"({x}, {y}) {'-' * 17}" for x in range(4))
+            row = "  ".join(str(self.board[y][x]) if self.board[y][x] is not None else f"({x}, {y}) {'-' * 14}" for x in range(4))
             rows.append(f"{'▶' if self.local.front_line == y else ' '} {row} {'◁' if self.remote.front_line == y else ' '}")
 
         remote = [f"{' ' * 50} {self.remote.order}: {self.remote.strength}"]
@@ -223,7 +223,7 @@ class Board:
     def spawn_token_unit(self, player: "Player", position: Point, strength: int, types: List[UnitType] = None):
         types = types or [UnitType(self.random.choice(list(UnitType)))]
 
-        token = Unit(types, 0, strength, 1)
+        token = Unit(Faction.NEUTRAL, types, 0, strength, 1)
         token.player = player
         token.position = position
 
@@ -234,7 +234,7 @@ class Board:
         self.calculate_front_line(player)
 
     def spawn_token_structure(self, player: "Player", position: Point, strength: int):
-        token = Structure(0, strength)
+        token = Structure(Faction.NEUTRAL, 0, strength)
         token.player = player
         token.position = position
         token.card_id = "b001"
