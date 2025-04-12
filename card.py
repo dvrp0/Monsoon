@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from enums import Faction
+from functools import wraps
 from typing import TYPE_CHECKING
 from point import Point
 import uuid
@@ -38,6 +39,20 @@ class Card(ABC):
                     kind = "4"
 
         return int(f"{kind}{self.card_id[1:]}", 16)
+
+    def __init_subclass__(cls):
+        super().__init_subclass__()
+
+        if "activate_ability" in cls.__dict__:
+            original = cls.activate_ability
+
+            def wrapped(self, *args):
+                result = original(self, *args)
+                self.player.board.is_resolving_trigger = False
+
+                return result
+
+            cls.activate_ability = wraps(original)(wrapped)
 
     @abstractmethod
     def play(self, position: Point | None = None):

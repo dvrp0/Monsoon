@@ -7,6 +7,7 @@ from test import CardTestCase
 class B005(Structure): # Temple of Time
     def __init__(self):
         super().__init__(Faction.SHADOWFEN, 3, 7)
+        self.targets = 3
         self.remembered = []
 
     def activate_ability(self, position: Point | None = None):
@@ -15,9 +16,15 @@ class B005(Structure): # Temple of Time
         if self.remembered == []:
             self.remembered = [self.player.board.at(tile).copy() for tile in tiles]
         else:
+            count = 0
+
             for entity in self.remembered:
                 if self.player.board.at(entity.position) is None or self.player.board.at(entity.position) == entity:
                     self.player.board.set(entity.position, entity)
+                    count += 1
+
+                    if count >= self.targets:
+                        break
 
             self.remembered = []
 
@@ -30,7 +37,11 @@ class B005Test(CardTestCase):
         self.board.at(Point(0, 3)).vitalize()
         self.board.at(Point(0, 3)).freeze()
         self.board.spawn_token_unit(self.local, Point(1, 2), 3)
+        self.board.spawn_token_unit(self.local, Point(2, 2), 3)
+        self.board.spawn_token_unit(self.local, Point(2, 3), 3)
+        self.board.spawn_token_unit(self.local, Point(2, 4), 3)
         self.board.spawn_token_unit(self.remote, Point(0, 4), 5)
+
         card = B005()
         card.player = self.local
         card.play(Point(1, 3))
@@ -41,6 +52,9 @@ class B005Test(CardTestCase):
         self.board.set(Point(0, 3), None)
         self.board.set(Point(0, 4), None)
         self.board.set(Point(1, 2), None)
+        self.board.set(Point(2, 2), None)
+        self.board.set(Point(2, 3), None)
+        self.board.set(Point(2, 4), None)
         self.board.spawn_token_unit(self.remote, Point(1, 2), 5)
         card.activate_ability()
 
@@ -50,3 +64,7 @@ class B005Test(CardTestCase):
         self.assertEqual(self.board.at(Point(0, 3)).strength, 1)
         self.assertEqual(self.board.at(Point(0, 3)).player, self.local)
         self.assertEqual(self.board.at(Point(0, 4)), None)
+        self.assertEqual(self.board.at(Point(2, 2)).player, self.local)
+        self.assertEqual(self.board.at(Point(2, 2)).strength, 3)
+        self.assertEqual(self.board.at(Point(2, 3)), None)
+        self.assertEqual(self.board.at(Point(2, 4)), None)

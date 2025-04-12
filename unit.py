@@ -179,15 +179,17 @@ class Unit(Card):
 
         if not pending_destroy and self.strength <= 0:
             self.destroy()
-        elif self.trigger == TriggerType.AFTER_SURVIVING:
-            self.activate_ability()
+        elif self.trigger == TriggerType.AFTER_SURVIVING and self.strength > 0:
+            self.player.board.push_trigger(self.activate_ability)
+            self.player.board.pop_trigger()
 
     def destroy(self):
         self.player.board.set(self.position, None)
         self.path = []
 
         if self.trigger == TriggerType.ON_DEATH:
-            self.activate_ability()
+            self.player.board.push_trigger(self.activate_ability)
+            self.player.board.pop_trigger()
 
         self.player.board.calculate_front_line(self.player.board.remote)
 

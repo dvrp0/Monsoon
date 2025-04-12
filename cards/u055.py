@@ -9,7 +9,8 @@ class U055(Unit): # Sweetcap Kittens
         super().__init__(Faction.NEUTRAL, [UnitType.FELINE], 2, 5, 0, TriggerType.ON_PLAY)
 
     def activate_ability(self, position: Point | None = None):
-        targets = self.player.board.get_front_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ENEMY, exclude_status_effects=[StatusEffect.CONFUSED]))
+        targets = self.player.board.get_front_tiles(self.position,
+            Target(Target.Kind.UNIT, Target.Side.ENEMY, exclude_status_effects=[StatusEffect.CONFUSED]))
 
         for target in targets:
             self.player.board.at(target).confuse()

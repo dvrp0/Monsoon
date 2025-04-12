@@ -1,6 +1,7 @@
 import numpy as np
 from enums import Faction, UnitType
 from card import Card
+from collections.abc import Callable
 from unit import Unit
 from structure import Structure
 from target import Target
@@ -17,6 +18,8 @@ class Board:
         self.remote = remote
         self.history: List[Card] = []
         self.random = random
+        self.triggers: List[Callable] = []
+        self.is_resolving_trigger = False
 
         self.local.board = self
         self.remote.board = self
@@ -33,6 +36,22 @@ class Board:
         history = [", ".join(f"[{'local' if card.player == self.local else 'remote'}: {card.card_id}]" for card in self.history[-4:])]
 
         return "\n".join(remote + rows + local + history)
+
+    def push_trigger(self, trigger: Callable):
+        self.triggers.append(trigger)
+
+    def pop_trigger(self):
+        if len(self.triggers) == 0 or self.is_resolving_trigger:
+            return
+
+        self.is_resolving_trigger = True
+        trigger = self.triggers.pop()
+
+        if trigger is not None:
+            trigger()
+
+        if len(self.triggers) > 0:
+            self.pop_trigger()
 
     def at(self, position: Point):
         return self.board[position.y][position.x]
@@ -151,11 +170,11 @@ class Board:
     def get_front_tiles(self, position: Point, target: Target = None, perspective: "Player | None" = None) -> List[Point]:
         if perspective is None:
             perspective = self.local
-        tiles = [Point(position.x, i) for i in range(position.y - 1, -1, -1)]
+        tiles = [Point(position.x, i) for i in range(position.y)]
 
         if target is not None:
             targets = self.get_targets(target, perspective=perspective)
-            tiles = [tile for tile in tiles if tile in targets]
+            tiles = [target for target in targets if target in tiles]
 
         return tiles
 
@@ -166,7 +185,7 @@ class Board:
 
         if target is not None:
             targets = self.get_targets(target, perspective=perspective)
-            tiles = [tile for tile in tiles if tile in targets]
+            tiles = [target for target in targets if target in tiles]
 
         return tiles
 
@@ -180,7 +199,7 @@ class Board:
 
         if target is not None:
             targets = self.get_targets(target, perspective=perspective)
-            tiles = [tile for tile in tiles if tile in targets]
+            tiles = [target for target in targets if target in tiles]
 
         return [tile for tile in tiles if tile.is_valid]
 
@@ -196,7 +215,7 @@ class Board:
 
         if target is not None:
             targets = self.get_targets(target, perspective=perspective)
-            tiles = [tile for tile in tiles if tile in targets]
+            tiles = [target for target in targets if target in tiles]
 
         return [tile for tile in tiles if tile.is_valid]
 
@@ -216,7 +235,7 @@ class Board:
 
         if target is not None:
             targets = self.get_targets(target, perspective=perspective)
-            tiles = [tile for tile in tiles if tile in targets]
+            tiles = [target for target in targets if target in tiles]
 
         return [tile for tile in tiles if tile.is_valid]
 

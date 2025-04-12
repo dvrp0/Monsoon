@@ -12,7 +12,7 @@ class U314(Unit): # Sound Drivers
         targets = self.player.board.get_front_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.FRIENDLY))
 
         if len(targets) > 0:
-            self.player.board.at(targets[0]).push(self.position)
+            self.player.board.at(targets[-1]).push(self.position)
 
 class U314Test(CardTestCase):
     def test_ability(self):

@@ -20,15 +20,16 @@ class B006(Structure): # Temple of Life
         front = self.player.board.get_front_tiles(self.position)
         behind = self.player.board.get_behind_tiles(self.position)
 
-        if len(front) > 0 and self.player.board.at(front[0]) is None and front[0].y >= self.player.front_line:
-            tiles.append(front[0])
+        if len(front) > 0 and self.player.board.at(front[-1]) is None and front[-1].y >= self.player.front_line:
+            tiles.append(front[-1])
 
         if len(behind) > 0 and self.player.board.at(behind[0]) is None:
             tiles.append(behind[0])
 
-        copy = self.copy()
-        copy.strength = 1
-        copy.play(self.player.random.choice(tiles))
+        if len(tiles) > 0:
+            copy = self.copy()
+            copy.strength = 1
+            copy.play(self.player.random.choice(tiles))
 
 class B006Test(CardTestCase):
     def test_ability(self):

@@ -16,8 +16,8 @@ class U071(Unit): # Angelic Tikas
             self.player.board.at(self.player.random.choice(not_confused)).confuse()
             front = self.player.board.get_front_tiles(self.position)
 
-            if len(front) > 0 and self.player.board.at(front[0]) is None:
-                self.teleport(front[0])
+            if len(front) > 0 and self.player.board.at(front[-1]) is None:
+                self.teleport(front[-1])
                 self.set_path()
 
 class U071Test(CardTestCase):

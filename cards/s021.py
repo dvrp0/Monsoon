@@ -4,7 +4,7 @@ from spell import Spell
 from target import Target
 from test import CardTestCase
 
-class S201(Spell): # Catnip's Charm
+class S021(Spell): # Catnip's Charm
     def __init__(self):
         super().__init__(Faction.NEUTRAL, 2, Target(Target.Kind.UNIT, Target.Side.ANY, exclude_status_effects=[StatusEffect.CONFUSED]))
 
@@ -18,12 +18,12 @@ class S201(Spell): # Catnip's Charm
             weakests = [target for target in targets if self.player.board.at(target).strength == min_strength]
             self.player.board.at(self.player.random.choice(weakests)).heal(5)
 
-class S201Test(CardTestCase):
+class S021Test(CardTestCase):
     def test_ability(self):
         self.board.spawn_token_unit(self.local, Point(0, 4), 1, [UnitType.FELINE])
         self.board.spawn_token_unit(self.local, Point(1, 4), 1, [UnitType.FELINE])
         self.board.spawn_token_unit(self.local, Point(1, 3), 1, [UnitType.ANCIENT])
-        card = S201()
+        card = S021()
         card.player = self.local
         card.play(Point(0, 4))
 
