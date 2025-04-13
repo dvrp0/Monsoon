@@ -7,13 +7,14 @@ from test import CardTestCase
 class S403(Spell): # Soap Cleanse
     def __init__(self):
         super().__init__(Faction.SHADOWFEN, 1)
+        self.ability_strength = 5
 
     def activate_ability(self, position: Point | None = None):
         targets = self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY, status_effects=[StatusEffect.POISONED]))
 
         if len(targets) > 0:
             for target in targets:
-                self.player.board.at(target).heal(5)
+                self.player.board.at(target).heal(self.ability_strength)
                 self.player.board.at(target).vitalize()
 
 class S403Test(CardTestCase):
@@ -35,13 +36,13 @@ class S403Test(CardTestCase):
         card.player = self.local
         card.play()
 
-        self.assertEqual(self.board.at(Point(0, 3)).strength, 6)
+        self.assertEqual(self.board.at(Point(0, 3)).strength, 1 + card.ability_strength)
         self.assertEqual(self.board.at(Point(0, 3)).is_vitalized, True)
-        self.assertEqual(self.board.at(Point(1, 3)).strength, 7)
+        self.assertEqual(self.board.at(Point(1, 3)).strength, 2 + card.ability_strength)
         self.assertEqual(self.board.at(Point(1, 3)).is_vitalized, True)
         self.assertEqual(self.board.at(Point(2, 2)).strength, 5)
         self.assertEqual(self.board.at(Point(2, 2)).is_vitalized, False)
-        self.assertEqual(self.board.at(Point(3, 1)).strength, 15)
+        self.assertEqual(self.board.at(Point(3, 1)).strength, 10 + card.ability_strength)
         self.assertEqual(self.board.at(Point(3, 1)).is_vitalized, True)
         self.assertEqual(self.board.at(Point(0, 4)).strength, 5)
         self.assertEqual(self.board.at(Point(0, 4)).is_poisened, True)

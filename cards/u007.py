@@ -7,13 +7,14 @@ from test import CardTestCase
 class U007(Unit): # Green Prototypes
     def __init__(self):
         super().__init__(Faction.NEUTRAL, [UnitType.CONSUTRUCT], 1, 5, 1, TriggerType.ON_DEATH)
+        self.ability_strength = 5
 
     def activate_ability(self, position: Point | None = None):
         targets = self.player.board.get_surrounding_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ENEMY), self.player)
 
         if len(targets) > 0:
             target = self.player.board.at(self.player.random.choice(targets))
-            target.heal(5)
+            target.heal(self.ability_strength)
             target.vitalize()
 
 class U007Test(CardTestCase):

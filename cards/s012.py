@@ -7,6 +7,7 @@ from test import CardTestCase
 class S012(Spell): # Summon Militia
     def __init__(self):
         super().__init__(Faction.NEUTRAL, 1)
+        self.ability_strength = 5
 
     def activate_ability(self, position: Point | None = None):
         tiles = []
@@ -17,7 +18,7 @@ class S012(Spell): # Summon Militia
                     tiles.append(Point(x, y))
 
         if len(tiles) > 0:
-            self.player.board.spawn_token_unit(self.player, self.player.random.choice(tiles), 5, [UnitType.KNIGHT])
+            self.player.board.spawn_token_unit(self.player, self.player.random.choice(tiles), self.ability_strength, [UnitType.KNIGHT])
 
 class S012Test(CardTestCase):
     def test_ability(self):
@@ -34,3 +35,12 @@ class S012Test(CardTestCase):
 
         target = self.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY, [UnitType.KNIGHT]))[0]
         self.assertTrue(self.board.at(target).position.y >= self.local.front_line)
+
+        self.board.clear()
+        self.board.spawn_token_structure(self.remote, Point(0, 4), 5)
+        self.board.spawn_token_unit(self.remote, Point(1, 4), 5)
+        self.board.spawn_token_unit(self.remote, Point(2, 4), 5)
+        self.board.spawn_token_structure(self.remote, Point(3, 4), 5)
+
+        target = self.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY, [UnitType.KNIGHT]))
+        self.assertEqual(target, [])

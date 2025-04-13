@@ -7,6 +7,8 @@ from test import CardTestCase
 class B305(Structure): # Temple of Space
     def __init__(self):
         super().__init__(Faction.IRONCLAD, 3, 8, [TriggerType.ON_PLAY])
+        self.ability_amount = 8
+        self.ability_mana = 2
         self.original_cost = self.cost
 
     def activate_ability(self, position: Point | None = None):
@@ -15,7 +17,7 @@ class B305(Structure): # Temple of Space
         if self.position in targets:
             targets.remove(self.position)
 
-        for target in targets:
+        for target in targets[:self.ability_amount]:
             if self.player.board.at(target).card_id == self.card_id:
                 for tile in self.player.board.get_surrounding_tiles(target, Target(Target.Kind.UNIT, Target.Side.ANY)):
                     to = Point(tile.x - target.x  + self.position.x, tile.y - target.y + self.position.y)
@@ -31,7 +33,7 @@ class B305(Structure): # Temple of Space
         if not self.is_single_use:
             self.player.deck.pop()
 
-        self.cost = 2
+        self.cost = self.ability_mana
         self.weight = 1
         self.player.hand.append(self)
 
@@ -56,12 +58,12 @@ class B305Test(CardTestCase):
         self.local.play(3, Point(1, 3))
 
         self.assertEqual(self.local.hand[3].card_id, "b305")
-        self.assertEqual(self.local.hand[3].cost, 2)
+        self.assertEqual(self.local.hand[3].cost, card.ability_mana)
         self.assertEqual(len(self.local.deck), 8)
 
         self.local.play(3, Point(2, 1))
 
-        self.assertEqual(self.local.deck[-1].cost, 3)
+        self.assertEqual(self.local.deck[-1].cost, B305().cost)
         self.assertEqual(self.board.at(Point(1, 0)).strength, 2)
         self.assertEqual(self.board.at(Point(2, 0)).strength, 1)
         self.assertEqual(self.board.at(Point(3, 1)).strength, 6)

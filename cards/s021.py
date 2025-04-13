@@ -7,6 +7,7 @@ from test import CardTestCase
 class S021(Spell): # Catnip's Charm
     def __init__(self):
         super().__init__(Faction.NEUTRAL, 2, Target(Target.Kind.UNIT, Target.Side.ANY, exclude_status_effects=[StatusEffect.CONFUSED]))
+        self.ability_strength = 5
 
     def activate_ability(self, position: Point | None = None):
         self.player.board.at(position).confuse()
@@ -16,7 +17,7 @@ class S021(Spell): # Catnip's Charm
         if len(targets) > 0:
             min_strength = min([self.player.board.at(target).strength for target in targets])
             weakests = [target for target in targets if self.player.board.at(target).strength == min_strength]
-            self.player.board.at(self.player.random.choice(weakests)).heal(5)
+            self.player.board.at(self.player.random.choice(weakests)).heal(self.ability_strength)
 
 class S021Test(CardTestCase):
     def test_ability(self):
@@ -28,7 +29,8 @@ class S021Test(CardTestCase):
         card.play(Point(0, 4))
 
         self.assertTrue(self.board.at(Point(0, 4)).is_confused)
-        self.assertTrue(self.board.at(Point(0, 4)).strength == 6 or self.board.at(Point(1, 4)).strength == 6)
+        self.assertTrue(self.board.at(Point(0, 4)).strength == 1 + card.ability_strength or
+            self.board.at(Point(1, 4)).strength == 1 + card.ability_strength)
         self.assertEqual(self.board.at(Point(1, 3)).strength, 1)
 
         self.board.clear()
@@ -39,7 +41,7 @@ class S021Test(CardTestCase):
         self.board.spawn_token_unit(self.remote, Point(2, 2), 3, [UnitType.FELINE])
         card.play(Point(3, 1))
 
-        self.assertEqual(self.board.at(Point(2, 4)).strength, 8)
+        self.assertEqual(self.board.at(Point(2, 4)).strength, 3 + card.ability_strength)
         self.assertTrue(self.board.at(Point(3, 1)).is_confused)
         self.assertEqual(self.board.at(Point(3, 1)).strength, 1)
 

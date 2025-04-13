@@ -2,22 +2,31 @@ from enums import Faction, UnitType, TriggerType
 from point import Point
 from spell import Spell
 from unit import Unit
-from target import Target
 from test import CardTestCase
+from typing import List
 from .s003 import S003
 from .s007 import S007
+from .s012 import S012
+from .s021 import S021
 
 class U017(Unit): # Archdruid Earyn
     def __init__(self):
-        super().__init__(Faction.NEUTRAL, [UnitType.HERO], 7, 12, 0, TriggerType.ON_PLAY)
+        super().__init__(Faction.NEUTRAL, [UnitType.HERO], 6, 11, 0, TriggerType.ON_PLAY)
 
     def activate_ability(self, position: Point | None = None):
-        cards = [card for card in self.player.hand if isinstance(card, Spell) and card.cost <= self.cost]
+        cards = [card for card in self.player.hand if isinstance(card, Spell) and card.cost <= 8]
 
         if len(cards) > 0:
             self.player.random.shuffle(cards)
+            remaining = 8
+            targets: List[Spell] = []
 
-            for card in cards[:2]:
+            for card in cards:
+                if card.cost <= remaining:
+                    targets.append(card)
+                    remaining -= card.cost
+
+            for card in targets:
                 position = None if card.required_targets is None else self.player.random.choice(self.player.board.get_targets(card.required_targets))
                 self.player.play(self.player.hand.index(card), position)
 
@@ -43,4 +52,13 @@ class U017Test(CardTestCase):
         self.assertEqual(self.board.at(Point(0, 1)), None)
         self.assertEqual(self.board.at(Point(2, 1)), None)
         self.assertEqual(self.board.at(Point(0, 0)), None)
-        self.assertTrue(self.board.at(Point(1, 4)).strength == 19 or self.board.at(Point(3, 4)).strength == 12)
+        self.assertTrue(self.board.at(Point(1, 4)).strength == 18 or self.board.at(Point(3, 4)).strength == 12)
+
+        self.board.clear()
+        s012 = S012()
+        s012.player = self.local
+        s021 = S021()
+        s021.player = self.local
+        self.local.hand = self.local.hand[:1] + [s007, s012, s021]
+        card = U017()
+        card.player = self.local

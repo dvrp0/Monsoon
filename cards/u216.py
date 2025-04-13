@@ -5,10 +5,11 @@ from test import CardTestCase
 
 class U216(Unit): # Reckless Rushers
     def __init__(self):
-        super().__init__(Faction.SWARM, [UnitType.UNDEAD], 3, 5, 3, TriggerType.BEFORE_ATTACKING)
+        super().__init__(Faction.SWARM, [UnitType.UNDEAD], 4, 6, 3, TriggerType.BEFORE_ATTACKING)
+        self.ability_damage = 2
 
     def activate_ability(self, position: Point | None = None):
-        self.player.deal_damage(1)
+        self.player.deal_damage(self.ability_damage)
 
 class U216Test(CardTestCase):
     def test_ability(self):
@@ -16,8 +17,8 @@ class U216Test(CardTestCase):
         card.player = self.local
         card.play(Point(0, 2))
 
-        self.assertEqual(self.local.strength, 19)
-        self.assertEqual(self.remote.strength, 15)
+        self.assertEqual(self.local.strength, 20 - card.ability_damage)
+        self.assertEqual(self.remote.strength, 20 - U216().strength)
 
         self.board.spawn_token_structure(self.remote, Point(0, 0), 1)
         self.board.spawn_token_unit(self.remote, Point(0, 1), 1)
@@ -25,5 +26,5 @@ class U216Test(CardTestCase):
         card.player = self.local
         card.play(Point(0, 2))
 
-        self.assertEqual(self.local.strength, 16)
-        self.assertEqual(self.remote.strength, 12)
+        self.assertEqual(self.local.strength, 20 - card.ability_damage * 4)
+        self.assertEqual(self.remote.strength, 20 - U216().strength * 2 + 2)

@@ -7,26 +7,26 @@ from test import CardTestCase
 class B005(Structure): # Temple of Time
     def __init__(self):
         super().__init__(Faction.SHADOWFEN, 3, 7)
-        self.targets = 3
-        self.remembered = []
+        self.ability_targets = 3
+        self.ability_remembered = []
 
     def activate_ability(self, position: Point | None = None):
         tiles = self.player.board.get_surrounding_tiles(self.position, Target(Target.Kind.ANY, Target.Side.FRIENDLY))
 
-        if self.remembered == []:
-            self.remembered = [self.player.board.at(tile).copy() for tile in tiles]
+        if self.ability_remembered == []:
+            self.ability_remembered = [self.player.board.at(tile).copy() for tile in tiles]
         else:
             count = 0
 
-            for entity in self.remembered:
+            for entity in self.ability_remembered:
                 if self.player.board.at(entity.position) is None or self.player.board.at(entity.position) == entity:
                     self.player.board.set(entity.position, entity)
                     count += 1
 
-                    if count >= self.targets:
+                    if count >= self.ability_targets:
                         break
 
-            self.remembered = []
+            self.ability_remembered = []
 
 class B005Test(CardTestCase):
     def test_ability(self):

@@ -6,23 +6,24 @@ from test import CardTestCase
 
 class S104(Spell): # Icicle Burst
     def __init__(self):
-        super().__init__(Faction.WINTER, 1, Target(Target.Kind.UNIT, Target.Side.ENEMY))
+        super().__init__(Faction.WINTER, 2, Target(Target.Kind.UNIT, Target.Side.ENEMY))
+        self.ability_damage = 12
 
     def activate_ability(self, position: Point | None = None):
         target = self.player.board.at(position)
 
         if target.is_frozen:
-            target.deal_damage(12)
+            target.deal_damage(self.ability_damage)
         else:
             target.freeze()
 
 class S104Test(CardTestCase):
     def test_ability(self):
-        self.board.spawn_token_unit(self.remote, Point(0, 4), 5)
-        self.board.spawn_token_unit(self.remote, Point(1, 4), 5)
-        self.board.at(Point(1, 4)).freeze()
         card = S104()
         card.player = self.local
+        self.board.spawn_token_unit(self.remote, Point(0, 4), 5)
+        self.board.spawn_token_unit(self.remote, Point(1, 4), card.ability_damage - 1)
+        self.board.at(Point(1, 4)).freeze()
         card.play(Point(0, 4))
         card.play(Point(1, 4))
 

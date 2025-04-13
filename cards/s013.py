@@ -7,6 +7,7 @@ from test import CardTestCase
 class S013(Spell): # Hunter's Vengeance
     def __init__(self):
         super().__init__(Faction.NEUTRAL, 3)
+        self.ability_damage = 6
 
     def activate_ability(self, position: Point | None = None):
         targets = []
@@ -19,20 +20,20 @@ class S013(Spell): # Hunter's Vengeance
                 targets.append(self.player.random.choice(units))
 
         for target in targets:
-            self.player.board.at(target).deal_damage(6)
+            self.player.board.at(target).deal_damage(self.ability_damage)
 
 class S013Test(CardTestCase):
     def test_ability(self):
-        self.board.spawn_token_unit(self.local, Point(0, 4), 7, [UnitType.SATYR, UnitType.HERO])
-        self.board.spawn_token_unit(self.local, Point(1, 4), 7, [UnitType.SATYR, UnitType.HERO])
-        self.board.spawn_token_unit(self.remote, Point(2, 4), 7, [UnitType.FLAKE])
-        self.board.spawn_token_unit(self.remote, Point(3, 4), 7, [UnitType.FLAKE])
-        self.board.spawn_token_unit(self.remote, Point(0, 3), 6, [UnitType.ANCIENT])
-        self.board.spawn_token_unit(self.local, Point(1, 3), 6, [UnitType.CONSUTRUCT])
-        self.board.spawn_token_unit(self.remote, Point(2, 3), 6, [UnitType.DRAGON])
-        self.board.spawn_token_unit(self.local, Point(3, 3), 6, [UnitType.ELDER])
         card = S013()
         card.player = self.local
+        self.board.spawn_token_unit(self.local, Point(0, 4), card.ability_damage + 1, [UnitType.SATYR, UnitType.HERO])
+        self.board.spawn_token_unit(self.local, Point(1, 4), card.ability_damage + 1, [UnitType.SATYR, UnitType.HERO])
+        self.board.spawn_token_unit(self.remote, Point(2, 4), card.ability_damage + 1, [UnitType.FLAKE])
+        self.board.spawn_token_unit(self.remote, Point(3, 4), card.ability_damage + 1, [UnitType.FLAKE])
+        self.board.spawn_token_unit(self.remote, Point(0, 3), card.ability_damage, [UnitType.ANCIENT])
+        self.board.spawn_token_unit(self.local, Point(1, 3), card.ability_damage, [UnitType.CONSUTRUCT])
+        self.board.spawn_token_unit(self.remote, Point(2, 3), card.ability_damage, [UnitType.DRAGON])
+        self.board.spawn_token_unit(self.local, Point(3, 3), card.ability_damage, [UnitType.ELDER])
         card.play()
 
         self.assertEqual(self.board.at(Point(0, 4)).strength, 1)
@@ -44,8 +45,8 @@ class S013Test(CardTestCase):
         self.assertEqual(self.board.at(Point(3, 3)), None)
 
         self.board.clear()
-        self.board.spawn_token_unit(self.local, Point(0, 2), 6, [UnitType.ANCIENT])
-        self.board.spawn_token_unit(self.remote, Point(3, 2), 6, [UnitType.ELDER])
+        self.board.spawn_token_unit(self.local, Point(0, 2), card.ability_damage, [UnitType.ANCIENT])
+        self.board.spawn_token_unit(self.remote, Point(3, 2), card.ability_damage, [UnitType.ELDER])
         card.play()
 
         self.assertEqual(self.board.at(Point(0, 2)), None)

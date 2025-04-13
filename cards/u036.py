@@ -6,10 +6,11 @@ from test import CardTestCase
 class U036(Unit): # Northsea Dog
     def __init__(self):
         super().__init__(Faction.NEUTRAL, [UnitType.PIRATE], 2, 1, 0, TriggerType.ON_PLAY)
+        self.ability_strength = 12
 
     def activate_ability(self, position: Point | None = None):
         if len(self.player.hand) == 0:
-            self.player.board.at(self.position).heal(12)
+            self.player.board.at(self.position).heal(self.ability_strength)
 
 class U036Test(CardTestCase):
     def test_ability(self):
@@ -27,4 +28,4 @@ class U036Test(CardTestCase):
         self.local.hand.append(card)
         self.local.play(0, Point(0, 4))
 
-        self.assertEqual(self.board.at(Point(0, 4)).strength, 13)
+        self.assertEqual(self.board.at(Point(0, 4)).strength, U036().strength + card.ability_strength)

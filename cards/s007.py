@@ -7,10 +7,11 @@ from test import CardTestCase
 class S007(Spell): # Potion of Growth
     def __init__(self):
         super().__init__(Faction.NEUTRAL, 3, Target(Target.Kind.UNIT, Target.Side.FRIENDLY))
+        self.ability_strength = 7
 
     def activate_ability(self, position: Point | None = None):
         target = self.player.board.at(position)
-        target.heal(7)
+        target.heal(self.ability_strength)
         target.vitalize()
 
 class S007Test(CardTestCase):
@@ -20,7 +21,7 @@ class S007Test(CardTestCase):
         card.player = self.local
         card.play(Point(0, 4))
 
-        self.assertEqual(self.board.at(Point(0, 4)).strength, 14)
+        self.assertEqual(self.board.at(Point(0, 4)).strength, 7 + card.ability_strength)
 
         self.board.clear()
         self.board.spawn_token_unit(self.remote, Point(0, 4), 7)

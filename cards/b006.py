@@ -7,13 +7,15 @@ from test import CardTestCase
 class B006(Structure): # Temple of Life
     def __init__(self):
         super().__init__(Faction.WINTER, 3, 6)
+        self.ability_targets = 3
+        self.ability_strength = 1
 
     def activate_ability(self, position: Point | None = None):
         targets = [target for target in self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY))
                    if not self.player.board.at(target).is_vitalized]
         self.player.random.shuffle(targets)
 
-        for target in targets[:3]:
+        for target in targets[:self.ability_targets]:
             self.player.board.at(target).vitalize()
 
         tiles = []
@@ -28,7 +30,7 @@ class B006(Structure): # Temple of Life
 
         if len(tiles) > 0:
             copy = self.copy()
-            copy.strength = 1
+            copy.strength = self.ability_strength
             copy.play(self.player.random.choice(tiles))
 
 class B006Test(CardTestCase):
@@ -43,7 +45,7 @@ class B006Test(CardTestCase):
         card.activate_ability()
 
         self.assertEqual(self.board.at(Point(0, 3)).card_id, "b006")
-        self.assertEqual(self.board.at(Point(0, 3)).strength, 1)
+        self.assertEqual(self.board.at(Point(0, 3)).strength, card.ability_strength)
         self.assertTrue(self.board.at(Point(3, 4)).is_vitalized)
         self.assertTrue(self.board.at(Point(3, 3)).is_vitalized)
         self.assertTrue(self.board.at(Point(3, 2)).is_vitalized)
@@ -56,7 +58,7 @@ class B006Test(CardTestCase):
         card.activate_ability()
 
         self.assertEqual(self.board.at(Point(0, 4)).card_id, "b006")
-        self.assertEqual(self.board.at(Point(0, 4)).strength, 1)
+        self.assertEqual(self.board.at(Point(0, 4)).strength, card.ability_strength)
 
         self.board.clear()
         self.local.front_line = 2

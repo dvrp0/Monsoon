@@ -6,7 +6,7 @@ from test import CardTestCase
 
 class U314(Unit): # Sound Drivers
     def __init__(self):
-        super().__init__(Faction.IRONCLAD, [UnitType.RODENT], 3, 7, 0, TriggerType.ON_PLAY)
+        super().__init__(Faction.IRONCLAD, [UnitType.RODENT], 3, 6, 0, TriggerType.ON_PLAY)
 
     def activate_ability(self, position: Point | None = None):
         targets = self.player.board.get_front_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.FRIENDLY))
