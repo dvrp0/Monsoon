@@ -2,6 +2,7 @@ import numpy as np
 from enums import Faction, UnitType
 from card import Card
 from collections.abc import Callable
+from colorama import Back, Fore, Style
 from unit import Unit
 from structure import Structure
 from target import Target
@@ -28,11 +29,14 @@ class Board:
         rows = []
 
         for y in range(5):
-            row = "  ".join(str(self.board[y][x]) if self.board[y][x] is not None else f"({x}, {y}) {'-' * 14}" for x in range(4))
-            rows.append(f"{'▶' if self.local.front_line == y else ' '} {row} {'◁' if self.remote.front_line == y else ' '}")
+            row = "  ".join(str(self.board[y][x]) if self.board[y][x] is not None else
+                f"{Fore.LIGHTBLACK_EX}({x}, {y}) {' ' * 14}{Style.RESET_ALL}" for x in range(4))
+            local_front = f"{Fore.BLUE}▶{Style.RESET_ALL}" if self.local.front_line == y else " "
+            remote_front = f"{Fore.RED}◁{Style.RESET_ALL}" if self.remote.front_line == y else " "
+            rows.append(f"{local_front} {row} {remote_front}")
 
-        remote = [f"{' ' * 50} {self.remote.order}: {self.remote.strength}"]
-        local = [f"{' ' * 50} {self.local.order}: {self.local.strength}"]
+        remote = [f"{' ' * 47}{Back.RED} {self.remote.order}: {self.remote.strength} {Style.RESET_ALL}"]
+        local = [f"{' ' * 47}{Back.BLUE} {self.local.order}: {self.local.strength} {Style.RESET_ALL}"]
         history = [", ".join(f"[{'local' if card.player == self.local else 'remote'}: {card.card_id}]" for card in self.history[-4:])]
 
         return "\n".join(remote + rows + local + history)

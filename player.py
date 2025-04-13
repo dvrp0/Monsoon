@@ -6,6 +6,7 @@ from structure import Structure
 from point import Point
 from board import Board
 from typing import List
+from utils import get_faction_color
 from colorama import Back, Fore, Style
 
 class Player:
@@ -84,25 +85,17 @@ class Player:
         self.strength += amount
 
     def print_hand(self):
-        lines = [[] for _ in self.hand]
+        lines = [[] for _ in range(len(self.hand) + 1)]
+
+        # discard availability)
+        back, fore = get_faction_color(self.faction)
+        available = "O" if self.replacable else "x"
+
+        for i in range(5):
+            lines[0].append(f"{back} {available if i == 0 else ' '} {Style.RESET_ALL}")
 
         for i, card in enumerate(self.hand):
-            match card.faction:
-                case Faction.NEUTRAL:
-                    back = Back.WHITE
-                    fore = Fore.BLACK
-                case Faction.WINTER:
-                    back = Back.BLUE
-                    fore = Fore.WHITE
-                case Faction.SWARM:
-                    back = Back.YELLOW
-                    fore = Fore.BLACK
-                case Faction.IRONCLAD:
-                    back = Back.RED
-                    fore = Fore.WHITE
-                case Faction.SHADOWFEN:
-                    back = Back.GREEN
-                    fore = Fore.BLACK
+            back, fore = get_faction_color(card.faction)
 
             if isinstance(card, Structure) or isinstance(card, Unit):
                 strength = f"{Back.LIGHTRED_EX}{Fore.BLACK} {card.strength} {back}"
@@ -114,11 +107,11 @@ class Player:
             else:
                 movement = '   '
 
-            lines[i].append(f"{back}{fore} {Back.CYAN}{Fore.BLACK} ♦{card.cost} {back} {Style.RESET_ALL}")
-            lines[i].append(f"{back}{fore}      {Style.RESET_ALL}")
-            lines[i].append(f"{back}{fore} {card.card_id} {Style.RESET_ALL}")
-            lines[i].append(f"{back}{fore}      {Style.RESET_ALL}")
-            lines[i].append(f"{back}{fore}{strength}{movement}{Style.RESET_ALL}")
+            lines[i + 1].append(f"{back}{fore} {Back.CYAN}{Fore.BLACK} ♦{card.cost} {back} {Style.RESET_ALL}")
+            lines[i + 1].append(f"{back}{fore}      {Style.RESET_ALL}")
+            lines[i + 1].append(f"{back}{fore} {card.card_id} {Style.RESET_ALL}")
+            lines[i + 1].append(f"{back}{fore}      {Style.RESET_ALL}")
+            lines[i + 1].append(f"{back}{fore}{strength}{movement}{Style.RESET_ALL}")
 
         for i in range(len(lines[i])):
             for line in lines:

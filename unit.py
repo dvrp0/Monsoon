@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction, UnitType, TriggerType, StatusEffect
 from typing import List
 from point import Point
-from colorama import Back, Style
+from colorama import Back, Fore, Style
 
 class Unit(Card):
     def __init__(self, faction: Faction, unit_types: List[UnitType], cost: int, strength: int, movement: int, trigger: TriggerType = None, fixedly_forward=False):
@@ -21,6 +21,7 @@ class Unit(Card):
         return isinstance(other, Unit) and self.card_id == other.card_id and self.player == other.player and self.position == other.position
 
     def __repr__(self):
+        fore = Fore.BLUE if self.player == self.player.board.local else Fore.RED
         color = Back.BLUE if self.player == self.player.board.local else Back.RED
         strength = f"♥{min(99, self.strength)}{' ' if self.strength < 10 else ''}"
         is_frozen = f"{Back.LIGHTBLUE_EX} {color}" if self.is_frozen else ' '
@@ -29,7 +30,8 @@ class Unit(Card):
         is_confused = f"{Back.YELLOW} {color}" if self.is_confused else ' '
         is_disabled = f"{Back.MAGENTA} {color}" if self.is_disabled else ' '
 
-        return f"{self.position} {color}{self.card_id} {strength} {is_frozen}{is_poisoned}{is_vitalized}{is_confused}{is_disabled}{Style.RESET_ALL}"
+        return f"{fore}{self.position}{Style.RESET_ALL} " \
+            f"{color}{self.card_id} {strength} {is_frozen}{is_poisoned}{is_vitalized}{is_confused}{is_disabled}{Style.RESET_ALL}"
 
     @property
     def is_frozen(self):
