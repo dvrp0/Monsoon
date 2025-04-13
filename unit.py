@@ -193,6 +193,9 @@ class Unit(Card):
 
         self.player.board.calculate_front_line(self.player.board.remote)
 
+    def reduce(self, amount: int):
+        self.strength = max(1, self.strength - amount)
+
     def heal(self, amount: int):
         self.strength += amount
 
