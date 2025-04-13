@@ -1,0 +1,27 @@
+{
+    "New Card": {
+        "scope": "python",
+        "prefix": "newcard",
+        "body": [
+            "from enums import Faction, UnitType, TriggerType",
+            "from unit import Unit",
+            "from point import Point",
+            "from target import Target",
+            "from test import CardTestCase",
+            "",
+            "class ${1:id}(Unit): # ${2:name}",
+            "    def __init__(self):",
+            "        super().__init__(Faction.${3:faction}, [UnitType.${4:unittype}], ${5:cost}, ${6:str}, ${7:mvnt}, TriggerType.${8:trigger})",
+            "",
+            "    def activate_ability(self, position: Point | None = None):",
+            "        pass",
+            "",
+            "class ${1:id}Test(CardTestCase):",
+            "    def test_ability(self):",
+            "        card = ${1:id}()",
+            "        card.player = self.local",
+            "        card.play(Point(0, 4))"
+        ],
+        "description": "An empty new card"
+    }
+}
