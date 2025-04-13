@@ -13,7 +13,7 @@ class CardTestCase(TestCase):
         random = np.random.RandomState(int(time.time()))
         local_deck, remote_deck = [], []
         unit_types = list(UnitType)
-        factions = list(Faction)
+        factions = list(Faction)[1:] # Excluding Neutral
 
         for _ in range(12):
             local_card = Unit(Faction.NEUTRAL, [UnitType(random.choice(unit_types))], random.randint(0, 9), random.randint(1, 10), random.randint(0, 3))
