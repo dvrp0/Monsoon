@@ -24,7 +24,7 @@ class Unit(Card):
         fore = Fore.BLUE if self.player == self.player.board.local else Fore.RED
         color = Back.BLUE if self.player == self.player.board.local else Back.RED
         strength = f"♥{min(99, self.strength)}{' ' if self.strength < 10 else ''}"
-        is_frozen = f"{Back.LIGHTBLUE_EX} {color}" if self.is_frozen else ' '
+        is_frozen = f"{Back.LIGHTCYAN_EX} {color}" if self.is_frozen else ' '
         is_poisoned = f"{Back.GREEN} {color}" if self.is_poisened else ' '
         is_vitalized = f"{Back.LIGHTGREEN_EX} {color}" if self.is_vitalized else ' '
         is_confused = f"{Back.YELLOW} {color}" if self.is_confused else ' '
