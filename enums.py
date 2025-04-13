@@ -64,6 +64,7 @@ class UnitType(IntEnum):
     ELDER = 12
     FELINE = 13
     ANCIENT = 14
+    PRIMAL = 15
 
 class TriggerType(IntEnum):
     # ON_DEATH, BEFORE_ATTACKING, AFTER_ATTACKING, AFTER_SURVIVING, BEFORE_MOVING abilities MUST set perspective when calling board.get_targets() or its variants
