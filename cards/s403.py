@@ -45,5 +45,5 @@ class S403Test(CardTestCase):
         self.assertEqual(self.board.at(Point(3, 1)).strength, 10 + card.ability_strength)
         self.assertEqual(self.board.at(Point(3, 1)).is_vitalized, True)
         self.assertEqual(self.board.at(Point(0, 4)).strength, 5)
-        self.assertEqual(self.board.at(Point(0, 4)).is_poisened, True)
+        self.assertEqual(self.board.at(Point(0, 4)).is_poisoned, True)
         self.assertEqual(self.board.at(Point(1, 4)).strength, 5)

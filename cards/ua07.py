@@ -27,4 +27,4 @@ class UA07Test(CardTestCase):
         card.play(Point(0, 4))
         card.activate_ability()
 
-        self.assertTrue(card.is_frozen or card.is_poisened or card.is_vitalized or card.is_confused or card.is_disabled)
+        self.assertTrue(card.is_frozen or card.is_poisoned or card.is_vitalized or card.is_confused or card.is_disabled)

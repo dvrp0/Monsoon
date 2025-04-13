@@ -256,6 +256,8 @@ class Board:
         self.set(position, token)
         self.calculate_front_line(player)
 
+        return self.at(position)
+
     def spawn_token_structure(self, player: "Player", position: Point, strength: int):
         token = Structure(Faction.NEUTRAL, 0, strength)
         token.player = player
@@ -264,6 +266,8 @@ class Board:
 
         self.set(position, token)
         self.calculate_front_line(player)
+
+        return self.at(position)
 
     def add_to_history(self, card: Card):
         self.history.append(card)

@@ -31,6 +31,6 @@ class U401Test(CardTestCase):
         self.assertEqual(self.board.at(Point(1, 0)).strength, 7)
         self.assertEqual(self.board.at(Point(0, 1)), None)
         self.assertEqual(self.board.at(Point(2, 1)).strength, 5)
-        self.assertTrue(self.board.at(Point(2, 1)).is_poisened)
+        self.assertTrue(self.board.at(Point(2, 1)).is_poisoned)
         self.assertEqual(self.board.at(Point(1, 1)), None)
         self.assertEqual(self.board.at(Point(1, 2)), None)

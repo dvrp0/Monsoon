@@ -25,7 +25,7 @@ class Unit(Card):
         color = Back.BLUE if self.player == self.player.board.local else Back.RED
         strength = f"♥{min(99, self.strength)}{' ' if self.strength < 10 else ''}"
         is_frozen = f"{Back.LIGHTCYAN_EX} {color}" if self.is_frozen else ' '
-        is_poisoned = f"{Back.GREEN} {color}" if self.is_poisened else ' '
+        is_poisoned = f"{Back.GREEN} {color}" if self.is_poisoned else ' '
         is_vitalized = f"{Back.LIGHTGREEN_EX} {color}" if self.is_vitalized else ' '
         is_confused = f"{Back.YELLOW} {color}" if self.is_confused else ' '
         is_disabled = f"{Back.MAGENTA} {color}" if self.is_disabled else ' '
@@ -38,7 +38,7 @@ class Unit(Card):
         return StatusEffect.FROZEN in self.status_effects
 
     @property
-    def is_poisened(self):
+    def is_poisoned(self):
         return StatusEffect.POISONED in self.status_effects
 
     @property
@@ -108,7 +108,7 @@ class Unit(Card):
 
     def move(self, is_turn_start=False):
         if is_turn_start:
-            if self.is_poisened:
+            if self.is_poisoned:
                 self.deal_damage(1)
             elif self.is_vitalized:
                 self.heal(1)
@@ -217,7 +217,7 @@ class Unit(Card):
         self.status_effects.remove(StatusEffect.POISONED)
 
     def vitalize(self):
-        if self.is_poisened:
+        if self.is_poisoned:
             self.unpoison()
 
         self.status_effects.append(StatusEffect.VITALIZED)
@@ -259,7 +259,9 @@ class Unit(Card):
     def push(self, position: Point): # push this unit from position
         points = []
 
-        if position.y > self.position.y: # down
+        if position.y < self.position.y: # up
+            points = [Point(self.position.x, y) for y in range(self.position.y + 1, 5)]
+        elif position.y > self.position.y: # down
             points = [Point(self.position.x, y) for y in range(self.position.y - 1, -1, -1)]
         elif position.x < self.position.x: # left
             points = [Point(x, self.position.y) for x in range(self.position.x + 1, 4)]
