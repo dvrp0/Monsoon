@@ -207,6 +207,28 @@ class Board:
 
         return [tile for tile in tiles if tile.is_valid]
 
+    def get_row_tiles(self, position: Point, target: Target = None, perspective: "Player | None" = None) -> List[Point]:
+        if perspective is None:
+            perspective = self.local
+        tiles = [Point(i, position.y) for i in range(0, 4)]
+
+        if target is not None:
+            targets = self.get_targets(target, perspective=perspective)
+            tiles = [target for target in targets if target in tiles]
+
+        return [tile for tile in tiles if tile.is_valid]
+
+    def get_column_tiles(self, position: Point, target: Target = None, perspective: "Player | None" = None) -> List[Point]:
+        if perspective is None:
+            perspective = self.local
+        tiles = [Point(position.x, i) for i in range(0, 5)]
+
+        if target is not None:
+            targets = self.get_targets(target, perspective=perspective)
+            tiles = [target for target in targets if target in tiles]
+
+        return [tile for tile in tiles if tile.is_valid]
+
     def get_bordering_tiles(self, position: Point, target: Target = None, perspective: "Player | None" = None) -> List[Point]:
         if perspective is None:
             perspective = self.local

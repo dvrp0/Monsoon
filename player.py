@@ -84,6 +84,9 @@ class Player:
     def heal(self, amount: int):
         self.strength += amount
 
+    def gain_mana(self, amount: int):
+        self.current_mana += amount
+
     def print_hand(self):
         lines = [[] for _ in range(len(self.hand) + 1)]
 

@@ -287,3 +287,5 @@ class Unit(Card):
 
             if self.player.front_line > destination.y:
                 self.player.front_line = max(1, destination.y)
+
+            self.set_path()
