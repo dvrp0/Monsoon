@@ -1,7 +1,7 @@
 {
-    "New Card": {
+    "New Unit": {
         "scope": "python",
-        "prefix": "newcard",
+        "prefix": "newunit",
         "body": [
             "from enums import Faction, UnitType, TriggerType",
             "from unit import Unit",
@@ -22,6 +22,56 @@
             "        card.player = self.local",
             "        card.play(Point(0, 4))"
         ],
-        "description": "An empty new card"
-    }
+        "description": "An empty unit card"
+    },
+    "New Structure": {
+        "scope": "python",
+        "prefix": "newstructure",
+        "body": [
+            "from enums import Faction",
+            "from point import Point",
+            "from target import Target",
+            "from structure import Structure",
+            "from test import CardTestCase",
+            "",
+            "class ${1:id}(Structure): # ${2:name}",
+            "    def __init__(self):",
+            "        super().__init__(Faction.${3:faction}, ${4:cost}, ${5:str})",
+            "",
+            "    def activate_ability(self, position: Point | None = None):",
+            "        pass",
+            "",
+            "class ${1:id}Test(CardTestCase):",
+            "    def test_ability(self):",
+            "        card = ${1:id}()",
+            "        card.player = self.local",
+            "        card.play(Point(0, 4))"
+        ],
+        "description": "An empty structure card"
+    },
+    "New Spell": {
+        "scope": "python",
+        "prefix": "newspell",
+        "body": [
+            "from enums import Faction",
+            "from point import Point",
+            "from target import Target",
+            "from spell import Spell",
+            "from test import CardTestCase",
+            "",
+            "class ${1:id}(Spell): # ${2:name}",
+            "    def __init__(self):",
+            "        super().__init__(Faction.${3:faction}, ${4:cost}, ${5:target})",
+            "",
+            "    def activate_ability(self, position: Point | None = None):",
+            "        pass",
+            "",
+            "class ${1:id}Test(CardTestCase):",
+            "    def test_ability(self):",
+            "        card = ${1:id}()",
+            "        card.player = self.local",
+            "        card.play()"
+        ],
+        "description": "An empty unit card"
+    },
 }
