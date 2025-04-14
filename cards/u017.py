@@ -62,3 +62,7 @@ class U017Test(CardTestCase):
         self.local.hand = self.local.hand[:1] + [s007, s012, s021]
         card = U017()
         card.player = self.local
+        card.play(Point(1, 4))
+
+        self.assertEqual(len(self.local.hand), 1)
+        self.assertFalse(any(x in self.local.hand for x in ["s007", "s012", "s021"]))
