@@ -1,5 +1,5 @@
 from card import Card
-from enums import Faction, UnitType, TriggerType, StatusEffect
+from enums import Faction, UnitType, Phase, TriggerType, StatusEffect
 from typing import List
 from point import Point
 from colorama import Back, Fore, Style
@@ -63,14 +63,15 @@ class Unit(Card):
 
         self.move()
 
-    def set_path(self, is_turn_start=False):
+    def set_path(self):
         destinations: List[Point] = []
         position = self.position
         status_effects_cached = list(self.status_effects)
+        is_turn_start = self.player.board.phase == Phase.TURN_START
 
         for _ in range(1 if is_turn_start else self.movement):
-            destination = Point(position.x, position.y - 1)
-            up = self.player.board.at(destination)
+            destination = Point(position.x, position.y + (-1 if self.player == self.player.board.local else 1))
+            next = self.player.board.at(destination)
 
             if StatusEffect.CONFUSED in status_effects_cached:
                 if position.x == 0:
@@ -82,7 +83,7 @@ class Unit(Card):
 
                 destination = Point(position.x + int(self.player.random.choice(choices)), position.y)
                 status_effects_cached.remove(StatusEffect.CONFUSED)
-            elif not is_turn_start and not self.fixedly_forward and destination.y > -1 and (up is None or up.player == self.player):
+            elif not is_turn_start and not self.fixedly_forward and destination.y > -1 and (next is None or next.player == self.player):
                 # 상대 기지 앞이 아닌 위치에서 앞에 아무것도 없거나 앞이 아군으로 막혀 있다면 옆을 살펴보기
                 left_position = Point(position.x - 1, position.y)
                 left = self.player.board.at(left_position) if position.x > 0 else None
@@ -106,8 +107,8 @@ class Unit(Card):
 
         self.path = destinations
 
-    def move(self, is_turn_start=False):
-        if is_turn_start:
+    def move(self):
+        if self.player.board.phase == Phase.TURN_START:
             if self.is_poisoned:
                 self.deal_damage(1)
             elif self.is_vitalized:
@@ -121,11 +122,11 @@ class Unit(Card):
         if self.trigger == TriggerType.BEFORE_MOVING and not self.is_disabled and len(self.path) > 0:
             self.activate_ability()
 
-        if self.is_frozen: # if frozen during ability, skip the rest
+        if self.is_frozen: # If frozen during ability, skip the rest
             return
 
         for destination in self.path:
-            if destination.y < 0: # 적 기지로
+            if destination.y < 0 or destination.y > 4: # To base
                 if self.trigger == TriggerType.BEFORE_ATTACKING and not self.is_disabled:
                     self.activate_ability(destination)
 
@@ -253,19 +254,43 @@ class Unit(Card):
 
         self.fixedly_forward = fixedly_forward_cache
 
+    def convert(self):
+        self.player = self.player.opponent
+        self.set_path()
+
     def pull(self, position: Point): # pull this unit to position
-        pass
+        points = []
+
+        if position.y < self.position.y: # from front
+            points = [Point(self.position.x, y) for y in range(self.position.y - 1, -1, -1)]
+        elif position.y > self.position.y: # from behind
+            points = [Point(self.position.x, y) for y in range(self.position.y + 1, 5)]
+        elif position.x < self.position.x: # from left
+            points = [Point(x, self.position.y) for x in range(self.position.x - 1, -1, -1)]
+        elif position.x > self.position.x: # from right
+            points = [Point(x, self.position.y) for x in range(self.position.x + 1, 4)]
+
+        for point in points:
+            if self.player.board.at(point) is not None:
+                return
+
+            self.player.board.set(self.position, None)
+            self.position = point
+            self.player.board.set(point, self)
+
+        if self.player.front_line > self.position.y:
+            self.player.front_line = max(1, self.position.y)
 
     def push(self, position: Point): # push this unit from position
         points = []
 
-        if position.y < self.position.y: # up
+        if position.y < self.position.y: # from front
             points = [Point(self.position.x, y) for y in range(self.position.y + 1, 5)]
-        elif position.y > self.position.y: # down
+        elif position.y > self.position.y: # from behind
             points = [Point(self.position.x, y) for y in range(self.position.y - 1, -1, -1)]
-        elif position.x < self.position.x: # left
+        elif position.x < self.position.x: # from left
             points = [Point(x, self.position.y) for x in range(self.position.x + 1, 4)]
-        elif position.x > self.position.x: # right
+        elif position.x > self.position.x: # from right
             points = [Point(x, self.position.y) for x in range(self.position.x - 1, -1, -1)]
 
         for point in points:
