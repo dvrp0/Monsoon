@@ -12,7 +12,7 @@ class S003(Spell): # Bladestorm
 
     def activate_ability(self, position: Point | None = None):
         for tile in self.player.board.get_targets(Target(Target.Kind.ANY, Target.Side.ENEMY)):
-            self.player.board.at(tile).deal_damage(self.player.random.randint(self.ability_min_damage, self.ability_max_damage))
+            self.player.board.at(tile).deal_damage(self.player.random.randint(self.ability_min_damage, self.ability_max_damage + 1))
 
 class S003Test(CardTestCase):
     def test_ability(self):

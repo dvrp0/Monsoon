@@ -8,7 +8,7 @@ class UA07(Unit): # Erratic Neglects
         super().__init__(Faction.NEUTRAL, [UnitType.ANCIENT], 1, 5, 0, TriggerType.BEFORE_MOVING)
 
     def activate_ability(self, position: Point | None = None):
-        match self.player.random.randint(0, 4):
+        match self.player.random.randint(0, 5):
             case 0:
                 self.freeze()
             case 1:

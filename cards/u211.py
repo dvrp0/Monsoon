@@ -15,7 +15,7 @@ class U211(Unit): # Doppelbocks
 
         if len(front) > 0 and self.player.board.at(front[-1]) is None:
             self.player.board.spawn_token_unit(self.player, front[-1],
-                self.player.random.randint(self.ability_min_strength, self.ability_max_strength), [UnitType.SATYR])
+                self.player.random.randint(self.ability_min_strength, self.ability_max_strength + 1), [UnitType.SATYR])
 
 class U211Test(CardTestCase):
     def test_ability(self):
