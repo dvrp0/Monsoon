@@ -29,5 +29,4 @@ class UE41Test(CardTestCase):
         card.player = self.local
         card.play(Point(2, 2))
 
-        print(self.board)
         self.assertEqual(card.position, Point(1, 2))
