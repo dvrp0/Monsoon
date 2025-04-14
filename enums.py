@@ -84,6 +84,11 @@ class StatusEffect(IntEnum):
     DISABLED = 3
     VITALIZED = 4
 
+class Phase(IntEnum):
+    TURN_START = 0
+    PLAY = 1
+    TURN_END = 2
+
 # Complete list of actions:
 # index = 0
 # for card in range(4):

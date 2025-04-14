@@ -1,5 +1,5 @@
 import numpy as np
-from enums import Faction, UnitType
+from enums import Faction, Phase, UnitType
 from card import Card
 from collections.abc import Callable
 from colorama import Back, Fore, Style
@@ -17,10 +17,12 @@ class Board:
         self.board: List[List[Unit | Structure | None]] = [[None for _ in range(4)] for _ in range(5)]
         self.local = local
         self.remote = remote
+        self.current_player = local
         self.history: List[Card] = []
         self.random = random
         self.triggers: List[Callable] = []
         self.is_resolving_trigger = False
+        self.phase = Phase.PLAY
 
         self.local.board = self
         self.remote.board = self
@@ -58,6 +60,9 @@ class Board:
             self.pop_trigger()
 
     def at(self, position: Point):
+        if not position.is_valid:
+            return None
+
         return self.board[position.y][position.x]
 
     def set(self, position: Point, entity: Unit | Structure | None):
@@ -67,7 +72,7 @@ class Board:
             entity.position = position
 
     def is_ally(self, entity: Unit | Structure):
-        return entity.player == self.local
+        return entity.player == self.current_player
 
     def clear(self):
         self.board = [[None for _ in range(4)] for _ in range(5)]
@@ -105,7 +110,8 @@ class Board:
                     self.board[y][x].position = Point(x, y)
 
     def to_next_turn(self):
-        self.local.fill_hand()
+        self.phase = Phase.TURN_END
+        self.current_player.fill_hand()
 
         for structure in [self.at(tile) for tile in self.get_targets(Target(Target.Kind.STRUCTURE, Target.Side.FRIENDLY))]:
             if structure.is_at_turn_end:
@@ -114,26 +120,28 @@ class Board:
         self.calculate_front_line(self.local)
         self.calculate_front_line(self.remote)
 
-        self.local.max_mana += 1
+        self.current_player.max_mana += 1
         self.local.current_mana = self.local.max_mana
         self.remote.current_mana = self.remote.max_mana
 
-        self.flip()
-
-        self.local.replacable = True
-        self.local.leftmost_movable = True
+        self.phase = Phase.TURN_START
+        self.current_player = self.current_player.opponent
+        self.current_player.replacable = True
+        self.current_player.leftmost_movable = True
 
         for structure in [self.at(tile) for tile in self.get_targets(Target(Target.Kind.STRUCTURE, Target.Side.FRIENDLY))]:
             if structure.is_at_turn_start:
                 structure.activate_ability(structure.position)
 
         for unit in [self.at(tile) for tile in self.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY))]:
-            unit.set_path(True)
-            unit.move(True)
+            unit.set_path()
+            unit.move()
+
+        self.phase = Phase.PLAY
 
     def get_targets(self, target: Target, exclude: Point = None, perspective: "Player | None" = None) -> List[Point]:
         if perspective is None:
-            perspective = self.local
+            perspective = self.current_player
         tiles = []
 
         for y in range(5):
@@ -172,8 +180,6 @@ class Board:
         return tiles
 
     def get_front_tiles(self, position: Point, target: Target = None, perspective: "Player | None" = None) -> List[Point]:
-        if perspective is None:
-            perspective = self.local
         tiles = [Point(position.x, i) for i in range(position.y)]
 
         if target is not None:
@@ -183,8 +189,6 @@ class Board:
         return tiles
 
     def get_behind_tiles(self, position: Point, target: Target = None, perspective: "Player | None" = None) -> List[Point]:
-        if perspective is None:
-            perspective = self.local
         tiles = [Point(position.x, i) for i in range(position.y + 1, 5)]
 
         if target is not None:
@@ -194,8 +198,6 @@ class Board:
         return tiles
 
     def get_side_tiles(self, position: Point, target: Target = None, perspective: "Player | None" = None) -> List[Point]:
-        if perspective is None:
-            perspective = self.local
         tiles = [
             Point(position.x - 1, position.y),
             Point(position.x + 1, position.y)
@@ -208,8 +210,6 @@ class Board:
         return [tile for tile in tiles if tile.is_valid]
 
     def get_row_tiles(self, position: Point, target: Target = None, perspective: "Player | None" = None) -> List[Point]:
-        if perspective is None:
-            perspective = self.local
         tiles = [Point(i, position.y) for i in range(0, 4)]
 
         if target is not None:
@@ -219,8 +219,6 @@ class Board:
         return [tile for tile in tiles if tile.is_valid]
 
     def get_column_tiles(self, position: Point, target: Target = None, perspective: "Player | None" = None) -> List[Point]:
-        if perspective is None:
-            perspective = self.local
         tiles = [Point(position.x, i) for i in range(0, 5)]
 
         if target is not None:
@@ -230,8 +228,6 @@ class Board:
         return [tile for tile in tiles if tile.is_valid]
 
     def get_bordering_tiles(self, position: Point, target: Target = None, perspective: "Player | None" = None) -> List[Point]:
-        if perspective is None:
-            perspective = self.local
         tiles = [
             Point(position.x - 1, position.y),
             Point(position.x + 1, position.y),
@@ -246,8 +242,6 @@ class Board:
         return [tile for tile in tiles if tile.is_valid]
 
     def get_surrounding_tiles(self, position: Point, target: Target = None, perspective: "Player | None" = None) -> List[Point]:
-        if perspective is None:
-            perspective = self.local
         tiles = [
             Point(position.x - 1, position.y),
             Point(position.x - 1, position.y - 1),

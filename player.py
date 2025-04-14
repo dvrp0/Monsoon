@@ -34,12 +34,12 @@ class Player:
 
         self.actions = []
 
-    def __eq__(self, other):
+    def __eq__(self, other: "Player"):
         return self.order == other.order
 
     @property
     def opponent(self):
-        return self.board.remote
+        return self.board.remote if self.order == PlayerOrder.FIRST else self.board.local
 
     def draw(self, amount=1):
         for _ in range(amount):
