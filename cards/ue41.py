@@ -1,7 +1,6 @@
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
-from target import Target
 from test import CardTestCase
 
 class UE41(Unit): # Faithless Prophets

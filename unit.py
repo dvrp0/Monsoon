@@ -16,6 +16,7 @@ class Unit(Card):
         self.trigger: TriggerType = trigger
         self.status_effects = []
         self.position: Point = None
+        self.damage_taken = 0
 
     def __eq__(self, other):
         return isinstance(other, Unit) and self.card_id == other.card_id and self.player == other.player and self.position == other.position
@@ -178,6 +179,7 @@ class Unit(Card):
                     self.deconfuse()
 
     def deal_damage(self, amount: int, pending_destroy=False):
+        self.damage_taken = amount
         self.strength -= amount
 
         if not pending_destroy and self.strength <= 0:
@@ -194,7 +196,7 @@ class Unit(Card):
             self.player.board.push_trigger(self.activate_ability)
             self.player.board.pop_trigger()
 
-        self.player.board.calculate_front_line(self.player.board.remote)
+        self.player.board.calculate_front_line(self.player.board.current_player.opponent)
 
     def reduce(self, amount: int):
         self.strength = max(1, self.strength - amount)
