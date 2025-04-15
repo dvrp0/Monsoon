@@ -10,13 +10,10 @@ class UD02(Unit): # Conflicted Drakes
         self.ability_damage = 4
 
     def activate_ability(self, position: Point | None = None):
-        targets = self.player.board.get_front_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ANY))
+        targets = self.player.board.get_front_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ANY, exclude_unit_types=[UnitType.DRAGON]))
 
         for target in targets:
-            temp = self.player.board.at(target)
-
-            if UnitType.DRAGON not in temp.unit_types:
-                temp.deal_damage(self.ability_damage)
+            self.player.board.at(target).deal_damage(self.ability_damage)
 
 class UD02Test(CardTestCase):
     def test_ability(self):
