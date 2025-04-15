@@ -14,7 +14,7 @@ class U406(Unit): # Dubious Hags
 
         if len(tiles) > 0:
             tile = self.player.random.choice(tiles)
-            self.player.board.spawn_token_unit(self.player, tile, self.ability_strength, [UnitType.RAVEN])
+            self.player.board.spawn_token_unit(self.player.opponent, tile, self.ability_strength, [UnitType.RAVEN])
 
 class U406Test(CardTestCase):
     def test_ability(self):
@@ -24,6 +24,8 @@ class U406Test(CardTestCase):
         card.play(Point(0, 4))
 
         self.assertIsNotNone(self.board.at(Point(1, 4)))
+        self.assertEqual(self.board.at(Point(1, 4)).player, self.remote)
+        self.assertEqual(self.board.at(Point(1, 4)).strength, card.ability_strength)
 
         self.board.clear()
         card = U406()
@@ -31,5 +33,7 @@ class U406Test(CardTestCase):
         card.play(Point(2, 4))
         card.destroy()
 
-        self.assertTrue(self.board.at(Point(2, 2)) is not None or self.board.at(Point(1, 3)) is not None or \
-            self.board.at(Point(3, 3)) is not None or self.board.at(Point(2, 4)) is not None)
+        u1 = self.board.get_targets(Target(Target.Kind.UNIT, Target.Side.ANY))[0]
+        self.assertTrue(u1 in [Point(2, 2), Point(1, 3), Point(3, 3), Point(2, 4)])
+        self.assertEqual(self.board.at(u1).player, self.remote)
+        self.assertEqual(self.board.at(u1).strength, card.ability_strength)
