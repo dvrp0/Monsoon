@@ -16,7 +16,7 @@ class U101(Unit): # Wisp Cloud
             return
 
         targets = self.player.board.get_surrounding_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ENEMY,
-            status_effects=[StatusEffect.FROZEN]))
+            status_effects=[StatusEffect.FROZEN]), self.player)
 
         if len(targets) > 0:
             for target in targets:

@@ -67,7 +67,8 @@ class UnitType(IntEnum):
     PRIMAL = 15
 
 class TriggerType(IntEnum):
-    # ON_DEATH, BEFORE_ATTACKING, AFTER_ATTACKING, AFTER_SURVIVING, BEFORE_MOVING abilities MUST set perspective when calling board.get_targets() or its variants
+    # ON_DEATH, BEFORE_ATTACKING, AFTER_ATTACKING, AFTER_SURVIVING, BEFORE_MOVING abilities
+    # MUST set perspective when calling board.get_targets() or its variants
     ON_PLAY = 0
     ON_DEATH = 1
     BEFORE_ATTACKING = 2
