@@ -20,6 +20,7 @@ class Unit(Card):
         self.damage_taken = 0
         self.damage_source = None
         self.resolving_play = False
+        self.move_id = 0
 
     def __eq__(self, other):
         return isinstance(other, Unit) and self.card_id == other.card_id and self.player == other.player and self.position == other.position
@@ -116,6 +117,9 @@ class Unit(Card):
         self.path = destinations
 
     def move(self):
+        self.move_id += 1
+        current_id = self.move_id
+
         if self.player.board.phase == Phase.TURN_START:
             if self.is_poisoned:
                 self.deal_damage(1)
@@ -174,6 +178,9 @@ class Unit(Card):
                         self.destroy()
 
                     is_attacked = True
+
+            if current_id != self.move_id:
+                return
 
             if self.player.board.at(destination) is None and self.strength > 0:
                 self.player.board.set(self.position, None)
@@ -316,6 +323,38 @@ class Unit(Card):
 
         if self.player.front_line > self.position.y:
             self.player.front_line = max(1, self.position.y)
+
+    def force_attack(self, destination: Point):
+        if (destination.x != self.position.x and destination.y != self.position.y) or \
+            self.player.board.at(destination) is None:
+            return
+
+        destinations: List[Point] = []
+        is_vertical = destination.x == self.position.x
+
+        if is_vertical:
+            fixed = self.position.x
+            start = self.position.y
+            end = destination.y
+        else:
+            fixed = self.position.y
+            start = self.position.x
+            end = destination.x
+
+        delta = 1 if end > start else -1
+        for i in range(start + delta, end + delta, delta):
+            point = Point(fixed, i) if is_vertical else Point(i, fixed)
+
+            # If there is another entity in the way, no attack at all
+            if i != end and self.player.board.at(point) is not None:
+                destinations = []
+                return
+
+            destinations.append(point)
+
+        if len(destinations) > 0:
+            self.path = destinations
+            self.move()
 
     def teleport(self, destination: Point):
         if self.player.board.at(destination) is None:
