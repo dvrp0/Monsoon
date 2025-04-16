@@ -16,7 +16,10 @@ class Unit(Card):
         self.trigger: TriggerType = trigger
         self.status_effects = []
         self.position: Point = None
+        self.path: List[Point] = []
         self.damage_taken = 0
+        self.damage_source = None
+        self.resolving_play = False
 
     def __eq__(self, other):
         return isinstance(other, Unit) and self.card_id == other.card_id and self.player == other.player and self.position == other.position
@@ -55,22 +58,23 @@ class Unit(Card):
         return StatusEffect.DISABLED in self.status_effects
 
     def play(self, position: Point):
+        self.resolving_play = True
         self.position = position
         self.player.board.set(self.position, self)
-        self.set_path()
+        self.set_path(True)
 
         if self.trigger == TriggerType.ON_PLAY:
             self.activate_ability()
 
         self.move()
+        self.resolving_play = False
 
-    def set_path(self):
+    def set_path(self, on_play=False):
         destinations: List[Point] = []
         position = self.position
         status_effects_cached = list(self.status_effects)
-        is_turn_start = self.player.board.phase == Phase.TURN_START
 
-        for _ in range(1 if is_turn_start else self.movement):
+        for _ in range(self.movement if on_play else 1):
             destination = Point(position.x, position.y + (-1 if self.player == self.player.board.local else 1))
             next = self.player.board.at(destination)
 
@@ -84,8 +88,11 @@ class Unit(Card):
 
                 destination = Point(position.x + int(self.player.random.choice(choices)), position.y)
                 status_effects_cached.remove(StatusEffect.CONFUSED)
-            elif not is_turn_start and not self.fixedly_forward and destination.y > -1 and (next is None or next.player == self.player):
-                # 상대 기지 앞이 아닌 위치에서 앞에 아무것도 없거나 앞이 아군으로 막혀 있다면 옆을 살펴보기
+            elif on_play and not self.fixedly_forward and \
+                destination.y != (-1 if self.player == self.player.board.local else 5) and \
+                (next is None or next.player == self.player):
+                # When not in front of opponent base, consider sides if
+                # there is nothing in front or blocked by ally
                 left_position = Point(position.x - 1, position.y)
                 left = self.player.board.at(left_position) if position.x > 0 else None
                 right_position = Point(position.x + 1, position.y)
@@ -120,7 +127,10 @@ class Unit(Card):
 
                 return
 
-        if self.trigger == TriggerType.BEFORE_MOVING and not self.is_disabled and len(self.path) > 0:
+        if len(self.path) == 0:
+            return
+
+        if self.trigger == TriggerType.BEFORE_MOVING and not self.is_disabled:
             self.activate_ability()
 
         if self.is_frozen: # If frozen during ability, skip the rest
@@ -131,9 +141,10 @@ class Unit(Card):
                 if self.trigger == TriggerType.BEFORE_ATTACKING and not self.is_disabled:
                     self.activate_ability(destination)
 
-                self.player.opponent.deal_damage(self.strength)
+                target = self.player.board.remote if destination.y < 0 else self.player.board.local
+                target.deal_damage(self.strength)
 
-                if self.player.opponent.strength > 0:
+                if target.strength > 0:
                     self.destroy()
 
                 return
@@ -141,7 +152,7 @@ class Unit(Card):
             target = self.player.board.at(destination)
             is_attacked = False
 
-            if target is not None and target.player == self.player and destination.y < self.position.y:
+            if target is not None and target.player == self.player and destination.x == self.position.x: # same column
                 return
 
             if target is not None and (self.is_confused or target.player != self.player):
@@ -244,7 +255,7 @@ class Unit(Card):
 
     def gain_speed(self, amount: int):
         self.movement += amount
-        self.set_path() # gaining speed is only possible on play
+        self.set_path(self.resolving_play)
         self.movement -= amount
 
     def command(self):
@@ -258,7 +269,7 @@ class Unit(Card):
 
     def convert(self):
         self.player = self.player.opponent
-        self.set_path()
+        self.set_path(self.resolving_play)
 
     def pull(self, position: Point): # pull this unit to position
         points = []
@@ -315,4 +326,4 @@ class Unit(Card):
             if self.player.front_line > destination.y:
                 self.player.front_line = max(1, destination.y)
 
-            self.set_path()
+            self.set_path(self.resolving_play)

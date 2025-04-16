@@ -18,7 +18,6 @@ class U071(Unit): # Angelic Tikas
 
             if len(front) > 0 and self.player.board.at(front[-1]) is None:
                 self.teleport(front[-1])
-                self.set_path()
 
 class U071Test(CardTestCase):
     def test_ability(self):
