@@ -11,7 +11,7 @@ class U101(Unit): # Wisp Cloud
 
     def activate_ability(self, position: Point | None = None):
         # When attacking base, structure, or unfrozen unit
-        if not position.is_valid or not isinstance(self.player.board.at(position), Unit) or \
+        if position.is_base or not isinstance(self.player.board.at(position), Unit) or \
             not self.player.board.at(position).is_frozen:
             return
 

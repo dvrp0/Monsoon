@@ -14,13 +14,8 @@ class U018(Unit): # Ubass the Hunter
         types = list(set([self.player.board.at(target).unit_types[0] for target in targets]))
 
         for _ in range(len(types)):
-            targets = self.player.board.get_targets(Target(Target.Kind.ANY, Target.Side.ENEMY)) + [Point(-1, -1)] # indicating enemy base
-            target = self.player.random.choice(targets)
-
-            if target == Point(-1, -1):
-                self.player.opponent.deal_damage(self.ability_damage)
-            else:
-                self.player.board.at(target).deal_damage(self.ability_damage)
+            targets = self.player.board.get_targets(Target(Target.Kind.ANY, Target.Side.ENEMY), include_base=True)
+            self.player.board.at(self.player.random.choice(targets)).deal_damage(self.ability_damage)
 
 class U018Test(CardTestCase):
     def test_ability(self):

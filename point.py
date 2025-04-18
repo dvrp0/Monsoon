@@ -15,3 +15,7 @@ class Point():
     @property
     def is_valid(self):
         return self.x >= 0 and self.x <= 3 and self.y >= 0 and self.y <= 4
+
+    @property
+    def is_base(self):
+        return self.x == -1 and (self.y == -1 or self.y == 5)

@@ -35,7 +35,7 @@ class Player:
         self.actions = []
 
     def __eq__(self, other: "Player"):
-        return self.order == other.order
+        return other is not None and self.order == other.order
 
     @property
     def opponent(self):

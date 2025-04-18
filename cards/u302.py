@@ -9,7 +9,7 @@ class U302(Unit): # Windmakers
         self.ability_damage = 7
 
     def activate_ability(self, position: Point | None = None):
-        if not position.is_valid or not isinstance(self.player.board.at(position), Unit): # 기지 또는 건물이라면 발동 안 함
+        if position.is_base or not isinstance(self.player.board.at(position), Unit): # 기지 또는 건물이라면 발동 안 함
             return
 
         target = self.player.board.at(position)

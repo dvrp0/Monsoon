@@ -11,14 +11,11 @@ class S302(Spell): # Needle Blast
         self.ability_damage = 4
 
     def activate_ability(self, position: Point | None = None):
-        targets = self.player.board.get_targets(Target(Target.Kind.ANY, Target.Side.ENEMY)) + [Point(-1, -1)] # indicating enemy base
+        targets = self.player.board.get_targets(Target(Target.Kind.ANY, Target.Side.ENEMY), include_base=True)
         self.player.random.shuffle(targets)
 
         for target in targets[:self.ability_targets]:
-            if target == Point(-1, -1):
-                self.player.opponent.deal_damage(self.ability_damage)
-            else:
-                self.player.board.at(target).deal_damage(self.ability_damage)
+            self.player.board.at(target).deal_damage(self.ability_damage)
 
 class S302Test(CardTestCase):
     def test_ability(self):
