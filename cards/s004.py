@@ -11,16 +11,14 @@ class S004(Spell): # Rain of Frogs
         self.ability_max_amount = 6
 
     def activate_ability(self, position: Point | None = None):
-        tiles = []
+        tiles = self.player.get_within_front_line()
+        empty = [tile for tile in tiles if self.player.board.at(tile) is None]
 
-        for y in range(self.player.front_line, 5):
-            for x in range(4):
-                if self.player.board.at(Point(x, y)) is None:
-                    tiles.append(Point(x, y))
-
-        if len(tiles) > 0:
+        if len(empty) > 0:
+            self.player.random.shuffle(empty)
             amount = self.player.random.randint(self.ability_min_amount, self.ability_max_amount + 1)
-            for tile in tiles[:amount]:
+
+            for tile in empty[:amount]:
                 self.player.board.spawn_token_unit(self.player, tile, 1, [UnitType.TOAD])
 
 class S004Test(CardTestCase):

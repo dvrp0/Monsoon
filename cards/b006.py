@@ -22,7 +22,7 @@ class B006(Structure): # Temple of Life
         front = self.player.board.get_front_tiles(self.position)
         behind = self.player.board.get_behind_tiles(self.position)
 
-        if len(front) > 0 and self.player.board.at(front[-1]) is None and front[-1].y >= self.player.front_line:
+        if len(front) > 0 and self.player.board.at(front[-1]) is None and self.player.is_within_front_line(front[-1]):
             tiles.append(front[-1])
 
         if len(behind) > 0 and self.player.board.at(behind[0]) is None:
@@ -70,3 +70,11 @@ class B006Test(CardTestCase):
         target = self.board.at(Point(0, 4)) if self.board.at(Point(0, 4)) is not None else self.board.at(Point(0, 2))
         self.assertEqual(target.card_id, "b006")
         self.assertEqual(target.strength, 1)
+
+        self.board.clear()
+        card = B006()
+        card.player = self.remote
+        card.play(Point(0, 1))
+        self.board.to_next_turn()
+
+        self.assertIsNotNone(self.board.at(Point(0, 0)))

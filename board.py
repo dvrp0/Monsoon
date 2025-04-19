@@ -194,10 +194,11 @@ class Board:
         return tiles
 
     def get_front_tiles(self, position: Point, target: Target = None, perspective: "Player | None" = None, include_base=False) -> List[Point]:
-        if perspective == self.remote:
-            return self.get_behind_tiles(position, target, perspective, include_base)[::-1]
+        if perspective is None:
+            perspective = self.current_player
 
-        tiles = [Point(position.x, i) for i in range(position.y)]
+        y_range = range(position.y) if perspective == self.local else range(4, position.y, -1)
+        tiles = [Point(position.x, i) for i in y_range]
 
         if target is not None:
             targets = self.get_targets(target, perspective=perspective, include_base=include_base)
@@ -206,10 +207,11 @@ class Board:
         return tiles
 
     def get_behind_tiles(self, position: Point, target: Target = None, perspective: "Player | None" = None, include_base=False) -> List[Point]:
-        if perspective == self.remote:
-            return self.get_front_tiles(position, target, perspective, include_base)[::-1]
+        if perspective is None:
+            perspective = self.current_player
 
-        tiles = [Point(position.x, i) for i in range(position.y + 1, 5)]
+        y_range = range(position.y + 1, 5) if perspective == self.local else range(position.y - 1, -1, -1)
+        tiles = [Point(position.x, i) for i in y_range]
 
         if target is not None:
             targets = self.get_targets(target, perspective=perspective, include_base=include_base)

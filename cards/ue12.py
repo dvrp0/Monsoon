@@ -29,3 +29,13 @@ class UE12Test(CardTestCase):
         self.assertIsNone(self.board.at(Point(0, 2)))
         self.assertIsNone(self.board.at(Point(0, 1)))
         self.assertIsNotNone(self.board.at(Point(0, 0)))
+
+        self.board.clear()
+        self.board.spawn_token_unit(self.local, Point(2, 3), 1)
+        self.board.spawn_token_unit(self.local, Point(2, 4), 99)
+        card = UE12()
+        card.player = self.remote
+        self.board.set(Point(2, 2), card)
+        self.board.to_next_turn()
+
+        self.assertIsNone(self.board.at(Point(2, 4)))

@@ -1,7 +1,6 @@
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
-from target import Target
 from test import CardTestCase
 
 class U211(Unit): # Doppelbocks
@@ -34,3 +33,11 @@ class U211Test(CardTestCase):
         card.play(Point(0, 4))
 
         self.assertEqual(self.board.at(Point(0, 3)).strength, 6)
+
+        self.board.clear()
+        self.board.to_next_turn()
+        card = U211()
+        card.player = self.remote
+        card.play(Point(0, 0))
+
+        self.assertIsNotNone(self.board.at(Point(0, 1)))

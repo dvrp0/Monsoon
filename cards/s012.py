@@ -10,15 +10,11 @@ class S012(Spell): # Summon Militia
         self.ability_strength = 5
 
     def activate_ability(self, position: Point | None = None):
-        tiles = []
+        tiles = self.player.get_within_front_line()
+        empty = [tile for tile in tiles if self.player.board.at(tile) is None]
 
-        for y in range(self.player.front_line, 5):
-            for x in range(4):
-                if self.player.board.at(Point(x, y)) is None:
-                    tiles.append(Point(x, y))
-
-        if len(tiles) > 0:
-            self.player.board.spawn_token_unit(self.player, self.player.random.choice(tiles), self.ability_strength, [UnitType.KNIGHT])
+        if len(empty) > 0:
+            self.player.board.spawn_token_unit(self.player, self.player.random.choice(empty), self.ability_strength, [UnitType.KNIGHT])
 
 class S012Test(CardTestCase):
     def test_ability(self):

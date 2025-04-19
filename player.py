@@ -87,6 +87,23 @@ class Player:
     def gain_mana(self, amount: int):
         self.current_mana += amount
 
+    def is_within_front_line(self, position: Point):
+        if self.order == PlayerOrder.FIRST:
+            return position.y >= self.front_line
+        else:
+            return position.y <= self.front_line
+
+    def get_within_front_line(self):
+        tiles = []
+        y_range = range(self.front_line, 5) if self.order == PlayerOrder.FIRST else range(self.front_line, -1, -1)
+        x_range = range(4) if self.order == PlayerOrder.FIRST else range(3, -1, -1)
+
+        for y in y_range:
+            for x in x_range:
+                tiles.append(Point(x, y))
+
+        return tiles
+
     def print_hand(self):
         lines = [[] for _ in range(len(self.hand) + 1)]
 
