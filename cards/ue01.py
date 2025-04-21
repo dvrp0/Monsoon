@@ -31,7 +31,7 @@ class UE01Test(CardTestCase):
 
         self.assertEqual(u1.strength + u2.strength + u3.strength + u4.strength + u5.strength + \
             u6.strength + s1.strength, 2)
-        
+
         self.board.clear()
         strength = UE01().strength - 1
         u1 = self.board.spawn_token_unit(self.remote, Point(3, 0), strength)

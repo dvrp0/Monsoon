@@ -10,8 +10,8 @@ class UE42(Unit): # Hairy Chesetnuts
 
     def activate_ability(self, position: Point | None = None):
         amount = min(self.ability_damage, self.damage_taken)
-        self.player.opponent.deal_damage(amount)
-        self.heal(amount)
+        dealt = self.player.opponent.deal_damage(amount)
+        self.heal(dealt)
 
 class UE42Test(CardTestCase):
     def test_ability(self):
