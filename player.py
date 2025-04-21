@@ -81,6 +81,8 @@ class Player:
     def deal_damage(self, amount: int):
         self.strength -= amount
 
+        return amount
+
     def heal(self, amount: int):
         self.strength += amount
 

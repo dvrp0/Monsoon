@@ -12,6 +12,8 @@ class Structure(Card):
         self.strength = strength
         self.triggers = triggers
         self.position: Point = None
+        self.damage_taken = 0
+        self.damage_source = None
 
     def __eq__(self, other):
         return isinstance(other, Structure) and self.card_id == other.card_id and self.player == other.player and self.position == other.position
@@ -43,10 +45,16 @@ class Structure(Card):
             self.activate_ability()
 
     def deal_damage(self, amount: int, pending_destroy=False):
+        if self.strength - amount < 0:
+            amount = self.strength
+
+        self.damage_taken = amount
         self.strength -= amount
 
         if not pending_destroy and self.strength <= 0:
             self.destroy()
+
+        return amount
 
     def destroy(self):
         self.player.board.set(self.position, None)

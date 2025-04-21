@@ -197,6 +197,9 @@ class Unit(Card):
                     self.deconfuse()
 
     def deal_damage(self, amount: int, pending_destroy=False):
+        if self.strength - amount < 0:
+            amount = self.strength
+
         self.damage_taken = amount
         self.strength -= amount
 
@@ -205,6 +208,8 @@ class Unit(Card):
         elif self.trigger == TriggerType.AFTER_SURVIVING and self.strength > 0:
             self.player.board.push_trigger(self.activate_ability)
             self.player.board.pop_trigger()
+
+        return amount
 
     def destroy(self):
         self.player.board.set(self.position, None)
