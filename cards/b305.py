@@ -25,7 +25,7 @@ class B305(Structure): # Temple of Space
                     if to.is_valid:
                         self.player.board.at(tile).teleport(to)
 
-                self.player.board.at(target).destroy()
+                self.player.board.at(target).destroy(source=self)
                 self.player.deck[-1].cost = self.original_cost
 
                 return

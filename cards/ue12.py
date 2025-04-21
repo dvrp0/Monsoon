@@ -12,7 +12,7 @@ class UE12(Unit): # Chilled Stonedames
         targets = self.player.board.get_front_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ENEMY), self.player)
 
         for target in targets:
-            self.player.board.at(target).destroy()
+            self.player.board.at(target).destroy(source=self)
 
 class UE12Test(CardTestCase):
     def test_ability(self):

@@ -15,14 +15,12 @@ class S203(Spell): # Dark Harvest
         friendlies = self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY))
 
         for friendly in friendlies:
-            tiles += self.player.board.get_surrounding_tiles(friendly, Target(Target.Kind.ANY, Target.Side.ENEMY))
+            tiles += self.player.board.get_surrounding_tiles(friendly, Target(Target.Kind.ANY, Target.Side.ENEMY), include_base=True)
 
-        tiles = sorted(list(set(tiles)), key=lambda tile: (tile.y, tile.x)) # sort for correct trigger order
+        tiles = list(set(tiles)) 
+
         for tile in tiles:
-            self.player.board.at(tile).deal_damage(self.ability_damage)
-
-        if 0 in [tile.y for tile in tiles]:
-            self.player.opponent.deal_damage(self.ability_damage)
+            self.player.board.at(tile).deal_damage(self.ability_damage, source=self)
 
 class S203Test(CardTestCase):
     def test_ability(self):
@@ -45,5 +43,3 @@ class S203Test(CardTestCase):
         self.assertEqual(self.board.at(Point(2, 1)), None)
         self.assertEqual(self.board.at(Point(1, 0)).strength, 4)
         self.assertEqual(self.remote.strength, 14)
-
-        # TODO: test for trigger order

@@ -14,7 +14,7 @@ class UE32(Unit): # Booming Professors
         targets = self.player.board.get_front_tiles(self.position, Target(Target.Kind.ANY, Target.Side.ENEMY), self.player)
 
         if len(targets) > 0:
-            self.player.board.at(targets[-1]).deal_damage(damage)
+            self.player.board.at(targets[-1]).deal_damage(damage, source=self)
         else:
             self.player.opponent.deal_damage(damage)
 

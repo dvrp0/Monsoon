@@ -20,7 +20,7 @@ class S013(Spell): # Hunter's Vengeance
                 targets.append(self.player.random.choice(units))
 
         for target in targets:
-            self.player.board.at(target).deal_damage(self.ability_damage)
+            self.player.board.at(target).deal_damage(self.ability_damage, source=self)
 
 class S013Test(CardTestCase):
     def test_ability(self):

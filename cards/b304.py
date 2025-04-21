@@ -9,7 +9,7 @@ class B304(Structure): # Unstable Build
         self.ability_strength = 3
 
     def activate_ability(self, position: Point | None = None):
-        self.deal_damage(self.ability_strength)
+        self.deal_damage(self.ability_strength, source=self)
 
 class B304Test(CardTestCase):
     def test_ability(self):

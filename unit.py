@@ -169,8 +169,8 @@ class Unit(Card):
                     target_on_death_pending = isinstance(target, Unit) and target.trigger == TriggerType.ON_DEATH and not target.is_disabled
                     local_on_death_pending = self.trigger == TriggerType.ON_DEATH and not self.is_disabled
 
-                    target.deal_damage(self.strength, target_on_death_pending)
-                    self.deal_damage(target_strength_cached, local_on_death_pending)
+                    target.deal_damage(self.strength, target_on_death_pending, self.card_id)
+                    self.deal_damage(target_strength_cached, local_on_death_pending, target.card_id)
 
                     if target.strength <= 0 and target_on_death_pending:
                         target.destroy() # defender triggers first
@@ -196,24 +196,27 @@ class Unit(Card):
                 if self.is_confused:
                     self.deconfuse()
 
-    def deal_damage(self, amount: int, pending_destroy=False):
+    def deal_damage(self, amount: int, pending_destroy=False, source: Card | str = None):
         if self.strength - amount < 0:
             amount = self.strength
 
         self.damage_taken = amount
+        self.damage_source = source
         self.strength -= amount
 
         if not pending_destroy and self.strength <= 0:
-            self.destroy()
+            self.destroy(source)
         elif self.trigger == TriggerType.AFTER_SURVIVING and self.strength > 0:
             self.player.board.push_trigger(self.activate_ability)
             self.player.board.pop_trigger()
 
         return amount
 
-    def destroy(self):
+    def destroy(self, source: Card | str = None):
         self.player.board.set(self.position, None)
         self.path = []
+        self.damage_taken = self.strength
+        self.damage_source = source
 
         if self.trigger == TriggerType.ON_DEATH:
             self.player.board.push_trigger(self.activate_ability)

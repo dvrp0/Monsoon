@@ -13,7 +13,7 @@ class U306(Unit): # Destuctobots
         targets = self.player.board.get_targets(Target(Target.Kind.ANY, Target.Side.FRIENDLY), self.position)
 
         if len(targets) > 0:
-            self.player.board.at(self.player.random.choice(targets)).deal_damage(self.ability_damage)
+            self.player.board.at(self.player.random.choice(targets)).deal_damage(self.ability_damage, source=self)
 
 class U306Test(CardTestCase):
     def test_ability(self):

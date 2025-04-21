@@ -13,7 +13,7 @@ class UE01(Unit): # Trekking Aldermen
             targets = self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.ENEMY), perspective=self.player)
 
             if len(targets) > 0:
-                self.player.board.at(self.player.random.choice(targets)).deal_damage(1)
+                self.player.board.at(self.player.random.choice(targets)).deal_damage(1, source=self)
 
 class UE01Test(CardTestCase):
     def test_ability(self):

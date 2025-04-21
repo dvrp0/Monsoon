@@ -21,6 +21,8 @@ class Player:
         self.replacable = True
         self.leftmost_movable = True
         self.random = random
+        self.damage_taken = 0
+        self.damage_source = None
 
         self.deck = deck
         self.random.shuffle(self.deck)
@@ -78,8 +80,10 @@ class Player:
         self.discard(target)
         self.draw()
 
-    def deal_damage(self, amount: int):
+    def deal_damage(self, amount: int, source: Card | None = None):
         self.strength -= amount
+        self.damage_taken = amount
+        self.damage_source = source
 
         return amount
 

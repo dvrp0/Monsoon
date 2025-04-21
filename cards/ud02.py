@@ -13,7 +13,7 @@ class UD02(Unit): # Conflicted Drakes
         targets = self.player.board.get_front_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ANY, exclude_unit_types=[UnitType.DRAGON]))
 
         for target in targets:
-            self.player.board.at(target).deal_damage(self.ability_damage)
+            self.player.board.at(target).deal_damage(self.ability_damage, source=self)
 
 class UD02Test(CardTestCase):
     def test_ability(self):

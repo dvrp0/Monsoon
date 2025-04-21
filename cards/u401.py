@@ -16,7 +16,7 @@ class U401(Unit): # Crimson Sentry
             unit = self.player.board.at(target)
 
             if unit:
-                unit.deal_damage(self.damage)
+                unit.deal_damage(self.damage, source=self)
                 unit.poison()
 
 class U401Test(CardTestCase):

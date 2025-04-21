@@ -15,7 +15,7 @@ class U076(Unit): # Divine Reptiles; DVRP🥰
 
         if len(targets) > 0:
             target = self.player.board.at(self.player.random.choice(targets))
-            target.deal_damage(self.ability_damage)
+            target.deal_damage(self.ability_damage, source=self)
 
             if target.strength <= 0:
                 self.player.board.spawn_token_unit(self.player, target.position, self.ability_strength, [UnitType.DRAGON])

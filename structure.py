@@ -44,19 +44,22 @@ class Structure(Card):
         if self.is_on_play:
             self.activate_ability()
 
-    def deal_damage(self, amount: int, pending_destroy=False):
+    def deal_damage(self, amount: int, pending_destroy=False, source: Card | str = None):
         if self.strength - amount < 0:
             amount = self.strength
 
         self.damage_taken = amount
+        self.damage_source = source
         self.strength -= amount
 
         if not pending_destroy and self.strength <= 0:
-            self.destroy()
+            self.destroy(source)
 
         return amount
 
-    def destroy(self):
+    def destroy(self, source: Card | str = None):
+        self.damage_taken = self.strength
+        self.damage_source = source
         self.player.board.set(self.position, None)
         self.player.board.calculate_front_line(self.player.board.current_player.opponent)
 

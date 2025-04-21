@@ -14,7 +14,7 @@ class B002(Structure): # Trueshot Post
 
         if len(targets) > 0:
             targets.sort(key=lambda t: (t.y, self.player.random.random()), reverse=True)
-            self.player.board.at(targets[0]).deal_damage(self.ability_damage)
+            self.player.board.at(targets[0]).deal_damage(self.ability_damage, source=self)
 
 class B002Test(CardTestCase):
     def test_ability(self):

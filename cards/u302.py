@@ -15,7 +15,7 @@ class U302(Unit): # Windmakers
         target = self.player.board.at(position)
 
         if target.strength > self.strength:
-            target.deal_damage(self.ability_damage)
+            target.deal_damage(self.ability_damage, source=self)
 
             if target.strength > 0:
                 target.push(self.position)

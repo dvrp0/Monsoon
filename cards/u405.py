@@ -13,7 +13,7 @@ class U405(Unit): # Witches of the Wild
         targets = self.player.board.get_bordering_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ANY))
 
         for target in targets:
-            dealt = self.player.board.at(target).deal_damage(self.ability_strength)
+            dealt = self.player.board.at(target).deal_damage(self.ability_strength, source=self)
             self.heal(dealt)
 
 class U405Test(CardTestCase):

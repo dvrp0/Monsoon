@@ -13,9 +13,9 @@ class B004(Structure): # Powder Tower
         targets = self.player.board.get_targets(Target(Target.Kind.ANY, Target.Side.ENEMY), include_base=True)
 
         for target in targets:
-            self.player.board.at(target).deal_damage(self.ability_damage)
+            self.player.board.at(target).deal_damage(self.ability_damage, source=self)
 
-        self.destroy()
+        self.destroy(source=self)
 
 class B004Test(CardTestCase):
     def test_ability(self):

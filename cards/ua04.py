@@ -22,7 +22,7 @@ class UA04(Unit): # Gray the Balancer
             targets = [target for target in remote_units if target.strength == strength]
 
         if len(targets) > 0:
-            self.player.random.choice(targets).destroy()
+            self.player.random.choice(targets).destroy(source=self)
 
 class UA04Test(CardTestCase):
     def test_ability(self):

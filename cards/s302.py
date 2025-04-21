@@ -15,7 +15,7 @@ class S302(Spell): # Needle Blast
         self.player.random.shuffle(targets)
 
         for target in targets[:self.ability_targets]:
-            self.player.board.at(target).deal_damage(self.ability_damage)
+            self.player.board.at(target).deal_damage(self.ability_damage, source=self)
 
 class S302Test(CardTestCase):
     def test_ability(self):

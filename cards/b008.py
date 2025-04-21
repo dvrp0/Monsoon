@@ -18,7 +18,7 @@ class B008(Structure): # Temple of the Mind
 
         if len(targets) > 0:
             targets.sort(key=lambda t: (self.player.board.at(t).strength, self.player.random.random()))
-            self.player.board.at(targets[0]).destroy()
+            self.player.board.at(targets[0]).destroy(source=self)
 
 class B008Test(CardTestCase):
     def test_ability(self):

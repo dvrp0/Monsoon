@@ -15,7 +15,7 @@ class U018(Unit): # Ubass the Hunter
 
         for _ in range(len(types)):
             targets = self.player.board.get_targets(Target(Target.Kind.ANY, Target.Side.ENEMY), include_base=True)
-            self.player.board.at(self.player.random.choice(targets)).deal_damage(self.ability_damage)
+            self.player.board.at(self.player.random.choice(targets)).deal_damage(self.ability_damage, source=self)
 
 class U018Test(CardTestCase):
     def test_ability(self):

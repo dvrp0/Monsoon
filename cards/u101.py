@@ -20,7 +20,7 @@ class U101(Unit): # Wisp Cloud
 
         if len(targets) > 0:
             for target in targets:
-                self.player.board.at(target).deal_damage(self.ability_damage)
+                self.player.board.at(target).deal_damage(self.ability_damage, source=self)
 
 class U101Test(CardTestCase):
     def test_ability(self):
