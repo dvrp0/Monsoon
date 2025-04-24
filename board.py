@@ -185,7 +185,7 @@ class Board:
             if target.side in [Target.Side.FRIENDLY, Target.Side.ANY]:
                 tiles.append(friendly)
             
-            if target.side  in [Target.Side.ENEMY, Target.Side.ANY]:
+            if target.side in [Target.Side.ENEMY, Target.Side.ANY]:
                 tiles.append(enemy)
 
         if exclude is not None and exclude in tiles:
@@ -202,7 +202,7 @@ class Board:
 
         if target is not None:
             targets = self.get_targets(target, perspective=perspective, include_base=include_base)
-            tiles = [target for target in targets if target in tiles]
+            tiles = [target for target in targets if target in tiles or (target.is_base and include_base)]
 
         return tiles
 
@@ -215,7 +215,7 @@ class Board:
 
         if target is not None:
             targets = self.get_targets(target, perspective=perspective, include_base=include_base)
-            tiles = [target for target in targets if target in tiles]
+            tiles = [target for target in targets if target in tiles or (target.is_base and include_base)]
 
         return tiles
 
@@ -236,7 +236,7 @@ class Board:
 
         if target is not None:
             targets = self.get_targets(target, perspective=perspective)
-            tiles = [target for target in targets if target in tiles]
+            tiles = [target for target in targets if target in tiles or (target.is_base and include_base)]
 
         return [tile for tile in tiles if tile.is_valid]
 
@@ -245,7 +245,7 @@ class Board:
 
         if target is not None:
             targets = self.get_targets(target, perspective=perspective, include_base=include_base)
-            tiles = [target for target in targets if target in tiles]
+            tiles = [target for target in targets if target in tiles or (target.is_base and include_base)]
 
         return [tile for tile in tiles if tile.is_valid or (include_base and tile.is_base)]
 
@@ -259,7 +259,7 @@ class Board:
 
         if target is not None:
             targets = self.get_targets(target, perspective=perspective, include_base=include_base)
-            tiles = [target for target in targets if target in tiles]
+            tiles = [target for target in targets if target in tiles or (target.is_base and include_base)]
 
         return [tile for tile in tiles if tile.is_valid or (include_base and tile.is_base)]
 
@@ -277,7 +277,7 @@ class Board:
 
         if target is not None:
             targets = self.get_targets(target, perspective=perspective, include_base=include_base)
-            tiles = [target for target in targets if target in tiles]
+            tiles = [target for target in targets if target in tiles or (target.is_base and include_base)]
 
         return [tile for tile in tiles if tile.is_valid or (tile.is_base and include_base)]
 
