@@ -39,5 +39,5 @@ class U076Test(CardTestCase):
         card.player = self.local
         card.play(Point(0, 4))
 
-        units = self.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY), perspective=self.local)
+        units = self.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY), pov=self.local)
         self.assertEqual(len(units), 1)

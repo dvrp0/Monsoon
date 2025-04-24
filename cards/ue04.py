@@ -10,7 +10,7 @@ class UE04(Unit): # Greenwood Ancients
         self.ability_strength = 4
 
     def activate_ability(self, position: Point | None = None):
-        targets = self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.ENEMY), perspective=self.player)
+        targets = self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.ENEMY), pov=self.player)
         self.heal(sum(self.player.board.at(target).strength > self.strength for target in targets) * self.ability_strength)
 
 class UE04Test(CardTestCase):

@@ -10,7 +10,7 @@ class UE01(Unit): # Trekking Aldermen
 
     def activate_ability(self, position: Point | None = None):
         for _ in range(self.damage_taken):
-            targets = self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.ENEMY), perspective=self.player)
+            targets = self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.ENEMY), pov=self.player)
 
             if len(targets) > 0:
                 self.player.board.at(self.player.random.choice(targets)).deal_damage(1, source=self)
