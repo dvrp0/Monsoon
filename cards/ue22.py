@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
@@ -9,7 +10,7 @@ class UE22(Unit): # Bucks of Wasteland
         super().__init__(Faction.SWARM, [UnitType.SATYR, UnitType.ELDER], 6, 14, 0, TriggerType.AFTER_SURVIVING)
         self.ability_amount = 2
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         targets = self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY), self.position, self.player)
 
         if len(targets) > 0:

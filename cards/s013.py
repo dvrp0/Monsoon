@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType
 from point import Point
 from spell import Spell
@@ -9,7 +10,7 @@ class S013(Spell): # Hunter's Vengeance
         super().__init__(Faction.NEUTRAL, 3)
         self.ability_damage = 6
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         targets = []
 
         for unit_type in list(UnitType):

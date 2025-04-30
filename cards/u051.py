@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
@@ -10,7 +11,7 @@ class U051(Unit): # Razor-sharp Lynxes
         self.ability_movement = 1
         self.ability_strength = 2
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         if len(self.player.board.get_bordering_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ANY))) == 0:
             self.gain_speed(self.ability_movement)
         else:

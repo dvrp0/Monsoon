@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
@@ -8,7 +9,7 @@ class U216(Unit): # Reckless Rushers
         super().__init__(Faction.SWARM, [UnitType.UNDEAD], 4, 6, 3, TriggerType.BEFORE_ATTACKING)
         self.ability_damage = 2
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         self.player.deal_damage(self.ability_damage)
 
 class U216Test(CardTestCase):

@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
@@ -8,7 +9,7 @@ class U103(Unit): # Frosthexers
     def __init__(self):
         super().__init__(Faction.WINTER, [UnitType.FLAKE], 2, 5, 0, TriggerType.ON_PLAY)
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         targets = self.player.board.get_bordering_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ENEMY))
 
         for target in targets:

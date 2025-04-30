@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType, TriggerType
 from point import Point
 from spell import Spell
@@ -10,7 +11,7 @@ class S004(Spell): # Rain of Frogs
         self.ability_min_amount = 6
         self.ability_max_amount = 6
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         tiles = self.player.get_within_front_line()
         empty = [tile for tile in tiles if self.player.board.at(tile) is None]
 

@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
@@ -7,7 +8,7 @@ class UE41(Unit): # Faithless Prophets
     def __init__(self):
         super().__init__(Faction.SHADOWFEN, [UnitType.RAVEN, UnitType.ELDER], 3, 10, 1, TriggerType.AFTER_SURVIVING)
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         self.convert()
 
 class UE41Test(CardTestCase):

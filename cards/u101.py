@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType, TriggerType, StatusEffect
 from unit import Unit
 from point import Point
@@ -9,7 +10,7 @@ class U101(Unit): # Wisp Cloud
         super().__init__(Faction.WINTER, [UnitType.FLAKE], 3, 6, 1, TriggerType.BEFORE_ATTACKING)
         self.ability_damage = 8
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         # When attacking base, structure, or unfrozen unit
         if position.is_base or not isinstance(self.player.board.at(position), Unit) or \
             not self.player.board.at(position).is_frozen:

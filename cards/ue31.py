@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
@@ -8,7 +9,7 @@ class UE31(Unit): # Scrapped Planners
         super().__init__(Faction.IRONCLAD, [UnitType.CONSUTRUCT, UnitType.ELDER], 4, 8, 1, TriggerType.AFTER_SURVIVING)
         self.ability_strength = 6
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         self.strength = self.ability_strength
 
 class UE31Test(CardTestCase):

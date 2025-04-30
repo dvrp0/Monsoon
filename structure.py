@@ -42,7 +42,7 @@ class Structure(Card):
         self.player.board.set(self.position, self)
 
         if self.is_on_play:
-            self.activate_ability()
+            self.activate_ability(source=self)
 
     def deal_damage(self, amount: int, pending_destroy=False, source: Card | str = None):
         if self.strength - amount < 0:

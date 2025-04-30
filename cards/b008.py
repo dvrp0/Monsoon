@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, StatusEffect
 from point import Point
 from target import Target
@@ -10,7 +11,7 @@ class B008(Structure): # Temple of the Mind
     def __init__(self):
         super().__init__(Faction.NEUTRAL, 3, 9)
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         if len(self.player.hand) > 0 and isinstance(self.player.hand[0], Unit):
             self.player.hand[0].fixedly_forward = not self.player.hand[0].fixedly_forward
 

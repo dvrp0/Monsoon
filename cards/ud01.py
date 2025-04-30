@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
@@ -9,7 +10,7 @@ class UD01(Unit): # Spare Dragonling
         super().__init__(Faction.NEUTRAL, [UnitType.DRAGON], 2, 1, 1, TriggerType.ON_DEATH)
         self.ability_strength = 7
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         targets = self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY, unit_types=[UnitType.DRAGON]), pov=self.player)
 
         if len(targets) > 0:

@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
@@ -9,7 +10,7 @@ class UD02(Unit): # Conflicted Drakes
         super().__init__(Faction.NEUTRAL, [UnitType.DRAGON], 3, 5, 0, TriggerType.ON_PLAY)
         self.ability_damage = 4
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         targets = self.player.board.get_front_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ANY, exclude_unit_types=[UnitType.DRAGON]))
 
         for target in targets:

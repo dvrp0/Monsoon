@@ -1,4 +1,5 @@
 from unit import Unit
+from card import Card
 from enums import Faction, UnitType, TriggerType
 from point import Point
 from target import Target
@@ -8,7 +9,7 @@ class U061(Unit): # Sparkly Kitties
     def __init__(self):
         super().__init__(Faction.NEUTRAL, [UnitType.FELINE], 2, 6, 0, TriggerType.ON_PLAY)
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         self.confuse()
 
         units = self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY), self.position)

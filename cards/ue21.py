@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
@@ -8,7 +9,7 @@ class UE21(Unit): # Petrified Fossils
     def __init__(self):
         super().__init__(Faction.SWARM, [UnitType.UNDEAD, UnitType.ELDER], 4, 8, 1, TriggerType.AFTER_SURVIVING)
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         targets = self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY, strength_limit=self.strength),
             self.position, self.player)
 

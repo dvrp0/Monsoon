@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction
 from point import Point
 from spell import Spell
@@ -10,7 +11,7 @@ class S003(Spell): # Bladestorm
         self.ability_min_damage = 4
         self.ability_max_damage = 5
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         for tile in self.player.board.get_targets(Target(Target.Kind.ANY, Target.Side.ENEMY)):
             self.player.board.at(tile).deal_damage(self.player.random.randint(self.ability_min_damage, self.ability_max_damage + 1), source=self)
 

@@ -6,7 +6,7 @@ from colorama import Back, Fore, Style
 from unit import Unit
 from structure import Structure
 from target import Target
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Tuple
 from point import Point
 
 if TYPE_CHECKING:
@@ -20,7 +20,7 @@ class Board:
         self.current_player = local
         self.history: List[Card] = []
         self.random = random
-        self.triggers: List[Callable] = []
+        self.triggers: List[Tuple[Callable, Card | None]] = []
         self.is_resolving_trigger = False
         self.phase = Phase.PLAY
 
@@ -43,18 +43,18 @@ class Board:
 
         return "\n".join(remote + rows + local + history)
 
-    def push_trigger(self, trigger: Callable):
-        self.triggers.append(trigger)
+    def push_trigger(self, trigger: Callable, source: Card | None = None):
+        self.triggers.append((trigger, source))
 
     def pop_trigger(self):
         if len(self.triggers) == 0 or self.is_resolving_trigger:
             return
 
         self.is_resolving_trigger = True
-        trigger = self.triggers.pop()
+        trigger, source = self.triggers.pop()
 
         if trigger is not None:
-            trigger()
+            trigger(source=source)
 
         if len(self.triggers) > 0:
             self.pop_trigger()
@@ -118,7 +118,7 @@ class Board:
 
         for structure in [self.at(tile) for tile in self.get_targets(Target(Target.Kind.STRUCTURE, Target.Side.FRIENDLY))]:
             if structure.is_at_turn_end:
-                structure.activate_ability(structure.position)
+                structure.activate_ability(structure.position, structure)
 
         self.calculate_front_line(self.local)
         self.calculate_front_line(self.remote)
@@ -134,7 +134,7 @@ class Board:
 
         for structure in [self.at(tile) for tile in self.get_targets(Target(Target.Kind.STRUCTURE, Target.Side.FRIENDLY))]:
             if structure.is_at_turn_start:
-                structure.activate_ability(structure.position)
+                structure.activate_ability(structure.position, structure)
 
         for unit in [self.at(tile) for tile in self.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY))]:
             unit.set_path()

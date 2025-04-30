@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction
 from point import Point
 from structure import Structure
@@ -8,7 +9,7 @@ class B304(Structure): # Unstable Build
         super().__init__(Faction.IRONCLAD, 2, 9)
         self.ability_strength = 3
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         self.deal_damage(self.ability_strength, source=self)
 
 class B304Test(CardTestCase):

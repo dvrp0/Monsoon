@@ -18,4 +18,4 @@ class Spell(Card):
 
     def play(self, position: Point | None = None):
         if self.required_targets is None or position in self.player.board.get_targets(self.required_targets):
-            self.activate_ability(position)
+            self.activate_ability(position, self)

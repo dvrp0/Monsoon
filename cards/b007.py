@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction
 from point import Point
 from structure import Structure
@@ -8,7 +9,7 @@ class B007(Structure): # Temple of the Heart
         super().__init__(Faction.NEUTRAL, 3, 7)
         self.ability_strength = 2
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         if self.player.strength == self.player.opponent.strength:
             return
 

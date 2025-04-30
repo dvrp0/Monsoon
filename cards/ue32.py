@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
@@ -9,7 +10,7 @@ class UE32(Unit): # Booming Professors
         super().__init__(Faction.IRONCLAD, [UnitType.RODENT, UnitType.ELDER], 6, 10, 0, TriggerType.AFTER_SURVIVING)
         self.ability_damage = 6
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         damage = min(6, self.strength)
         targets = self.player.board.get_front_tiles(self.position, Target(Target.Kind.ANY, Target.Side.ENEMY), self.player)
 

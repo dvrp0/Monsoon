@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType, TriggerType
 from point import Point
 from unit import Unit
@@ -9,7 +10,7 @@ class U306(Unit): # Destuctobots
         super().__init__(Faction.IRONCLAD, [UnitType.CONSUTRUCT], 2, 6, 1, TriggerType.ON_PLAY)
         self.ability_damage = 1
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         targets = self.player.board.get_targets(Target(Target.Kind.ANY, Target.Side.FRIENDLY), self.position)
 
         if len(targets) > 0:

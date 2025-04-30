@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction
 from point import Point
 from structure import Structure
@@ -10,7 +11,7 @@ class B006(Structure): # Temple of Life
         self.ability_targets = 3
         self.ability_strength = 1
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         targets = [target for target in self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY))
                    if not self.player.board.at(target).is_vitalized]
         self.player.random.shuffle(targets)

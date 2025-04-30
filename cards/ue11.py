@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
@@ -8,7 +9,7 @@ class UE11(Unit): # Earthfathers
         super().__init__(Faction.WINTER, [UnitType.VIKING, UnitType.ELDER], 7, 12, 1, TriggerType.AFTER_SURVIVING)
         self.ability_strength = 6
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         self.heal(self.ability_strength)
 
 class UE11Test(CardTestCase):

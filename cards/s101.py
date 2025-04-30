@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction
 from point import Point
 from target import Target
@@ -10,7 +11,7 @@ class S101(Spell): # Gift of the Wise
         self.ability_mana = 13
         self.ability_strength = 6
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         self.player.gain_mana(self.ability_mana)
 
         targets = self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY))

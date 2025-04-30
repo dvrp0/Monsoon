@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType, TriggerType
 from point import Point
 from unit import Unit
@@ -8,7 +9,7 @@ class U302(Unit): # Windmakers
         super().__init__(Faction.IRONCLAD, [UnitType.RODENT], 4, 2, 2, TriggerType.BEFORE_ATTACKING)
         self.ability_damage = 7
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         if position.is_base or not isinstance(self.player.board.at(position), Unit): # 기지 또는 건물이라면 발동 안 함
             return
 

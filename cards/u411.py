@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
@@ -9,7 +10,7 @@ class U411(Unit): # Copperskin Rangers
         super().__init__(Faction.SHADOWFEN, [UnitType.TOAD], 2, 3, 0, TriggerType.ON_PLAY)
         self.ability_amount = 3
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         targets = self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.ENEMY))
 
         if len(targets) > 0:

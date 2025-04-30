@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
@@ -8,7 +9,7 @@ class UE42(Unit): # Hairy Chesetnuts
         super().__init__(Faction.SHADOWFEN, [UnitType.TOAD, UnitType.ELDER], 6, 14, 0, TriggerType.AFTER_SURVIVING)
         self.ability_damage = 2
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         amount = min(self.ability_damage, self.damage_taken)
         dealt = self.player.opponent.deal_damage(amount)
         self.heal(dealt)

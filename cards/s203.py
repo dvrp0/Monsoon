@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction
 from point import Point
 from spell import Spell
@@ -10,7 +11,7 @@ class S203(Spell): # Dark Harvest
         super().__init__(Faction.SWARM, 5)
         self.ability_damage = 6
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         tiles: List[Point] = []
         friendlies = self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY))
 

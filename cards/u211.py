@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
@@ -9,7 +10,7 @@ class U211(Unit): # Doppelbocks
         self.ability_min_strength = 1
         self.ability_max_strength = 2
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         front = self.player.board.get_front_tiles(self.position)
 
         if len(front) > 0 and self.player.board.at(front[-1]) is None:

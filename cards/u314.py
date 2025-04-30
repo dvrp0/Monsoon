@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType, TriggerType
 from point import Point
 from unit import Unit
@@ -8,7 +9,7 @@ class U314(Unit): # Sound Drivers
     def __init__(self):
         super().__init__(Faction.IRONCLAD, [UnitType.RODENT], 3, 6, 0, TriggerType.ON_PLAY)
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         targets = self.player.board.get_front_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.FRIENDLY))
 
         if len(targets) > 0:

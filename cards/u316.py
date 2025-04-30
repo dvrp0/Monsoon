@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
@@ -9,7 +10,7 @@ class U316(Unit): # Function Wilds
         super().__init__(Faction.IRONCLAD, [UnitType.CONSUTRUCT], 3, 6, 1, TriggerType.ON_PLAY)
         self.ability_amount = 2
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         targets = self.player.board.get_surrounding_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.FRIENDLY))
 
         if len(targets) > 0:

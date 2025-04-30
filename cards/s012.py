@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType
 from point import Point
 from spell import Spell
@@ -9,7 +10,7 @@ class S012(Spell): # Summon Militia
         super().__init__(Faction.NEUTRAL, 1)
         self.ability_strength = 5
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         tiles = self.player.get_within_front_line()
         empty = [tile for tile in tiles if self.player.board.at(tile) is None]
 

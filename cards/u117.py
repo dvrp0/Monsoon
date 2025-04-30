@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
@@ -7,7 +8,7 @@ class U117(Unit): # Iceflakes
     def __init__(self):
         super().__init__(Faction.WINTER, [UnitType.FLAKE], 2, 8, 0, TriggerType.ON_PLAY)
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         self.freeze()
 
 class U117Test(CardTestCase):

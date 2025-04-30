@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction
 from point import Point
 from spell import Spell
@@ -9,7 +10,7 @@ class S104(Spell): # Icicle Burst
         super().__init__(Faction.WINTER, 2, Target(Target.Kind.UNIT, Target.Side.ENEMY))
         self.ability_damage = 12
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         target = self.player.board.at(position)
 
         if target.is_frozen:

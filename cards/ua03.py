@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
@@ -8,7 +9,7 @@ class UA03(Unit): # Lost Psyches
     def __init__(self):
         super().__init__(Faction.NEUTRAL, [UnitType.ANCIENT], 3, 7, 1, TriggerType.BEFORE_MOVING)
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         tiles = [tile for tile in self.player.board.get_row_tiles(self.position)
             if self.player.board.at(tile) is None] + [self.position]
 

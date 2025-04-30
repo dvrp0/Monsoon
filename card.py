@@ -46,8 +46,8 @@ class Card(ABC):
         if "activate_ability" in cls.__dict__:
             original = cls.activate_ability
 
-            def wrapped(self, *args):
-                result = original(self, *args)
+            def wrapped(self, *args, **kwargs):
+                result = original(self, *args, **kwargs)
                 self.player.board.is_resolving_trigger = False
 
                 return result
@@ -58,7 +58,7 @@ class Card(ABC):
     def play(self, position: Point | None = None):
         pass
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: "Card | None" = None):
         pass
 
     def copy(self):

@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
@@ -9,7 +10,7 @@ class U405(Unit): # Witches of the Wild
         super().__init__(Faction.SHADOWFEN, [UnitType.RAVEN], 4, 5, 1, TriggerType.ON_PLAY)
         self.ability_strength = 3
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         targets = self.player.board.get_bordering_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ANY))
 
         for target in targets:

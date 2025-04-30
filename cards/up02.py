@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, TriggerType, UnitType
 from point import Point
 from unit import Unit
@@ -9,7 +10,7 @@ class UP02(Unit): # Enranged Cowards
         super().__init__(Faction.NEUTRAL, [UnitType.PRIMAL], 5, 6, 1, TriggerType.ON_PLAY)
         self.ability_strength = 2
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         types = []
         for target in self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY)):
             types += self.player.board.at(target).unit_types

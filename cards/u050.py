@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType, TriggerType
 from point import Point
 from unit import Unit
@@ -9,7 +10,7 @@ class U050(Unit): # Twilight Prowlers
         super().__init__(Faction.NEUTRAL, [UnitType.FELINE], 6, 15, 0, TriggerType.ON_PLAY)
         self.ability_movement = 3
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         if self.position.y == 4:
             self.gain_speed(self.ability_movement)
 

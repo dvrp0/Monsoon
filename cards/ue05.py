@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
@@ -9,7 +10,7 @@ class UE05(Unit): # Prime Oracle Bragda
         super().__init__(Faction.NEUTRAL, [UnitType.ELDER], 6, 11, 1, TriggerType.AFTER_SURVIVING)
         self.ability_amount = 4
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         targets = self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY, strength_limit=self.strength - 1),
             self.position, self.player)
 

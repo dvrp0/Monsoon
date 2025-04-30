@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, TriggerType, UnitType
 from point import Point
 from unit import Unit
@@ -8,7 +9,7 @@ class U036(Unit): # Northsea Dog
         super().__init__(Faction.NEUTRAL, [UnitType.PIRATE], 2, 1, 0, TriggerType.ON_PLAY)
         self.ability_strength = 12
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         if len(self.player.hand) == 0:
             self.player.board.at(self.position).heal(self.ability_strength)
 

@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
@@ -7,7 +8,7 @@ class UA07(Unit): # Erratic Neglects
     def __init__(self):
         super().__init__(Faction.NEUTRAL, [UnitType.ANCIENT], 1, 5, 0, TriggerType.BEFORE_MOVING)
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         match self.player.random.randint(0, 5):
             case 0:
                 self.freeze()

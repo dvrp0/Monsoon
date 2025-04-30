@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
@@ -9,7 +10,7 @@ class U217(Unit): # Gathering Troupe
         super().__init__(Faction.SWARM, [UnitType.SATYR, UnitType.ANCIENT], 4, 5, 1, TriggerType.BEFORE_MOVING)
         self.ability_strength = 5
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         tiles = [tile for tile in self.player.board.get_row_tiles(Point(0, 4)) if self.player.board.at(tile) is None]
 
         if len(tiles) > 0:

@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction
 from point import Point
 from spell import Spell
@@ -9,7 +10,7 @@ class S007(Spell): # Potion of Growth
         super().__init__(Faction.NEUTRAL, 3, Target(Target.Kind.UNIT, Target.Side.FRIENDLY))
         self.ability_strength = 7
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         target = self.player.board.at(position)
         target.heal(self.ability_strength)
         target.vitalize()

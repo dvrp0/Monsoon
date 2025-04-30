@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
@@ -9,7 +10,7 @@ class U021(Unit): # Personal Servers
         super().__init__(Faction.NEUTRAL, [UnitType.CONSUTRUCT], 3, 3, 1, TriggerType.ON_PLAY)
         self.ability_strength = 5
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         targets = self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY), self.position)
 
         if len(targets) > 0:

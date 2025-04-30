@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType, TriggerType
 from point import Point
 from unit import Unit
@@ -9,7 +10,7 @@ class U320(Unit): # Original Blueprints
         super().__init__(Faction.IRONCLAD, [UnitType.CONSUTRUCT, UnitType.ANCIENT], 4, 7, 1, TriggerType.BEFORE_MOVING)
         self.ability_strength = 4
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         targets = self.player.board.get_surrounding_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.FRIENDLY), self.player)
 
         if len(targets) > 0:

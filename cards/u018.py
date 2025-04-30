@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, TriggerType, UnitType
 from point import Point
 from unit import Unit
@@ -9,7 +10,7 @@ class U018(Unit): # Ubass the Hunter
         super().__init__(Faction.NEUTRAL, [UnitType.PRIMAL, UnitType.HERO], 5, 12, 0, TriggerType.ON_PLAY)
         self.ability_damage = 2
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         targets = self.player.board.get_surrounding_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ANY))
         types = list(set([self.player.board.at(target).unit_types[0] for target in targets]))
 

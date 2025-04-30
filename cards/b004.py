@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction
 from point import Point
 from target import Target
@@ -9,7 +10,7 @@ class B004(Structure): # Powder Tower
         super().__init__(Faction.NEUTRAL, 5, 8)
         self.ability_damage = 4
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         targets = self.player.board.get_targets(Target(Target.Kind.ANY, Target.Side.ENEMY), include_base=True)
 
         for target in targets:

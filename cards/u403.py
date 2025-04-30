@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType, TriggerType, StatusEffect
 from unit import Unit
 from point import Point
@@ -10,7 +11,7 @@ class U403(Unit): # Brood Sages
         self.ability_amount = 4
         self.ability_strength = 1
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         targets = self.player.board.get_surrounding_tiles(self.position,
             Target(Target.Kind.UNIT, Target.Side.ANY, status_effects=[StatusEffect.POISONED]))
 

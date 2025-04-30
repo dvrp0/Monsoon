@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction
 from point import Point
 from structure import Structure
@@ -10,7 +11,7 @@ class B005(Structure): # Temple of Time
         self.ability_targets = 3
         self.ability_remembered = []
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         tiles = self.player.board.get_surrounding_tiles(self.position, Target(Target.Kind.ANY, Target.Side.FRIENDLY))
 
         if self.ability_remembered == []:

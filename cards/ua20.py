@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType, TriggerType
 from point import Point
 from unit import Unit
@@ -17,7 +18,7 @@ class UA20(Unit): # Guardi the Lightbringer
         self.ability_level = 5 # unused for now
         self.ability_candidates: List[Structure] = [B005(), B006(), B203(), B305()]
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         if len(self.player.board.get_front_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ENEMY), self.player)) == 0:
             card = self.player.random.choice(self.ability_candidates).copy()
             card.player = self.player

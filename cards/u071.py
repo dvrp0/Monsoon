@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType, TriggerType
 from point import Point
 from unit import Unit
@@ -8,7 +9,7 @@ class U071(Unit): # Angelic Tikas
     def __init__(self):
         super().__init__(Faction.NEUTRAL, [UnitType.FELINE, UnitType.ANCIENT], 3, 5, 1, TriggerType.BEFORE_MOVING)
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         targets = self.player.board.get_bordering_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ENEMY), self.player)
         not_confused = [tile for tile in targets if not self.player.board.at(tile).is_confused]
 

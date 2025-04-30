@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction
 from point import Point
 from spell import Spell
@@ -10,7 +11,7 @@ class S302(Spell): # Needle Blast
         self.ability_targets = 4
         self.ability_damage = 4
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         targets = self.player.board.get_targets(Target(Target.Kind.ANY, Target.Side.ENEMY), include_base=True)
         self.player.random.shuffle(targets)
 

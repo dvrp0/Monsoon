@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType, TriggerType
 from point import Point
 from unit import Unit
@@ -9,7 +10,7 @@ class UE04(Unit): # Greenwood Ancients
         super().__init__(Faction.NEUTRAL, [UnitType.ELDER], 4, 6, 1, TriggerType.AFTER_SURVIVING)
         self.ability_strength = 4
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         targets = self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.ENEMY), pov=self.player)
         self.heal(sum(self.player.board.at(target).strength > self.strength for target in targets) * self.ability_strength)
 

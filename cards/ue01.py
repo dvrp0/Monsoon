@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
@@ -8,7 +9,7 @@ class UE01(Unit): # Trekking Aldermen
     def __init__(self):
         super().__init__(Faction.NEUTRAL, [UnitType.ELDER], 3, 8, 0, TriggerType.AFTER_SURVIVING)
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         for _ in range(self.damage_taken):
             targets = self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.ENEMY), pov=self.player)
 

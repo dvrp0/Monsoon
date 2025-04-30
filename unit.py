@@ -65,7 +65,7 @@ class Unit(Card):
         self.set_path(True)
 
         if self.trigger == TriggerType.ON_PLAY:
-            self.activate_ability()
+            self.activate_ability(source=self)
 
         self.move()
         self.resolving_play = False
@@ -135,7 +135,7 @@ class Unit(Card):
             return
 
         if self.trigger == TriggerType.BEFORE_MOVING and not self.is_disabled:
-            self.activate_ability()
+            self.activate_ability(source=self)
 
         if self.is_frozen: # If frozen during ability, skip the rest
             return
@@ -143,7 +143,7 @@ class Unit(Card):
         for destination in self.path:
             if destination.y < 0 or destination.y > 4: # To base
                 if self.trigger == TriggerType.BEFORE_ATTACKING and not self.is_disabled:
-                    self.activate_ability(destination)
+                    self.activate_ability(destination, self)
 
                 target = self.player.board.remote if destination.y < 0 else self.player.board.local
                 target.deal_damage(self.strength)
@@ -161,7 +161,7 @@ class Unit(Card):
 
             if target is not None and (self.is_confused or target.player != self.player):
                 if self.trigger == TriggerType.BEFORE_ATTACKING and not self.is_disabled:
-                    self.activate_ability(destination)
+                    self.activate_ability(destination, self)
 
                 target = self.player.board.at(destination) # target may have changed
                 if target is not None:
@@ -191,7 +191,7 @@ class Unit(Card):
                     self.player.front_line = max(1, destination.y)
 
                 if is_attacked and self.trigger == TriggerType.AFTER_ATTACKING and not self.is_disabled:
-                    self.activate_ability()
+                    self.activate_ability(source=self)
 
                 if self.is_confused:
                     self.deconfuse()
@@ -207,7 +207,7 @@ class Unit(Card):
         if not pending_destroy and self.strength <= 0:
             self.destroy(source)
         elif self.trigger == TriggerType.AFTER_SURVIVING and self.strength > 0:
-            self.player.board.push_trigger(self.activate_ability)
+            self.player.board.push_trigger(self.activate_ability, source)
             self.player.board.pop_trigger()
 
         return amount
@@ -219,7 +219,7 @@ class Unit(Card):
         self.damage_source = source
 
         if self.trigger == TriggerType.ON_DEATH:
-            self.player.board.push_trigger(self.activate_ability)
+            self.player.board.push_trigger(self.activate_ability, source)
             self.player.board.pop_trigger()
 
         self.player.board.calculate_front_line(self.player.board.current_player.opponent)

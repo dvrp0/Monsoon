@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType, TriggerType
 from point import Point
 from unit import Unit
@@ -9,7 +10,7 @@ class U106(Unit): # Hearthguards
         super().__init__(Faction.NEUTRAL, [UnitType.VIKING], 6, 7, 2, TriggerType.ON_PLAY)
         self.ability_strength = 7
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         if len(self.player.board.get_bordering_tiles(self.position, Target(Target.Kind.STRUCTURE, Target.Side.FRIENDLY))) > 0 or self.position.y == 4:
             self.heal(self.ability_strength)
 

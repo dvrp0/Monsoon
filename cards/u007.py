@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
@@ -9,7 +10,7 @@ class U007(Unit): # Green Prototypes
         super().__init__(Faction.NEUTRAL, [UnitType.CONSUTRUCT], 1, 5, 1, TriggerType.ON_DEATH)
         self.ability_strength = 5
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         targets = self.player.board.get_surrounding_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ENEMY), self.player)
 
         if len(targets) > 0:

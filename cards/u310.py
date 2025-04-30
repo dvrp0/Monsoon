@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
@@ -9,7 +10,7 @@ class U310(Unit): # Ozone Purifiers
         super().__init__(Faction.IRONCLAD, [UnitType.RODENT], 2, 5, 0, TriggerType.ON_PLAY)
 
     # behind > sides > front
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         targets = self.player.board.get_bordering_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ENEMY))
 
         behind = next(filter(lambda t: self.position.y + 1 == t.y, targets), None)

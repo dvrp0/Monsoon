@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
@@ -9,7 +10,7 @@ class U406(Unit): # Dubious Hags
         super().__init__(Faction.SHADOWFEN, [UnitType.RAVEN], 2, 6, 1, TriggerType.ON_DEATH)
         self.ability_strength = 1
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         tiles = [tile for tile in self.player.board.get_bordering_tiles(self.position) if self.player.board.at(tile) is None]
 
         if len(tiles) > 0:

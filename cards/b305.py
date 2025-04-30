@@ -1,3 +1,4 @@
+from card import Card
 from enums import Faction, TriggerType
 from point import Point
 from structure import Structure
@@ -11,7 +12,7 @@ class B305(Structure): # Temple of Space
         self.ability_mana = 2
         self.original_cost = self.cost
 
-    def activate_ability(self, position: Point | None = None):
+    def activate_ability(self, position: Point | None = None, source: Card | None = None):
         targets = self.player.board.get_targets(Target(Target.Kind.STRUCTURE, Target.Side.FRIENDLY))
 
         if self.position in targets:
