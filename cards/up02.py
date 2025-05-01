@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction, TriggerType, UnitType
 from point import Point
 from unit import Unit
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class UP02(Unit): # Enranged Cowards
@@ -12,7 +12,10 @@ class UP02(Unit): # Enranged Cowards
 
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
         types = []
-        for target in self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY)):
+        for target in self.player.board.get_targets(
+            Context(source=self),
+            Target(Target.Kind.UNIT, Target.Side.FRIENDLY)
+        ):
             types += self.player.board.at(target).unit_types
         types = list(set(types))
 

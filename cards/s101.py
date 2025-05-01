@@ -1,7 +1,7 @@
 from card import Card
 from enums import Faction
 from point import Point
-from target import Target
+from target import Context, Target
 from spell import Spell
 from test import CardTestCase
 
@@ -14,7 +14,10 @@ class S101(Spell): # Gift of the Wise
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
         self.player.gain_mana(self.ability_mana)
 
-        targets = self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY))
+        targets = self.player.board.get_targets(
+            Context(source=self),
+            Target(Target.Kind.UNIT, Target.Side.FRIENDLY)
+        )
         targets.sort(key=lambda t: (self.player.board.at(t).strength, self.player.random.random()))
         self.player.board.at(targets[0]).heal(self.ability_strength)
 

@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class U406(Unit): # Dubious Hags
@@ -11,7 +11,9 @@ class U406(Unit): # Dubious Hags
         self.ability_strength = 1
 
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
-        tiles = [tile for tile in self.player.board.get_bordering_tiles(self.position) if self.player.board.at(tile) is None]
+        tiles = [tile for tile in self.player.board.get_bordering_tiles(
+            Context(self.position, source=self)
+        ) if self.player.board.at(tile) is None]
 
         if len(tiles) > 0:
             tile = self.player.random.choice(tiles)
@@ -34,7 +36,7 @@ class U406Test(CardTestCase):
         card.play(Point(2, 4))
         card.destroy()
 
-        u1 = self.board.get_targets(Target(Target.Kind.UNIT, Target.Side.ANY))[0]
+        u1 = self.board.get_targets(None, Target(Target.Kind.UNIT, Target.Side.ANY))[0]
         self.assertTrue(u1 in [Point(2, 2), Point(1, 3), Point(3, 3), Point(2, 4)])
         self.assertEqual(self.board.at(u1).player, self.remote)
         self.assertEqual(self.board.at(u1).strength, card.ability_strength)

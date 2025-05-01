@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class UE32(Unit): # Booming Professors
@@ -12,10 +12,13 @@ class UE32(Unit): # Booming Professors
 
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
         damage = min(6, self.strength)
-        targets = self.player.board.get_front_tiles(self.position, Target(Target.Kind.ANY, Target.Side.ENEMY), self.player)
+        targets = self.player.board.get_front_tiles(
+            Context(self.position, pov=self.player, source=self),
+            Target(Target.Kind.ANY, Target.Side.ENEMY)
+        )
 
         if len(targets) > 0:
-            self.player.board.at(targets[-1]).deal_damage(damage, source=self)
+            self.player.board.at(targets[0]).deal_damage(damage, source=self)
         else:
             self.player.opponent.deal_damage(damage)
 

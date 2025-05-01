@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class U401(Unit): # Crimson Sentry
@@ -11,7 +11,10 @@ class U401(Unit): # Crimson Sentry
         self.damage = 5
 
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
-        targets = self.player.board.get_bordering_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ANY))
+        targets = self.player.board.get_bordering_tiles(
+            Context(self.position, source=self),
+            Target(Target.Kind.UNIT, Target.Side.ANY)
+        )
 
         for target in targets:
             unit = self.player.board.at(target)

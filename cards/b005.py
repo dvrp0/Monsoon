@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction
 from point import Point
 from structure import Structure
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class B005(Structure): # Temple of Time
@@ -12,7 +12,10 @@ class B005(Structure): # Temple of Time
         self.ability_remembered = []
 
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
-        tiles = self.player.board.get_surrounding_tiles(self.position, Target(Target.Kind.ANY, Target.Side.FRIENDLY))
+        tiles = self.player.board.get_surrounding_tiles(
+            Context(self.position, source=self, natural=True),
+            Target(Target.Kind.ANY, Target.Side.FRIENDLY)
+        )
 
         if self.ability_remembered == []:
             self.ability_remembered = [self.player.board.at(tile).copy() for tile in tiles]
@@ -42,7 +45,6 @@ class B005Test(CardTestCase):
         self.board.spawn_token_unit(self.local, Point(2, 3), 3)
         self.board.spawn_token_unit(self.local, Point(2, 4), 3)
         self.board.spawn_token_unit(self.remote, Point(0, 4), 5)
-
         card = B005()
         card.player = self.local
         card.play(Point(1, 3))

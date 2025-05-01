@@ -1,7 +1,7 @@
 from card import Card
 from enums import Faction, StatusEffect
 from point import Point
-from target import Target
+from target import Context, Target
 from structure import Structure
 from unit import Unit
 from test import CardTestCase
@@ -15,7 +15,10 @@ class B008(Structure): # Temple of the Mind
         if len(self.player.hand) > 0 and isinstance(self.player.hand[0], Unit):
             self.player.hand[0].fixedly_forward = not self.player.hand[0].fixedly_forward
 
-        targets = self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.ANY, status_effects=[StatusEffect.CONFUSED]))
+        targets = self.player.board.get_targets(
+            Context(source=self),
+            Target(Target.Kind.UNIT, Target.Side.ANY, status_effects=[StatusEffect.CONFUSED])
+        )
 
         if len(targets) > 0:
             targets.sort(key=lambda t: (self.player.board.at(t).strength, self.player.random.random()))

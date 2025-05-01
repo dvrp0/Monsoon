@@ -1,6 +1,7 @@
 from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
+from target import Context
 from point import Point
 from test import CardTestCase
 
@@ -9,7 +10,9 @@ class UE03(Unit): # Beards of Crowglyph
         super().__init__(Faction.NEUTRAL, [UnitType.ELDER], 6, 13, 0, TriggerType.AFTER_SURVIVING)
 
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
-        tiles = [tile for tile in self.player.board.get_bordering_tiles(self.position) if self.player.board.at(tile) is None]
+        tiles = [tile for tile in self.player.board.get_bordering_tiles(
+            Context(self.position, source=self)
+        ) if self.player.board.at(tile) is None]
 
         if len(tiles) > 0:
             self.player.board.spawn_token_unit(self.player, self.player.random.choice(tiles), self.strength, [UnitType.ELDER])

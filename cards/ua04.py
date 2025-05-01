@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction, UnitType, TriggerType
 from point import Point
 from unit import Unit
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class UA04(Unit): # Gray the Balancer
@@ -11,8 +11,14 @@ class UA04(Unit): # Gray the Balancer
 
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
         # no need to set perspective as the result will be the same
-        local_units = [self.player.board.at(tile) for tile in self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY))]
-        remote_units = [self.player.board.at(tile) for tile in self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.ENEMY))]
+        local_units = [self.player.board.at(tile) for tile in self.player.board.get_targets(
+            Context(source=self),
+            Target(Target.Kind.UNIT, Target.Side.FRIENDLY)
+        )]
+        remote_units = [self.player.board.at(tile) for tile in self.player.board.get_targets(
+            Context(source=self),
+            Target(Target.Kind.UNIT, Target.Side.ENEMY)
+        )]
         targets = []
 
         if len(local_units) > len(remote_units):

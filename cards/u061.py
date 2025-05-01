@@ -2,7 +2,7 @@ from unit import Unit
 from card import Card
 from enums import Faction, UnitType, TriggerType
 from point import Point
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class U061(Unit): # Sparkly Kitties
@@ -12,7 +12,10 @@ class U061(Unit): # Sparkly Kitties
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
         self.confuse()
 
-        units = self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY), self.position)
+        units = self.player.board.get_targets(
+            Context(exclude=self.position, source=self),
+            Target(Target.Kind.UNIT, Target.Side.FRIENDLY)
+        )
         if len(units) > 0:
             self.player.board.at(self.player.random.choice(units)).confuse()
 

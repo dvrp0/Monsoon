@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction, StatusEffect, TriggerType, UnitType
 from point import Point
 from unit import Unit
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class U055(Unit): # Sweetcap Kittens
@@ -10,8 +10,10 @@ class U055(Unit): # Sweetcap Kittens
         super().__init__(Faction.NEUTRAL, [UnitType.FELINE], 2, 5, 0, TriggerType.ON_PLAY)
 
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
-        targets = self.player.board.get_front_tiles(self.position,
-            Target(Target.Kind.UNIT, Target.Side.ENEMY, exclude_status_effects=[StatusEffect.CONFUSED]))
+        targets = self.player.board.get_front_tiles(
+            Context(self.position, source=self),
+            Target(Target.Kind.UNIT, Target.Side.ENEMY, exclude_status_effects=[StatusEffect.CONFUSED])
+        )
 
         for target in targets:
             self.player.board.at(target).confuse()

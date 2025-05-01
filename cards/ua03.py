@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class UA03(Unit): # Lost Psyches
@@ -10,7 +10,7 @@ class UA03(Unit): # Lost Psyches
         super().__init__(Faction.NEUTRAL, [UnitType.ANCIENT], 3, 7, 1, TriggerType.BEFORE_MOVING)
 
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
-        tiles = [tile for tile in self.player.board.get_row_tiles(self.position)
+        tiles = [tile for tile in self.player.board.get_row_tiles(Context(self.position, source=self))
             if self.player.board.at(tile) is None] + [self.position]
 
         self.teleport(self.player.random.choice(tiles))

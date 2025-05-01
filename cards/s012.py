@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction, UnitType
 from point import Point
 from spell import Spell
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class S012(Spell): # Summon Militia
@@ -23,14 +23,14 @@ class S012Test(CardTestCase):
         card.player = self.local
         card.play()
 
-        target = self.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY, [UnitType.KNIGHT]))[0]
+        target = self.board.get_targets(None, Target(Target.Kind.UNIT, Target.Side.FRIENDLY, [UnitType.KNIGHT]))[0]
         self.assertTrue(self.board.at(target).position.y >= self.local.front_line)
 
         self.board.clear()
         self.local.front_line = 2
         card.play()
 
-        target = self.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY, [UnitType.KNIGHT]))[0]
+        target = self.board.get_targets(None, Target(Target.Kind.UNIT, Target.Side.FRIENDLY, [UnitType.KNIGHT]))[0]
         self.assertTrue(self.board.at(target).position.y >= self.local.front_line)
 
         self.board.clear()
@@ -39,5 +39,5 @@ class S012Test(CardTestCase):
         self.board.spawn_token_unit(self.remote, Point(2, 4), 5)
         self.board.spawn_token_structure(self.remote, Point(3, 4), 5)
 
-        target = self.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY, [UnitType.KNIGHT]))
+        target = self.board.get_targets(None, Target(Target.Kind.UNIT, Target.Side.FRIENDLY, [UnitType.KNIGHT]))
         self.assertEqual(target, [])

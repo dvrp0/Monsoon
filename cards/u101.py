@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction, UnitType, TriggerType, StatusEffect
 from unit import Unit
 from point import Point
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class U101(Unit): # Wisp Cloud
@@ -16,8 +16,10 @@ class U101(Unit): # Wisp Cloud
             not self.player.board.at(position).is_frozen:
             return
 
-        targets = self.player.board.get_surrounding_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ENEMY,
-            status_effects=[StatusEffect.FROZEN]), self.player)
+        targets = self.player.board.get_surrounding_tiles(
+            Context(self.position, pov=self.player, source=self),
+            Target(Target.Kind.UNIT, Target.Side.ENEMY, status_effects=[StatusEffect.FROZEN])
+        )
 
         if len(targets) > 0:
             for target in targets:

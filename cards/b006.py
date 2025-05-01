@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction
 from point import Point
 from structure import Structure
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class B006(Structure): # Temple of Life
@@ -12,19 +12,22 @@ class B006(Structure): # Temple of Life
         self.ability_strength = 1
 
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
-        targets = [target for target in self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY))
-                   if not self.player.board.at(target).is_vitalized]
+        points = self.player.board.get_targets(
+            Context(source=self),
+            Target(Target.Kind.UNIT, Target.Side.FRIENDLY)
+        )
+        targets = [target for target in points if not self.player.board.at(target).is_vitalized]
         self.player.random.shuffle(targets)
 
         for target in targets[:self.ability_targets]:
             self.player.board.at(target).vitalize()
 
         tiles = []
-        front = self.player.board.get_front_tiles(self.position)
-        behind = self.player.board.get_behind_tiles(self.position)
+        front = self.player.board.get_front_tiles(Context(self.position, source=self))
+        behind = self.player.board.get_behind_tiles(Context(self.position, source=self))
 
-        if len(front) > 0 and self.player.board.at(front[-1]) is None and self.player.is_within_front_line(front[-1]):
-            tiles.append(front[-1])
+        if len(front) > 0 and self.player.board.at(front[0]) is None and self.player.is_within_front_line(front[0]):
+            tiles.append(front[0])
 
         if len(behind) > 0 and self.player.board.at(behind[0]) is None:
             tiles.append(behind[0])

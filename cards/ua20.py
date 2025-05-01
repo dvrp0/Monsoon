@@ -3,7 +3,7 @@ from enums import Faction, UnitType, TriggerType
 from point import Point
 from unit import Unit
 from structure import Structure
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 from typing import List
 from cards.b005 import B005
@@ -19,7 +19,10 @@ class UA20(Unit): # Guardi the Lightbringer
         self.ability_candidates: List[Structure] = [B005(), B006(), B203(), B305()]
 
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
-        if len(self.player.board.get_front_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ENEMY), self.player)) == 0:
+        if len(self.player.board.get_front_tiles(
+            Context(self.position, pov=self.player, source=self),
+            Target(Target.Kind.UNIT, Target.Side.ENEMY)
+        )) == 0:
             card = self.player.random.choice(self.ability_candidates).copy()
             card.player = self.player
             card.weight = 1

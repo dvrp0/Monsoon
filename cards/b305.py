@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction, TriggerType
 from point import Point
 from structure import Structure
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class B305(Structure): # Temple of Space
@@ -13,14 +13,20 @@ class B305(Structure): # Temple of Space
         self.original_cost = self.cost
 
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
-        targets = self.player.board.get_targets(Target(Target.Kind.STRUCTURE, Target.Side.FRIENDLY))
+        targets = self.player.board.get_targets(
+            Context(source=self),
+            Target(Target.Kind.STRUCTURE, Target.Side.FRIENDLY)
+        )
 
         if self.position in targets:
             targets.remove(self.position)
 
         for target in targets[:self.ability_amount]:
             if self.player.board.at(target).card_id == self.card_id:
-                for tile in self.player.board.get_surrounding_tiles(target, Target(Target.Kind.UNIT, Target.Side.ANY)):
+                for tile in self.player.board.get_surrounding_tiles(
+                    Context(target, source=self),
+                    Target(Target.Kind.UNIT, Target.Side.ANY)
+                ):
                     to = Point(tile.x - target.x  + self.position.x, tile.y - target.y + self.position.y)
 
                     if to.is_valid:

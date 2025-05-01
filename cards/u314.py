@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction, UnitType, TriggerType
 from point import Point
 from unit import Unit
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class U314(Unit): # Sound Drivers
@@ -10,10 +10,13 @@ class U314(Unit): # Sound Drivers
         super().__init__(Faction.IRONCLAD, [UnitType.RODENT], 3, 6, 0, TriggerType.ON_PLAY)
 
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
-        targets = self.player.board.get_front_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.FRIENDLY))
+        targets = self.player.board.get_front_tiles(
+            Context(self.position, source=self),
+            Target(Target.Kind.UNIT, Target.Side.FRIENDLY)
+        )
 
         if len(targets) > 0:
-            self.player.board.at(targets[-1]).push(self.position)
+            self.player.board.at(targets[0]).push(self.position)
 
 class U314Test(CardTestCase):
     def test_ability(self):

@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class U007(Unit): # Green Prototypes
@@ -11,7 +11,10 @@ class U007(Unit): # Green Prototypes
         self.ability_strength = 5
 
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
-        targets = self.player.board.get_surrounding_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ENEMY), self.player)
+        targets = self.player.board.get_surrounding_tiles(
+            Context(self.position, pov=self.player, source=self),
+            Target(Target.Kind.UNIT, Target.Side.ENEMY)
+        )
 
         if len(targets) > 0:
             target = self.player.board.at(self.player.random.choice(targets))

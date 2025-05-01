@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction, UnitType, TriggerType
 from point import Point
 from unit import Unit
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class U106(Unit): # Hearthguards
@@ -11,7 +11,10 @@ class U106(Unit): # Hearthguards
         self.ability_strength = 7
 
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
-        if len(self.player.board.get_bordering_tiles(self.position, Target(Target.Kind.STRUCTURE, Target.Side.FRIENDLY))) > 0 or self.position.y == 4:
+        if len(self.player.board.get_bordering_tiles(
+            Context(self.position, source=self),
+            Target(Target.Kind.STRUCTURE, Target.Side.FRIENDLY)
+        )) > 0 or self.position.y == 4:
             self.heal(self.ability_strength)
 
 class U106Test(CardTestCase):

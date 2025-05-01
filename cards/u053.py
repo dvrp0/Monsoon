@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class U053(Unit): # Wild Saberpaws
@@ -12,9 +12,15 @@ class U053(Unit): # Wild Saberpaws
         self.ability_amount = 1
 
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
-        if len(self.player.board.get_surrounding_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ANY))) == 0:
+        if len(self.player.board.get_surrounding_tiles(
+            Context(self.position, source=self),
+            Target(Target.Kind.UNIT, Target.Side.ANY)
+        )) == 0:
             self.gain_speed(self.ability_movement)
-        elif len(self.player.board.get_bordering_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ANY))) == 0:
+        elif len(self.player.board.get_bordering_tiles(
+            Context(self.position, source=self),
+            Target(Target.Kind.UNIT, Target.Side.ANY)
+        )) == 0:
             self.gain_speed(self.ability_amount)
 
 class U053Test(CardTestCase):

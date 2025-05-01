@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class U076(Unit): # Divine Reptiles; DVRP🥰
@@ -12,7 +12,10 @@ class U076(Unit): # Divine Reptiles; DVRP🥰
         self.ability_strength = 6
 
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
-        targets = self.player.board.get_surrounding_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ANY, exclude_unit_types=[UnitType.DRAGON]))
+        targets = self.player.board.get_surrounding_tiles(
+            Context(self.position, source=self),
+            Target(Target.Kind.UNIT, Target.Side.ANY, exclude_unit_types=[UnitType.DRAGON])
+        )
 
         if len(targets) > 0:
             target = self.player.board.at(self.player.random.choice(targets))
@@ -40,5 +43,8 @@ class U076Test(CardTestCase):
         card.player = self.local
         card.play(Point(0, 4))
 
-        units = self.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY), pov=self.local)
+        units = self.board.get_targets(
+            Context(pov=self.local),
+            Target(Target.Kind.UNIT, Target.Side.FRIENDLY)
+        )
         self.assertEqual(len(units), 1)

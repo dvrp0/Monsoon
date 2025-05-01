@@ -3,6 +3,7 @@ from enums import Faction, UnitType, TriggerType
 from point import Point
 from spell import Spell
 from unit import Unit
+from target import Context
 from test import CardTestCase
 from typing import List
 from .s003 import S003
@@ -28,7 +29,9 @@ class U017(Unit): # Archdruid Earyn
                     remaining -= card.cost
 
             for card in targets:
-                position = None if card.required_targets is None else self.player.random.choice(self.player.board.get_targets(card.required_targets))
+                position = None if card.required_targets is None else self.player.random.choice(
+                    self.player.board.get_targets(Context(source=self), card.required_targets)
+                )
                 self.player.play(self.player.hand.index(card), position)
 
 class U017Test(CardTestCase):

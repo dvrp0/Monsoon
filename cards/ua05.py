@@ -1,6 +1,7 @@
 from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
+from target import Context
 from point import Point
 from test import CardTestCase
 
@@ -10,7 +11,9 @@ class UA05(Unit): # Bounded Daemons
         self.ability_strength = 4
 
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
-        tiles = [tile for tile in self.player.board.get_side_tiles(self.position) if self.player.board.at(tile) is None]
+        tiles = [tile for tile in self.player.board.get_side_tiles(
+            Context(self.position, source=self)
+        ) if self.player.board.at(tile) is None]
 
         for tile in tiles:
             self.player.board.spawn_token_unit(self.player, tile, self.ability_strength, [UnitType.ANCIENT])

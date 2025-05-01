@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class UE21(Unit): # Petrified Fossils
@@ -10,8 +10,10 @@ class UE21(Unit): # Petrified Fossils
         super().__init__(Faction.SWARM, [UnitType.UNDEAD, UnitType.ELDER], 4, 8, 1, TriggerType.AFTER_SURVIVING)
 
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
-        targets = self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY, strength_limit=self.strength),
-            self.position, self.player)
+        targets = self.player.board.get_targets(
+            Context(exclude=self.position, pov=self.player, source=self),
+            Target(Target.Kind.UNIT, Target.Side.FRIENDLY, strength_limit=self.strength)
+        )
 
         for target in targets:
             self.player.board.at(target).command()

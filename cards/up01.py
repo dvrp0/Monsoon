@@ -1,7 +1,7 @@
 from enums import Faction, TriggerType, UnitType
 from point import Point
 from unit import Unit
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class UP01(Unit): # Eager Pursuers

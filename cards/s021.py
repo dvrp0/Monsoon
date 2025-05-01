@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction, StatusEffect, UnitType
 from point import Point
 from spell import Spell
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class S021(Spell): # Catnip's Charm
@@ -13,7 +13,10 @@ class S021(Spell): # Catnip's Charm
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
         self.player.board.at(position).confuse()
 
-        targets = self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY, unit_types=[UnitType.FELINE]))
+        targets = self.player.board.get_targets(
+            Context(source=self),
+            Target(Target.Kind.UNIT, Target.Side.FRIENDLY, unit_types=[UnitType.FELINE])
+        )
 
         if len(targets) > 0:
             min_strength = min([self.player.board.at(target).strength for target in targets])

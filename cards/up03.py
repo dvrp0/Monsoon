@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction, TriggerType, UnitType
 from point import Point
 from unit import Unit
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class UP03(Unit): # Terrifying Behemoths
@@ -12,11 +12,17 @@ class UP03(Unit): # Terrifying Behemoths
 
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
         types = []
-        for target in self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY)):
+        for target in self.player.board.get_targets(
+            Context(source=self),
+            Target(Target.Kind.UNIT, Target.Side.FRIENDLY)
+        ):
             types += self.player.board.at(target).unit_types
         types = list(set(types))
 
-        targets = self.player.board.get_surrounding_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ENEMY))
+        targets = self.player.board.get_surrounding_tiles(
+            Context(self.position, source=self),
+            Target(Target.Kind.UNIT, Target.Side.ENEMY)
+        )
 
         for target in targets:
             self.player.board.at(target).reduce(self.ability_amount * len(types))

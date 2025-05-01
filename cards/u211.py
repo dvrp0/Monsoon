@@ -1,6 +1,7 @@
 from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
+from target import Context
 from point import Point
 from test import CardTestCase
 
@@ -11,10 +12,10 @@ class U211(Unit): # Doppelbocks
         self.ability_max_strength = 2
 
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
-        front = self.player.board.get_front_tiles(self.position)
+        front = self.player.board.get_front_tiles(Context(self.position, source=self))
 
-        if len(front) > 0 and self.player.board.at(front[-1]) is None:
-            self.player.board.spawn_token_unit(self.player, front[-1],
+        if len(front) > 0 and self.player.board.at(front[0]) is None:
+            self.player.board.spawn_token_unit(self.player, front[0],
                 self.player.random.randint(self.ability_min_strength, self.ability_max_strength + 1), [UnitType.SATYR])
 
 class U211Test(CardTestCase):

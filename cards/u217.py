@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class U217(Unit): # Gathering Troupe
@@ -11,7 +11,7 @@ class U217(Unit): # Gathering Troupe
         self.ability_strength = 5
 
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
-        tiles = [tile for tile in self.player.board.get_row_tiles(Point(0, 4)) if self.player.board.at(tile) is None]
+        tiles = [tile for tile in self.player.board.get_row_tiles(Context(Point(0, 4), source=self)) if self.player.board.at(tile) is None]
 
         if len(tiles) > 0:
             self.player.board.spawn_token_unit(self.player, self.player.random.choice(tiles), self.ability_strength, [UnitType.SATYR])

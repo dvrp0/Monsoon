@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction, UnitType, TriggerType, StatusEffect
 from unit import Unit
 from point import Point
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class U403(Unit): # Brood Sages
@@ -12,11 +12,13 @@ class U403(Unit): # Brood Sages
         self.ability_strength = 1
 
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
-        targets = self.player.board.get_surrounding_tiles(self.position,
-            Target(Target.Kind.UNIT, Target.Side.ANY, status_effects=[StatusEffect.POISONED]))
+        targets = self.player.board.get_surrounding_tiles(
+            Context(self.position, source=self),
+            Target(Target.Kind.UNIT, Target.Side.ANY, status_effects=[StatusEffect.POISONED])
+        )
 
         for target in targets:
-            tiles = [tile for tile in self.player.board.get_bordering_tiles(target) if self.player.board.at(tile) is None]
+            tiles = [tile for tile in self.player.board.get_bordering_tiles(Context(target)) if self.player.board.at(tile) is None]
             self.player.random.shuffle(tiles)
 
             for tile in tiles[:self.ability_amount]:

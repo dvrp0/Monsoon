@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction
 from point import Point
 from structure import Structure
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class B203(Structure): # Temple of Focus
@@ -10,7 +10,10 @@ class B203(Structure): # Temple of Focus
         super().__init__(Faction.SWARM, 3, 7)
 
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
-        for tile in self.player.board.get_front_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.FRIENDLY), self.player):
+        for tile in self.player.board.get_front_tiles(
+            Context(self.position, pov=self.player, source=self),
+            Target(Target.Kind.UNIT, Target.Side.FRIENDLY)
+        ):
             target = self.player.board.at(tile)
 
             if target.is_confused:

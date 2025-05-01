@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class UE01(Unit): # Trekking Aldermen
@@ -11,7 +11,10 @@ class UE01(Unit): # Trekking Aldermen
 
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
         for _ in range(self.damage_taken):
-            targets = self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.ENEMY), pov=self.player)
+            targets = self.player.board.get_targets(
+                Context(pov=self.player, source=self),
+                Target(Target.Kind.UNIT, Target.Side.ENEMY)
+            )
 
             if len(targets) > 0:
                 self.player.board.at(self.player.random.choice(targets)).deal_damage(1, source=self)

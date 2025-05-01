@@ -47,8 +47,10 @@ class Card(ABC):
             original = cls.activate_ability
 
             def wrapped(self, *args, **kwargs):
+                self.player.board.is_resolving_trigger = True
                 result = original(self, *args, **kwargs)
                 self.player.board.is_resolving_trigger = False
+                self.player.board.pop_trigger()
 
                 return result
 

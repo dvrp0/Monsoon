@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction
 from point import Point
 from spell import Spell
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class S007(Spell): # Potion of Growth

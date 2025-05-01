@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class UE22(Unit): # Bucks of Wasteland
@@ -11,7 +11,10 @@ class UE22(Unit): # Bucks of Wasteland
         self.ability_amount = 2
 
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
-        targets = self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY), self.position, self.player)
+        targets = self.player.board.get_targets(
+            Context(exclude=self.position, pov=self.player, source=self),
+            Target(Target.Kind.UNIT, Target.Side.FRIENDLY)
+        )
 
         if len(targets) > 0:
             self.player.random.shuffle(targets)

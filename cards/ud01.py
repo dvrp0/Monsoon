@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class UD01(Unit): # Spare Dragonling
@@ -11,7 +11,10 @@ class UD01(Unit): # Spare Dragonling
         self.ability_strength = 7
 
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
-        targets = self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY, unit_types=[UnitType.DRAGON]), pov=self.player)
+        targets = self.player.board.get_targets(
+            Context(pov=self.player, source=self),
+            Target(Target.Kind.UNIT, Target.Side.FRIENDLY, unit_types=[UnitType.DRAGON])
+        )
 
         if len(targets) > 0:
             self.player.board.at(self.player.random.choice(targets)).heal(self.ability_strength)

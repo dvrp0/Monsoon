@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction, TriggerType, UnitType
 from point import Point
 from unit import Unit
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class U018(Unit): # Ubass the Hunter
@@ -11,11 +11,17 @@ class U018(Unit): # Ubass the Hunter
         self.ability_damage = 2
 
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
-        targets = self.player.board.get_surrounding_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ANY))
+        targets = self.player.board.get_surrounding_tiles(
+            Context(self.position, source=self),
+            Target(Target.Kind.UNIT, Target.Side.ANY)
+        )
         types = list(set([self.player.board.at(target).unit_types[0] for target in targets]))
 
         for _ in range(len(types)):
-            targets = self.player.board.get_targets(Target(Target.Kind.ANY, Target.Side.ENEMY), include_base=True)
+            targets = self.player.board.get_targets(
+                Context(source=self),
+                Target(Target.Kind.ANY, Target.Side.ENEMY, include_base=True)
+            )
             self.player.board.at(self.player.random.choice(targets)).deal_damage(self.ability_damage, source=self)
 
 class U018Test(CardTestCase):

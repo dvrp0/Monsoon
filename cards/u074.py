@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class U074(Unit): # Lunatic Lunas
@@ -10,10 +10,13 @@ class U074(Unit): # Lunatic Lunas
         super().__init__(Faction.NEUTRAL, [UnitType.FELINE, UnitType.ELDER], 4, 8, 1, TriggerType.AFTER_SURVIVING)
 
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
-        targets = self.player.board.get_front_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ENEMY), self.player)
+        targets = self.player.board.get_front_tiles(
+            Context(self.position, pov=self.player, source=self),
+            Target(Target.Kind.UNIT, Target.Side.ENEMY)
+        )
 
         if len(targets) > 0:
-            self.force_attack(targets[-1])
+            self.force_attack(targets[0])
 
 class U074Test(CardTestCase):
     def test_ability(self):

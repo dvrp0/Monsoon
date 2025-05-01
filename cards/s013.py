@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction, UnitType
 from point import Point
 from spell import Spell
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class S013(Spell): # Hunter's Vengeance
@@ -14,8 +14,10 @@ class S013(Spell): # Hunter's Vengeance
         targets = []
 
         for unit_type in list(UnitType):
-            units = [unit for unit in self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.ANY, [unit_type]))
-                     if unit not in targets]
+            units = [unit for unit in self.player.board.get_targets(
+                Context(source=self),
+                Target(Target.Kind.UNIT, Target.Side.ANY, [unit_type])
+            ) if unit not in targets]
 
             if len(units) > 0:
                 targets.append(self.player.random.choice(units))

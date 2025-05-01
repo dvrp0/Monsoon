@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction
 from point import Point
 from structure import Structure
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class B009(Structure): # Chateau de Cardboard
@@ -11,7 +11,10 @@ class B009(Structure): # Chateau de Cardboard
         self.ability_amount = 2
 
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
-        targets = self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.ENEMY))
+        targets = self.player.board.get_targets(
+            Context(source=self),
+            Target(Target.Kind.UNIT, Target.Side.ENEMY)
+        )
 
         if len(targets) > 0:
             targets.sort(key=lambda t: (t.y, self.player.random.random()), reverse=True)

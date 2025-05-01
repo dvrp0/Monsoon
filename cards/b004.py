@@ -1,7 +1,7 @@
 from card import Card
 from enums import Faction
 from point import Point
-from target import Target
+from target import Context, Target
 from structure import Structure
 from test import CardTestCase
 
@@ -11,7 +11,10 @@ class B004(Structure): # Powder Tower
         self.ability_damage = 4
 
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
-        targets = self.player.board.get_targets(Target(Target.Kind.ANY, Target.Side.ENEMY), include_base=True)
+        targets = self.player.board.get_targets(
+            Context(source=self),
+            Target(Target.Kind.ANY, Target.Side.ENEMY, include_base=True)
+        )
 
         for target in targets:
             self.player.board.at(target).deal_damage(self.ability_damage, source=self)

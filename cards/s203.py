@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction
 from point import Point
 from spell import Spell
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 from typing import List
 
@@ -13,10 +13,16 @@ class S203(Spell): # Dark Harvest
 
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
         tiles: List[Point] = []
-        friendlies = self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY))
+        friendlies = self.player.board.get_targets(
+            Context(source=self),
+            Target(Target.Kind.UNIT, Target.Side.FRIENDLY)
+        )
 
         for friendly in friendlies:
-            tiles += self.player.board.get_surrounding_tiles(friendly, Target(Target.Kind.ANY, Target.Side.ENEMY), include_base=True)
+            tiles += self.player.board.get_surrounding_tiles(
+                Context(friendly, source=self),
+                Target(Target.Kind.ANY, Target.Side.ENEMY, include_base=True)
+            )
 
         tiles = list(set(tiles)) 
 

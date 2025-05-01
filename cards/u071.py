@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction, UnitType, TriggerType
 from point import Point
 from unit import Unit
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class U071(Unit): # Angelic Tikas
@@ -10,15 +10,18 @@ class U071(Unit): # Angelic Tikas
         super().__init__(Faction.NEUTRAL, [UnitType.FELINE, UnitType.ANCIENT], 3, 5, 1, TriggerType.BEFORE_MOVING)
 
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
-        targets = self.player.board.get_bordering_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ENEMY), self.player)
+        targets = self.player.board.get_bordering_tiles(
+            Context(self.position, pov=self.player, source=self),
+            Target(Target.Kind.UNIT, Target.Side.ENEMY)
+        )
         not_confused = [tile for tile in targets if not self.player.board.at(tile).is_confused]
 
         if len(not_confused) > 0:
             self.player.board.at(self.player.random.choice(not_confused)).confuse()
-            front = self.player.board.get_front_tiles(self.position)
+            front = self.player.board.get_front_tiles(Context(self.position, source=self))
 
-            if len(front) > 0 and self.player.board.at(front[-1]) is None:
-                self.teleport(front[-1])
+            if len(front) > 0 and self.player.board.at(front[0]) is None:
+                self.teleport(front[0])
 
 class U071Test(CardTestCase):
     def test_ability(self):

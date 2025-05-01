@@ -5,7 +5,7 @@ from player import Player
 from point import Point
 from collections.abc import Callable
 from board import Board
-from cards import *
+# from cards import *
 from unit import Unit
 
 class CardTestCase(TestCase):
@@ -51,6 +51,7 @@ class CardTestCase(TestCase):
         setattr(instance, method_name, wrapper.__get__(instance))
 
 class BaseTestCase(CardTestCase):
+    # @SkipTest
     def test_ability(self):
         from target import Target
         from cards.u401 import U401
@@ -66,12 +67,12 @@ class BaseTestCase(CardTestCase):
                 u401 = U401()
                 u401.player = self.local
 
-                self.hook(u401, "activate_ability", lambda s: positions.append(s.position))
+                self.hook(u401, "activate_ability", lambda s, *args, **kwargs: positions.append(s.position))
                 self.board.set(Point(x, y), u401)
 
         self.board.at(Point(0, 1)).deal_damage(1)
 
-        self.assertEqual(len(self.board.get_targets(Target(Target.Kind.UNIT, Target.Side.ANY))), 0)
+        self.assertEqual(len(self.board.get_targets(None, Target(Target.Kind.UNIT, Target.Side.ANY))), 0)
         self.assertEqual(positions, [
             Point(0, 1),
             Point(0, 2),
@@ -95,11 +96,11 @@ class BaseTestCase(CardTestCase):
 
         u401 = U401()
         u401.player = self.local
-        self.hook(u401, "activate_ability", lambda s: positions.append(s.position))
+        self.hook(u401, "activate_ability", lambda s, *args, **kwargs: positions.append(s.position))
         self.board.set(Point(1, 3), u401)
         ue42 = UE42()
         ue42.player = self.local
-        self.hook(ue42, "activate_ability", lambda s: positions.append(s.position))
+        self.hook(ue42, "activate_ability", lambda s, *args, **kwargs: positions.append(s.position))
         self.board.set(Point(3, 3), ue42)
         u405 = U405()
         u405.player = self.local
@@ -114,11 +115,11 @@ class BaseTestCase(CardTestCase):
 
         u401 = U401()
         u401.player = self.remote
-        self.hook(u401, "activate_ability", lambda s: positions.append(s.position))
+        self.hook(u401, "activate_ability", lambda s, *args, **kwargs: positions.append(s.position))
         self.board.set(Point(1, 3), u401)
         ue42 = UE42()
         ue42.player = self.remote
-        self.hook(ue42, "activate_ability", lambda s: positions.append(s.position))
+        self.hook(ue42, "activate_ability", lambda s, *args, **kwargs: positions.append(s.position))
         self.board.set(Point(3, 3), ue42)
         u405 = U405()
         u405.player = self.local

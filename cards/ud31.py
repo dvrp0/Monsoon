@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction, UnitType, TriggerType
 from point import Point
 from unit import Unit
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class UD31(Unit): # Greengale Surpents
@@ -14,7 +14,10 @@ class UD31(Unit): # Greengale Surpents
         if position.is_base or not isinstance(self.player.board.at(position), Unit): # 기지 또는 건물이라면 발동 안 함
             return
 
-        targets = self.player.board.get_surrounding_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.FRIENDLY, [UnitType.DRAGON]), self.player)
+        targets = self.player.board.get_surrounding_tiles(
+            Context(self.position, pov=self.player, source=self),
+            Target(Target.Kind.UNIT, Target.Side.FRIENDLY, [UnitType.DRAGON])
+        )
 
         if len(targets) > 0:
             self.player.board.at(self.player.random.choice(targets)).heal(self.ability_strength)

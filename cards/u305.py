@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction, UnitType, TriggerType
 from point import Point
 from unit import Unit
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class U305(Unit): # Linked Golems
@@ -11,7 +11,10 @@ class U305(Unit): # Linked Golems
         self.ability_strength = 4
 
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
-        targets = self.player.board.get_bordering_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.FRIENDLY, [UnitType.CONSUTRUCT]))
+        targets = self.player.board.get_bordering_tiles(
+            Context(self.position, source=self),
+            Target(Target.Kind.UNIT, Target.Side.FRIENDLY, [UnitType.CONSUTRUCT])
+        )
 
         if len(targets) > 0:
             self.player.board.at(self.player.random.choice(targets)).heal(self.ability_strength)

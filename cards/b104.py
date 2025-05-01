@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction
 from point import Point
 from structure import Structure
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class B104(Structure): # Glacier Palace
@@ -10,7 +10,10 @@ class B104(Structure): # Glacier Palace
         super().__init__(Faction.WINTER, 4, 8)
 
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
-        targets = self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.ENEMY))
+        targets = self.player.board.get_targets(
+            Context(source=self),
+            Target(Target.Kind.UNIT, Target.Side.ENEMY)
+        )
 
         if len(targets) > 0:
             targets.sort(key=lambda t: (t.y, self.player.random.random()), reverse=True)

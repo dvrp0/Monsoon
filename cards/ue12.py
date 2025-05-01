@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class UE12(Unit): # Chilled Stonedames
@@ -10,7 +10,10 @@ class UE12(Unit): # Chilled Stonedames
         super().__init__(Faction.WINTER, [UnitType.FLAKE, UnitType.ELDER], 5, 10, 1, TriggerType.AFTER_SURVIVING)
 
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
-        targets = self.player.board.get_front_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ENEMY), self.player)
+        targets = self.player.board.get_front_tiles(
+            Context(self.position, pov=self.player, source=self),
+            Target(Target.Kind.UNIT, Target.Side.ENEMY)
+        )
 
         for target in targets:
             self.player.board.at(target).destroy(source=self)

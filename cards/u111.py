@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class U111(Unit): # Snowmasons
@@ -12,7 +12,10 @@ class U111(Unit): # Snowmasons
 
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
         for _ in range(self.ability_strength):
-            targets = self.player.board.get_surrounding_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.FRIENDLY), self.player)
+            targets = self.player.board.get_surrounding_tiles(
+                Context(self.position, pov=self.player, source=self),
+                Target(Target.Kind.UNIT, Target.Side.FRIENDLY)
+            )
 
             if len(targets) > 0:
                 self.player.board.at(self.player.random.choice(targets)).heal(1)

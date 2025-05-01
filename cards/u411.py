@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class U411(Unit): # Copperskin Rangers
@@ -11,7 +11,10 @@ class U411(Unit): # Copperskin Rangers
         self.ability_amount = 3
 
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
-        targets = self.player.board.get_targets(Target(Target.Kind.UNIT, Target.Side.ENEMY))
+        targets = self.player.board.get_targets(
+            Context(source=self),
+            Target(Target.Kind.UNIT, Target.Side.ENEMY)
+        )
 
         if len(targets) > 0:
             self.player.random.shuffle(targets)

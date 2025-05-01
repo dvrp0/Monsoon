@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction, UnitType, TriggerType
 from point import Point
 from spell import Spell
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class S004(Spell): # Rain of Frogs
@@ -37,5 +37,5 @@ class S004Test(CardTestCase):
         self.board.spawn_token_unit(self.local, Point(0, 2), 1, [UnitType.DRAGON])
         card.play()
 
-        count = self.board.get_targets(Target(Target.Kind.UNIT, Target.Side.FRIENDLY, unit_types=[UnitType.TOAD]))
+        count = self.board.get_targets(None, Target(Target.Kind.UNIT, Target.Side.FRIENDLY, unit_types=[UnitType.TOAD]))
         self.assertEqual(len(count), 6)

@@ -2,7 +2,7 @@ from card import Card
 from enums import Faction, UnitType, TriggerType
 from unit import Unit
 from point import Point
-from target import Target
+from target import Context, Target
 from test import CardTestCase
 
 class U310(Unit): # Ozone Purifiers
@@ -11,7 +11,10 @@ class U310(Unit): # Ozone Purifiers
 
     # behind > sides > front
     def activate_ability(self, position: Point | None = None, source: Card | None = None):
-        targets = self.player.board.get_bordering_tiles(self.position, Target(Target.Kind.UNIT, Target.Side.ENEMY))
+        targets = self.player.board.get_bordering_tiles(
+            Context(self.position, source=self),
+            Target(Target.Kind.UNIT, Target.Side.ENEMY)
+        )
 
         behind = next(filter(lambda t: self.position.y + 1 == t.y, targets), None)
         behind_pushable = behind is not None and behind.y < 4 and self.player.board.at(Point(behind.x, behind.y + 1)) is None
