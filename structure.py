@@ -44,7 +44,7 @@ class Structure(Card):
         if self.is_on_play:
             self.activate_ability(source=self)
 
-    def deal_damage(self, amount: int, pending_destroy=False, source: Card | str = None):
+    def deal_damage(self, amount: int, pending_destroy=False, source: Card | None = None):
         if self.strength - amount < 0:
             amount = self.strength
 
@@ -57,7 +57,7 @@ class Structure(Card):
 
         return amount
 
-    def destroy(self, source: Card | str = None):
+    def destroy(self, source: Card | None = None):
         self.damage_taken = self.strength
         self.damage_source = source
         self.player.board.set(self.position, None)
@@ -65,3 +65,20 @@ class Structure(Card):
 
     def heal(self, amount: int):
         self.strength += amount
+
+    def respawn(self, position: Point, strength: int):
+        if type(self) is Structure:
+            structure = Structure(
+                self.faction,
+                self.cost,
+                strength,
+                self.triggers
+            )
+        else:
+            structure = self.__class__()
+            structure.strength = strength
+
+        structure.player = self.player
+        structure.position = position
+
+        self.player.board.set(position, structure)

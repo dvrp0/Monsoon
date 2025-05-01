@@ -129,3 +129,20 @@ class BaseTestCase(CardTestCase):
             Point(3, 3),
             Point(1, 3)
         ])
+
+        # Verify respawn()
+        u1 = self.board.spawn_token_unit(self.local, Point(0, 3), 5)
+        u1.deal_damage(5)
+        u1.respawn(Point(0, 4), 10)
+
+        self.assertIsNone(self.board.at(Point(0, 3)))
+        self.assertIsNotNone(self.board.at(Point(0, 4)))
+        self.assertEqual(self.board.at(Point(0, 4)).strength, 10)
+
+        s1 = self.board.spawn_token_structure(self.remote, Point(0, 2), 5)
+        s1.deal_damage(5)
+        s1.respawn(Point(0, 1), 10)
+
+        self.assertIsNone(self.board.at(Point(0, 2)))
+        self.assertIsNotNone(self.board.at(Point(0, 1)))
+        self.assertEqual(self.board.at(Point(0, 1)).strength, 10)

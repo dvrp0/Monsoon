@@ -169,8 +169,9 @@ class Unit(Card):
                     target_on_death_pending = isinstance(target, Unit) and target.trigger == TriggerType.ON_DEATH and not target.is_disabled
                     local_on_death_pending = self.trigger == TriggerType.ON_DEATH and not self.is_disabled
 
-                    target.deal_damage(self.strength, target_on_death_pending, self.card_id)
-                    self.deal_damage(target_strength_cached, local_on_death_pending, target.card_id)
+                    # Not passing the source to indicate the damage is done by movement
+                    target.deal_damage(self.strength, target_on_death_pending)
+                    self.deal_damage(target_strength_cached, local_on_death_pending)
 
                     if target.strength <= 0 and target_on_death_pending:
                         target.destroy() # defender triggers first
@@ -196,7 +197,7 @@ class Unit(Card):
                 if self.is_confused:
                     self.deconfuse()
 
-    def deal_damage(self, amount: int, pending_destroy=False, source: Card | str = None):
+    def deal_damage(self, amount: int, pending_destroy=False, source: Card | None = None):
         if self.strength - amount < 0:
             amount = self.strength
 
@@ -212,7 +213,7 @@ class Unit(Card):
 
         return amount
 
-    def destroy(self, source: Card | str = None):
+    def destroy(self, source: Card | None = None):
         self.player.board.set(self.position, None)
         self.path = []
         self.damage_taken = self.strength
@@ -374,3 +375,23 @@ class Unit(Card):
                 self.player.front_line = max(1, destination.y)
 
             self.set_path(self.resolving_play)
+
+    def respawn(self, position: Point, strength: int):
+        if type(self) is Unit: # Token
+            unit = Unit(
+                self.faction,
+                self.unit_types,
+                self.cost,
+                strength,
+                self.movement,
+                self.trigger,
+                self.fixedly_forward
+            )
+        else:
+            unit = self.__class__()
+            unit.strength = strength
+
+        unit.player = self.player
+        unit.position = position
+
+        self.player.board.set(position, unit)
