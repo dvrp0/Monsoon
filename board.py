@@ -194,7 +194,7 @@ class Board:
 
         return tiles
 
-    def get_front_tiles(self, context: Context, target: Target = None) -> List[Point]:
+    def get_front_tiles(self, context: Context, target: Target | None = None) -> List[Point]:
         if context.pov is None:
             context.pov = self.current_player
 
@@ -209,7 +209,7 @@ class Board:
 
         return tiles
 
-    def get_behind_tiles(self, context: Context, target: Target = None) -> List[Point]:
+    def get_behind_tiles(self, context: Context, target: Target | None = None) -> List[Point]:
         if context.pov is None:
             context.pov = self.current_player
 
@@ -224,7 +224,7 @@ class Board:
 
         return tiles
 
-    def get_side_tiles(self, context: Context, target: Target = None) -> List[Point]:
+    def get_side_tiles(self, context: Context, target: Target | None = None) -> List[Point]:
         tiles = [
             Point(context.position.x - 1, context.position.y),
             Point(context.position.x + 1, context.position.y)
@@ -236,7 +236,7 @@ class Board:
 
         return [tile for tile in tiles if tile.is_valid]
 
-    def get_row_tiles(self, context: Context, target: Target = None) -> List[Point]:
+    def get_row_tiles(self, context: Context, target: Target | None = None) -> List[Point]:
         tiles = [Point(i, context.position.y) for i in range(0, 4)]
 
         if target is not None:
@@ -250,11 +250,11 @@ class Board:
 
         if target is not None:
             targets = self.get_targets(context, target)
-            tiles = [point for point in targets if point in tiles or (point.is_base and target.include_base)]
+            return [point for point in targets if point in tiles or (point.is_base and target.include_base)]
 
-        return [tile for tile in tiles if tile.is_valid or (tile.is_base and target.include_base)]
+        return [tile for tile in tiles if tile.is_valid]
 
-    def get_bordering_tiles(self, context: Context, target: Target = None) -> List[Point]:
+    def get_bordering_tiles(self, context: Context, target: Target | None = None) -> List[Point]:
         tiles = [
             Point(context.position.x - 1, context.position.y),
             Point(context.position.x + 1, context.position.y),
@@ -264,11 +264,11 @@ class Board:
 
         if target is not None:
             targets = self.get_targets(context, target)
-            tiles = [point for point in targets if point in tiles or (point.is_base and target.include_base)]
+            return [point for point in targets if point in tiles or (point.is_base and target.include_base)]
 
-        return [tile for tile in tiles if tile.is_valid or (tile.is_base and target.include_base)]
+        return [tile for tile in tiles if tile.is_valid]
 
-    def get_surrounding_tiles(self, context: Context, target: Target = None) -> List[Point]:
+    def get_surrounding_tiles(self, context: Context, target: Target | None = None) -> List[Point]:
         tiles = [
             Point(context.position.x - 1, context.position.y),
             Point(context.position.x - 1, context.position.y - 1),
@@ -282,9 +282,9 @@ class Board:
 
         if target is not None:
             targets = self.get_targets(context, target)
-            tiles = [point for point in targets if point in tiles or (point.is_base and target.include_base)]
+            return [point for point in targets if point in tiles or (point.is_base and target.include_base)]
 
-        return [tile for tile in tiles if tile.is_valid or (tile.is_base and target.include_base)]
+        return [tile for tile in tiles if tile.is_valid]
 
     def spawn_token_unit(self, player: "Player", position: Point, strength: int, types: List[UnitType] = None):
         types = types or [UnitType(self.random.choice(list(UnitType)))]
