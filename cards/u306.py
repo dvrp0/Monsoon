@@ -5,7 +5,7 @@ from unit import Unit
 from target import Context, Target
 from test import CardTestCase
 
-class U306(Unit): # Destuctobots
+class U306(Unit): # Destructobots
     def __init__(self):
         super().__init__(Faction.IRONCLAD, [UnitType.CONSUTRUCT], 2, 6, 1, TriggerType.ON_PLAY)
         self.ability_damage = 1
