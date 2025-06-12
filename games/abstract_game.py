@@ -2,10 +2,6 @@ from abc import ABC, abstractmethod
 
 
 class AbstractGame(ABC):
-    """
-    Inherit this class for muzero to play
-    """
-
     @abstractmethod
     def __init__(self, seed=None):
         pass
