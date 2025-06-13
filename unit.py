@@ -26,8 +26,13 @@ class Unit(Card):
         return isinstance(other, Unit) and self.card_id == other.card_id and self.player == other.player and self.position == other.position
 
     def __repr__(self):
-        fore = Fore.BLUE if self.player == self.player.board.local else Fore.RED
-        color = Back.BLUE if self.player == self.player.board.local else Back.RED
+        if self.player is None:
+            fore = Fore.WHITE
+            color = Back.LIGHTBLACK_EX
+        else:
+            fore = Fore.BLUE if self.player == self.player.board.local else Fore.RED
+            color = Back.BLUE if self.player == self.player.board.local else Back.RED
+
         strength = f"♥{min(99, self.strength)}{' ' if self.strength < 10 else ''}"
         is_frozen = f"{Back.LIGHTCYAN_EX} {color}" if self.is_frozen else ' '
         is_poisoned = f"{Back.GREEN} {color}" if self.is_poisoned else ' '

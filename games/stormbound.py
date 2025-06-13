@@ -20,7 +20,7 @@ class MuZeroConfig:
         self.max_num_gpus = 1 # Fix the maximum number of GPUs to use. It's usually faster to use a single GPU (set it to 1) if it has enough memory. None will use every GPUs available
 
         ### Game
-        self.observation_shape = (35, 5, 4)  # Dimensions of the game observation, must be 3D (channel, height, width). For a 1D array, please reshape it to (1, 1, length of array)
+        self.observation_shape = (27, 5, 4)  # Dimensions of the game observation, must be 3D (channel, height, width). For a 1D array, please reshape it to (1, 1, length of array)
         self.action_space = list(range(156))  # Fixed list of all possible actions. You should only edit the length
         self.players = list(range(2))  # List of players. You should only edit the length
         self.stacked_observations = 0  # Number of previous observations and previous actions to add to the current observation
@@ -48,7 +48,7 @@ class MuZeroConfig:
         ### Network
         self.network = "resnet"  # "resnet" / "fullyconnected"
         self.support_size = 10  # Value and reward are scaled (with almost sqrt) and encoded on a vector with a range of -support_size to support_size. Choose it so that support_size <= sqrt(max(abs(discounted reward)))
-        
+
         # Residual Network
         self.downsample = False  # Downsample observations before representation network, False / "CNN" (lighter) / "resnet" (See paper appendix Network Architecture)
         self.blocks = 6  # Number of blocks in the ResNet
@@ -292,8 +292,14 @@ class Action:
 class Stormbound:
     def __init__(self, seed):
         self.random = np.random.RandomState(seed)
-        local = Player(Faction.IRONCLAD, [B304(), UA07(), U007(), U061(), U053(), U106(), U302(), U305(), U306(), U320(), UD31(), UE04()], PlayerOrder.FIRST, self.random)
-        remote = Player(Faction.SWARM, [S012(), UA07(), U007(), U211(), U061(), U206(), U053(), U001(), U216(), S013(), U071(), UA04()], PlayerOrder.SECOND, self.random)
+        local = Player(Faction.IRONCLAD, [
+            UA07(), U007(), U306(), U061(), B304(), U305(),
+            U320(), U302(), U313(), UA02(), UT32(), U316()
+        ], PlayerOrder.FIRST, self.random)
+        remote = Player(Faction.SWARM, [
+            UA07(), U007(), U001(), U053(), UE01(), U211(),
+            U206(), U071(), U020(), S013(), B001(), U061()
+        ], PlayerOrder.SECOND, self.random)
         self.board = Board(local, remote, self.random)
         self.player = 1
 
@@ -307,11 +313,6 @@ class Stormbound:
         return 0 if self.player == 1 else 1
 
     def reset(self):
-        local = Player(Faction.IRONCLAD, [B304(), UA07(), U007(), U061(), U053(), U106(), U302(), U305(), U306(), U320(), UD31(), UE04()], PlayerOrder.FIRST, self.random)
-        remote = Player(Faction.SWARM, [S012(), UA07(), U007(), U211(), U061(), U206(), U053(), U001(), U216(), S013(), U071(), UA04()], PlayerOrder.SECOND, self.random)
-        self.board = Board(local, remote, self.random)
-        self.player = 1
-
         return self.get_observation()
 
     def step(self, action: int):
@@ -366,128 +367,150 @@ class Stormbound:
 
         if action == 155: # Pass
             self.player *= -1
+            self.board.flip()
             self.board.to_next_turn()
 
         return self.get_observation(), reward, done
 
     '''
-    Observation shape: (35, 5, 4)
+    Observation shape: (27, 5, 4)
     - 0: Card IDs of P1's units on the board
     - 1: Strengths of P1's units on the board
     - 2: Movements of P1's units on the board
-    - 3-7: Status effects(vitality, poison, confusion, freeze and disable) of P1's units on the board
-    - 8: Card IDs of P1's structures on the board
-    - 9: Strengths of P1's structures on the board
-    - 10: P1's hand ([card ID, cost, strength, movement] * 4 + hand representing cue [32767, 32767, 32767, 32767])
-    - 11-16: P1's deck ([card ID, cost, strength, movement] * n + deck representing cue [32768, 32768, 32768, 32768])
-    - 17: P1's current mana (constant-valued)
-    - 18: P1's base strength (constant-valued)
-    - 19: P1's faction (constant-valued)
-    - 20: Card IDs of P2's units on the board
-    - 21: Strengths of P2's units on the board
-    - 22: Movements of P2's units on the board
-    - 23-27: Status effects(vitality, poison, confusion, freeze and disable) of P2's units on the board
-    - 28: Card IDs of P2's structures on the board
-    - 29: Strengths of P2's structures on the board
-    - 30: P2's current mana (constant-valued)
-    - 31: P2's base strength (constant-valued)
-    - 32: P2's faction (constant-valued)
-    - 33: Current player (constant-valued)
-    - 34: Card play history ([player, card ID, -1, -1] * 4 + history representing cue [32769, 32769, 32769, 32769])
+    - 3: Bit encoded status effects(vitality, poison, confusion, freeze and disable) of P1's units on the board
+    - 4: Card IDs of P1's structures on the board
+    - 5: Strengths of P1's structures on the board
+    - 6: P1's hand ([card ID, cost, strength, movement] * 4 + hand representing cue [32767, 32767, 32767, 32767])
+    - 7-12: P1's deck ([card ID, cost, strength, movement] * n + deck representing cue [32768, 32768, 32768, 32768])
+    - 13: P1's current mana (constant-valued)
+    - 14: P1's base strength (constant-valued)
+    - 15: P1's faction (constant-valued)
+    - 16: Card IDs of P2's units on the board
+    - 17: Strengths of P2's units on the board
+    - 18: Movements of P2's units on the board
+    - 19: Bit encoded status effects(vitality, poison, confusion, freeze and disable) of P2's units on the board
+    - 20: Card IDs of P2's structures on the board
+    - 21: Strengths of P2's structures on the board
+    - 22: P2's current mana (constant-valued)
+    - 23: P2's base strength (constant-valued)
+    - 24: P2's faction (constant-valued)
+    - 25: Current player (constant-valued)
+    - 26: Card play history ([player, card ID, -1, -1] * 4 + history representing cue [32769, 32769, 32769, 32769])
     '''
     def get_observation(self):
         def foreach(operation: Callable[[Unit | Structure | None], Unit | Structure | None]):
             return [[operation(tile) for tile in row] for row in self.board.board]
 
-        if self.player == -1:
-            self.board.flip() # flip the board to make canonical form, which is the first player's perspective
-
+        # P1's units
         local_unit_ids = foreach(lambda tile: int(tile) if isinstance(tile, Unit) and tile.player == self.board.local else -1)
         local_unit_strengths = foreach(lambda tile: tile.strength if isinstance(tile, Unit) and tile.player == self.board.local else -1)
         local_unit_movements = foreach(lambda tile: tile.movement if isinstance(tile, Unit) and tile.player == self.board.local else -1)
-        local_unit_vitalized = foreach(lambda tile: int(tile.is_vitalized) if isinstance(tile, Unit) and tile.player == self.board.local else -1)
-        local_unit_poisoned = foreach(lambda tile: int(tile.is_poisoned) if isinstance(tile, Unit) and tile.player == self.board.local else -1)
-        local_unit_confused = foreach(lambda tile: int(tile.is_confused) if isinstance(tile, Unit) and tile.player == self.board.local else -1)
-        local_unit_frozen = foreach(lambda tile: int(tile.is_frozen) if isinstance(tile, Unit) and tile.player == self.board.local else -1)
-        local_unit_disabled = foreach(lambda tile: int(tile.is_disabled) if isinstance(tile, Unit) and tile.player == self.board.local else -1)
+        # Bit pack status effects: vitality(1), poison(2), confusion(4), freeze(8), disable(16)
+        local_unit_statuses = foreach(lambda tile: (
+            (1 if isinstance(tile, Unit) and tile.player == self.board.local and tile.is_vitalized else 0) |
+            (2 if isinstance(tile, Unit) and tile.player == self.board.local and tile.is_poisoned else 0) |
+            (4 if isinstance(tile, Unit) and tile.player == self.board.local and tile.is_confused else 0) |
+            (8 if isinstance(tile, Unit) and tile.player == self.board.local and tile.is_frozen else 0) |
+            (16 if isinstance(tile, Unit) and tile.player == self.board.local and tile.is_disabled else 0)
+        ) if isinstance(tile, Unit) and tile.player == self.board.local else -1)
+
+        # P1's structures
         local_structure_ids = foreach(lambda tile: int(tile) if isinstance(tile, Structure) and tile.player == self.board.local else -1)
         local_structure_strengths = foreach(lambda tile: tile.strength if isinstance(tile, Structure) and tile.player == self.board.local else -1)
-        local_hand = [[-1] * 4 if not card else [
-            int(card),
-            card.cost,
-            -1 if isinstance(card, Spell) else card.strength,
-            card.movement if isinstance(card, Unit) else -1
-        ] for card in (self.board.local.hand + [None] * 4)[:4]] + [[32767] * 4]
 
+        # P1's hand
+        local_hand = []
+        for card in (self.board.local.hand + [None] * 4)[:4]:
+            if card is None:
+                local_hand.append([-1, -1, -1, -1])
+            else:
+                local_hand.append([
+                    int(card),
+                    card.cost,
+                    -1 if isinstance(card, Spell) else card.strength,
+                    card.movement if isinstance(card, Unit) else -1
+                ])
+        local_hand.append([32767] * 4)
+
+        # P1's deck
         sorted_deck = sorted(self.board.local.deck, key=lambda x: (x.cost, x.card_id))
-        local_deck = [[], [], [], [], [], []]
+        local_deck = []
+        for i in range(6):
+            deck_layer = []
+            start_idx = i * 4
+            for card in (sorted_deck[start_idx:start_idx + 4] + [None] * 4)[:4]:
+                if card is None:
+                    deck_layer.append([-1, -1, -1, -1])
+                else:
+                    deck_layer.append([
+                        int(card),
+                        card.cost,
+                        -1 if isinstance(card, Spell) else card.strength,
+                        card.movement if isinstance(card, Unit) else -1
+                    ])
+            deck_layer.append([32768] * 4)
+            local_deck.append(deck_layer)
 
-        for i in range(0, 24, 4):
-            local_deck[i // 4] = [[-1] * 4 if not card else [
-                int(card),
-                card.cost,
-                -1 if isinstance(card, Spell) else card.strength,
-                card.movement if isinstance(card, Unit) else -1
-            ] for card in (sorted_deck[i:i + 4] + [None] * 4)[:4]] + [[32768] * 4]
-
+        # P1's constant values
         local_mana = [[self.board.local.current_mana] * 4] * 5
         local_base = [[self.board.local.strength] * 4] * 5
         local_faction = [[self.board.local.faction.value] * 4] * 5
 
+        # P2's units
         remote_unit_ids = foreach(lambda tile: int(tile) if isinstance(tile, Unit) and tile.player == self.board.remote else -1)
         remote_unit_strengths = foreach(lambda tile: tile.strength if isinstance(tile, Unit) and tile.player == self.board.remote else -1)
         remote_unit_movements = foreach(lambda tile: tile.movement if isinstance(tile, Unit) and tile.player == self.board.remote else -1)
-        remote_unit_vitalized = foreach(lambda tile: int(tile.is_vitalized) if isinstance(tile, Unit) and tile.player == self.board.remote else -1)
-        remote_unit_poisoned = foreach(lambda tile: int(tile.is_poisoned) if isinstance(tile, Unit) and tile.player == self.board.remote else -1)
-        remote_unit_confused = foreach(lambda tile: int(tile.is_confused) if isinstance(tile, Unit) and tile.player == self.board.remote else -1)
-        remote_unit_frozen = foreach(lambda tile: int(tile.is_frozen) if isinstance(tile, Unit) and tile.player == self.board.remote else -1)
-        remote_unit_disabled = foreach(lambda tile: int(tile.is_disabled) if isinstance(tile, Unit) and tile.player == self.board.remote else -1)
+        # Bit pack status effects: vitality(1), poison(2), confusion(4), freeze(8), disable(16)
+        remote_unit_statuses = foreach(lambda tile: (
+            (1 if isinstance(tile, Unit) and tile.player == self.board.remote and tile.is_vitalized else 0) |
+            (2 if isinstance(tile, Unit) and tile.player == self.board.remote and tile.is_poisoned else 0) |
+            (4 if isinstance(tile, Unit) and tile.player == self.board.remote and tile.is_confused else 0) |
+            (8 if isinstance(tile, Unit) and tile.player == self.board.remote and tile.is_frozen else 0) |
+            (16 if isinstance(tile, Unit) and tile.player == self.board.remote and tile.is_disabled else 0)
+        ) if isinstance(tile, Unit) and tile.player == self.board.remote else -1)
+
+        # P2's structures
         remote_structure_ids = foreach(lambda tile: int(tile) if isinstance(tile, Structure) and tile.player == self.board.remote else -1)
         remote_structure_strengths = foreach(lambda tile: tile.strength if isinstance(tile, Structure) and tile.player == self.board.remote else -1)
+
+        # P2's constant values
         remote_mana = [[self.board.remote.current_mana] * 4] * 5
         remote_base = [[self.board.remote.strength] * 4] * 5
         remote_faction = [[self.board.remote.faction.value] * 4] * 5
 
+        # Current player
         current_player = [[self.player * 99999] * 4] * 5
-        history = [[-1] * 4 if not card else [
-            -99999 if card.player.order.value else 99999,
-            int(card),
-            -1,
-            -1
-        ] for card in ([None] * 4 + self.board.history)[-4:]] + [[32769] * 4]
 
-        if self.player == -1:
-            self.board.flip()
+        # History
+        history = []
+        for card in ([None] * 4 + self.board.history)[-4:]:
+            if card is None:
+                history.append([-1, -1, -1, -1])
+            else:
+                history.append([
+                    -99999 if card.player.order.value else 99999,
+                    int(card),
+                    -1,
+                    -1
+                ])
+        history.append([32769] * 4)
 
-        return np.array([
+        observation = np.array([
             local_unit_ids,
             local_unit_strengths,
             local_unit_movements,
-            local_unit_vitalized,
-            local_unit_poisoned,
-            local_unit_confused,
-            local_unit_frozen,
-            local_unit_disabled,
+            local_unit_statuses,
             local_structure_ids,
             local_structure_strengths,
             local_hand,
-            local_deck[0],
-            local_deck[1],
-            local_deck[2],
-            local_deck[3],
-            local_deck[4],
-            local_deck[5],
+            *local_deck,
             local_mana,
             local_base,
             local_faction,
             remote_unit_ids,
             remote_unit_strengths,
             remote_unit_movements,
-            remote_unit_vitalized,
-            remote_unit_poisoned,
-            remote_unit_confused,
-            remote_unit_frozen,
-            remote_unit_disabled,
+            remote_unit_statuses,
             remote_structure_ids,
             remote_structure_strengths,
             remote_mana,
@@ -495,7 +518,12 @@ class Stormbound:
             remote_faction,
             current_player,
             history
-        ], dtype="int32");
+        ], dtype="int32")
+
+        # Verify shape is correct
+        assert observation.shape == (27, 5, 4), f"Expected shape (27, 5, 4), got {observation.shape}"
+
+        return observation
 
     def legal_actions(self):
         hand_length = len(self.board.local.hand)
@@ -520,7 +548,7 @@ class Stormbound:
                 if instance.required_targets is None:
                     use.append(Action(ActionType.USE, card))
                 else:
-                    use += [Action(ActionType.USE, card, point) for point in self.board.get_targets(instance.required_targets)]
+                    use += [Action(ActionType.USE, card, point) for point in self.board.get_targets(None, instance.required_targets)]
 
         actions: List[Action] = place + use + replace + to_leftmost
         if len(actions) == len(replace):

@@ -27,7 +27,7 @@ __all__ = [
     "StateFeatures",
     "StormboundAdapter",
     "HeuristicAgent",
-    
+
     # Evolution components
     "Population",
     "FitnessEvaluator",

@@ -92,9 +92,13 @@ class Board:
                 self.remote.front_line = 0
 
     def flip(self):
-        temp = self.local
-        self.local = self.remote
-        self.remote = temp
+        # Store original player references before swapping
+        original_local = self.local
+        original_remote = self.remote
+
+        # Swap local and remote players
+        self.local = original_remote
+        self.remote = original_local
 
         self.local.front_line = 4 - self.local.front_line
         self.remote.front_line = 4 - self.remote.front_line
@@ -104,6 +108,11 @@ class Board:
             for x in range(4):
                 if self.board[y][x] is not None:
                     self.board[y][x].position = Point(x, y)
+                    # Swap player ownership to reflect the flipped perspective
+                    if self.board[y][x].player == original_local:
+                        self.board[y][x].player = self.remote  # original_local units now belong to new remote
+                    elif self.board[y][x].player == original_remote:
+                        self.board[y][x].player = self.local  # original_remote units now belong to new local
 
     def to_next_turn(self):
         self.phase = Phase.TURN_END
@@ -121,7 +130,7 @@ class Board:
         self.remote.current_mana = self.remote.max_mana
 
         self.phase = Phase.TURN_START
-        self.current_player = self.current_player.opponent
+        self.current_player = self.remote if self.current_player == self.local else self.local
         self.current_player.replacable = True
         self.current_player.leftmost_movable = True
 
@@ -185,7 +194,7 @@ class Board:
 
             if target.side in [Target.Side.FRIENDLY, Target.Side.ANY]:
                 tiles.append(friendly)
-            
+
             if target.side in [Target.Side.ENEMY, Target.Side.ANY]:
                 tiles.append(enemy)
 

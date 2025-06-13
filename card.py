@@ -37,8 +37,13 @@ class Card(ABC):
                     kind = "3"
                 case "f":
                     kind = "4"
+            match self.card_id[1]:
+                case "t":
+                    kind2 = "f"
+                case _:
+                    kind2 = self.card_id[1]
 
-        return int(f"{kind}{self.card_id[1:]}", 16)
+        return int(f"{kind}{kind2}{self.card_id[2:]}", 16)
 
     def __init_subclass__(cls):
         super().__init_subclass__()

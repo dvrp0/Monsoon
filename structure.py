@@ -19,12 +19,17 @@ class Structure(Card):
         return isinstance(other, Structure) and self.card_id == other.card_id and self.player == other.player and self.position == other.position
 
     def __repr__(self):
-        fore = Fore.BLUE if self.player == self.player.board.local else Fore.RED
-        color = Back.BLUE if self.player == self.player.board.local else Back.RED
+        if self.player is None:
+            fore = Fore.WHITE
+            color = Back.LIGHTBLACK_EX
+        else:
+            fore = Fore.BLUE if self.player == self.player.board.local else Fore.RED
+            color = Back.BLUE if self.player == self.player.board.local else Back.RED
+
         strength = f"♥{self.strength}{' ' if self.strength < 10 else ''}"
 
         return f"{fore}{self.position}{Style.RESET_ALL} {color}{self.card_id} {strength}      {Style.RESET_ALL}"
-    
+
     @property
     def is_at_turn_start(self):
         return TriggerType.TURN_START in self.triggers
@@ -32,7 +37,7 @@ class Structure(Card):
     @property
     def is_at_turn_end(self):
         return TriggerType.TURN_END in self.triggers
-    
+
     @property
     def is_on_play(self):
         return TriggerType.ON_PLAY in self.triggers

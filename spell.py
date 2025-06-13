@@ -12,7 +12,10 @@ class Spell(Card):
         self.required_targets = required_targets
 
     def __repr__(self):
-        color = Back.BLUE if self.player == self.player.board.local else Back.RED
+        if self.player is None:
+            color = Back.LIGHTBLACK_EX
+        else:
+            color = Back.BLUE if self.player == self.player.board.local else Back.RED
 
         return f"{color}{self.card_id}          {Style.RESET_ALL}"
 
