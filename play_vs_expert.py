@@ -221,14 +221,46 @@ def play_game(evolutionary_agent: HeuristicAgent, expert_agent: ExpertAgent,
         except Exception as e:
             if verbose:
                 print(f"Error applying action {action}: {e}")
-            break
+            # Return error result instead of breaking without return
+            return {
+                'winner': -1,
+                'turns': turn_count + 1,
+                'agent_health': game.env.board.local.strength,
+                'expert_health': game.env.board.remote.strength
+            }
 
+    # This should handle the case where loop exits normally
     if turn_count >= max_turns:
         if verbose:
             print(f"\nGame ended after {max_turns} turns (draw due to turn limit)")
         return {
             'winner': -1,
             'turns': max_turns,
+            'agent_health': game.env.board.local.strength,
+            'expert_health': game.env.board.remote.strength
+        }
+    
+    # Final fallback - check if game actually ended
+    if game.env.have_winner():
+        # Determine winner based on player strengths
+        if game.env.board.local.strength <= 0:
+            winner = 1  # Remote player wins
+        elif game.env.board.remote.strength <= 0:
+            winner = 0  # Local player wins
+        else:
+            winner = -1  # Draw/unknown
+        
+        return {
+            'winner': winner,
+            'turns': turn_count,
+            'agent_health': game.env.board.local.strength,
+            'expert_health': game.env.board.remote.strength
+        }
+    else:
+        # Game ended without clear winner
+        return {
+            'winner': -1,
+            'turns': turn_count,
             'agent_health': game.env.board.local.strength,
             'expert_health': game.env.board.remote.strength
         }
