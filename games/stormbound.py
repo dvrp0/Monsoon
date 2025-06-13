@@ -602,10 +602,10 @@ class Stormbound:
                 index = playable[self.random.choice([i for i, x in enumerate(costs) if x == min_cost])]
 
             target = self.board.local.hand[index]
-            base_bordering_enemies = [x for x in self.board.get_targets(Target(Target.Kind.UNIT, Target.Side.ENEMY)) if x.y == 4]
+            base_bordering_enemies = [x for x in self.board.get_targets(None, Target(Target.Kind.UNIT, Target.Side.ENEMY)) if x.y == 4]
 
             if isinstance(target, Spell):
-                position = None if target.required_targets is None else self.random.choice(self.board.get_targets(target.required_targets))
+                position = None if target.required_targets is None else self.random.choice(self.board.get_targets(None, target.required_targets))
 
                 return Action(ActionType.USE, index, position).to_int()
             elif isinstance(target, Unit) and len(base_bordering_enemies) > 0:
@@ -621,7 +621,7 @@ class Stormbound:
                     return Action(ActionType.PLACE, index, self.random.choice(candidates)).to_int()
             else:
                 candidates = [Point(x, self.board.local.front_line) for x in range(4) if self.board.at(Point(x, self.board.local.front_line)) is None]
-                enemies = self.board.get_targets(Target(Target.Kind.UNIT, Target.Side.ENEMY))
+                enemies = self.board.get_targets(None, Target(Target.Kind.UNIT, Target.Side.ENEMY))
 
                 for enemy in enemies:
                     if enemy.x > 0 and enemy.y >= self.board.local.front_line and self.board.at(Point(enemy.x - 1, enemy.y)) is None:

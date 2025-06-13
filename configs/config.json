@@ -1,20 +1,20 @@
 {
     "population": {
-        "mu": 15,
-        "lambda_": 20
+        "mu": 10,
+        "lambda_": 10
     },
     "evolution": {
         "generations": 100
     },
     "evaluation": {
-        "games_per_pairing": 15,
+        "games_per_pairing": 20,
         "deck_configs": 3
     },
     "mutation": {
-        "tau": 0.25,
-        "tau_prime": 0.05,
-        "min_sigma": 1e-05,
-        "initial_sigma": 0.3,
+        "tau": 0.1,
+        "tau_prime": 0.01,
+        "min_sigma": 1e-5,
+        "initial_sigma": 0.1,
         "sigma_reset_threshold": 1e-04,
         "sigma_boost_factor": 3.0,
         "fitness_stagnation_gens": 5
